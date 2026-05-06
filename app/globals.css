@@ -1,1 +1,48 @@
 @import "tailwindcss";
+
+@theme {
+  /* ── Dark register ──────────────────────────────── */
+  --color-hero-bg: oklch(12% 0.012 60);        /* #1A1410 */
+  --color-hero-text: oklch(95% 0.010 78);      /* #F5F0E8 */
+  --color-accent-dark: oklch(56% 0.085 152);   /* #4A8A64 */
+
+  /* ── Light register ─────────────────────────────── */
+  --color-parchment: oklch(97% 0.008 80);      /* #FAF8F4 */
+  --color-linen: oklch(90% 0.022 68);          /* #EDE0D4 */
+  --color-border-warm: oklch(84% 0.018 72);    /* #DDD0C4 */
+  --color-text-primary: oklch(18% 0.010 65);   /* #2C1A0E */
+  --color-text-secondary: oklch(52% 0.022 58); /* #8C7060 */
+
+  /* ── Accent — forest green ──────────────────────── */
+  --color-accent: oklch(38% 0.085 152);        /* #2E5842 */
+  --color-accent-bg: oklch(94% 0.018 152);     /* #E8F0EB */
+  --color-code-surface: oklch(92% 0.015 70);   /* #F0EBE3 */
+
+  /* ── Font families ──────────────────────────────── */
+  /* next/font injects --font-archivo, --font-literata, --font-mono via a class
+     selector on <html>. Equal specificity to @theme's :root output, but
+     next/font's <style> loads after the compiled CSS bundle, so it wins.
+     Values below are system fallbacks only. */
+  --font-archivo: system-ui, sans-serif;
+  --font-literata: Georgia, serif;
+  --font-mono: 'Courier New', monospace;
+}
+
+body {
+  background-color: var(--color-parchment);
+  color: var(--color-text-primary);
+  font-family: var(--font-archivo), system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Grain texture — fixed full-viewport overlay, pointer-events disabled.
+   Per-section intensity variations override this opacity in those components. */
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bU9jdGF2ZXM9JzMnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48ZmVDb2xvck1hdHJpeCB0eXBlPSdzYXR1cmF0ZScgdmFsdWVzPScwJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzIwMCcgaGVpZ2h0PScyMDAnIGZpbHRlcj0ndXJsKCUyM25vaXNlKScgb3BhY2l0eT0nMScvPjwvc3ZnPg==");
+  opacity: 0.03;
+  pointer-events: none;
+  z-index: 9999;
+}
