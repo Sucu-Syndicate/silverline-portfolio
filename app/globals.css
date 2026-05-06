@@ -28,6 +28,11 @@
   --font-mono: 'Courier New', monospace;
 }
 
+/* Grain URL stored once — referenced by body::after and hero overlay div */
+:root {
+  --grain-url: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bU9jdGF2ZXM9JzMnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48ZmVDb2xvck1hdHJpeCB0eXBlPSdzYXR1cmF0ZScgdmFsdWVzPScwJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzIwMCcgaGVpZ2h0PScyMDAnIGZpbHRlcj0ndXJsKCUyM25vaXNlKScgb3BhY2l0eT0nMScvPjwvc3ZnPg==");
+}
+
 body {
   background-color: var(--color-parchment);
   color: var(--color-text-primary);
@@ -36,12 +41,12 @@ body {
 }
 
 /* Grain texture — fixed full-viewport overlay, pointer-events disabled.
-   Per-section intensity variations override this opacity in those components. */
+   Per-section intensity variations handled by additional overlays in those components. */
 body::after {
   content: '';
   position: fixed;
   inset: 0;
-  background-image: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bU9jdGF2ZXM9JzMnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48ZmVDb2xvck1hdHJpeCB0eXBlPSdzYXR1cmF0ZScgdmFsdWVzPScwJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzIwMCcgaGVpZ2h0PScyMDAnIGZpbHRlcj0ndXJsKCUyM25vaXNlKScgb3BhY2l0eT0nMScvPjwvc3ZnPg==");
+  background-image: var(--grain-url);
   opacity: 0.03;
   pointer-events: none;
   z-index: 9999;
