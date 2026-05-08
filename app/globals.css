@@ -1,42 +1,65 @@
 @import "tailwindcss";
 
-@theme {
-  /* ── Dark register ──────────────────────────────── */
-  --color-hero-bg: oklch(12% 0.012 60);        /* #1A1410 */
-  --color-hero-text: oklch(95% 0.010 78);      /* #F5F0E8 */
-  --color-accent-dark: oklch(56% 0.085 152);   /* #4A8A64 */
+/* ─────────────────────────────────────────────────────────────────────────────
+   Design System v3 — Direction A · Plotter
+   All site structure: full dark register.
+   Warm-cream (Direction B · Workshop) reserved for /blog body only — see below.
+   ───────────────────────────────────────────────────────────────────────────── */
 
-  /* ── Light register ─────────────────────────────── */
-  --color-parchment: oklch(97% 0.008 80);      /* #FAF8F4 */
-  --color-linen: oklch(90% 0.022 68);          /* #EDE0D4 */
-  --color-border-warm: oklch(84% 0.018 72);    /* #DDD0C4 */
-  --color-text-primary: oklch(18% 0.010 65);   /* #2C1A0E */
-  --color-text-secondary: oklch(52% 0.022 58); /* #8C7060 */
-
-  /* ── Accent — forest green ──────────────────────── */
-  --color-accent: oklch(38% 0.085 152);        /* #2E5842 */
-  --color-accent-bg: oklch(94% 0.018 152);     /* #E8F0EB */
-  --color-code-surface: oklch(92% 0.015 70);   /* #F0EBE3 */
-
-  /* ── Font families ──────────────────────────────── */
-  /* next/font injects --font-archivo, --font-literata, --font-mono via a class
-     selector on <html>. Equal specificity to @theme's :root output, but
-     next/font's <style> loads after the compiled CSS bundle, so it wins.
-     Values below are system fallbacks only. */
-  --font-archivo: system-ui, sans-serif;
-  --font-literata: Georgia, serif;
-  --font-mono: 'Courier New', monospace;
-}
-
-/* Grain URL stored once — referenced by body::after and hero overlay div */
 :root {
+  /* ── Dark register — homepage + site structure ─────────────────────────── */
+  --bg:          #0F100E;   /* Page base — warm near-black graphite */
+  --surface:     #161714;   /* Writing section band (only lifted band on homepage) */
+  --surface-2:   #1A1B18;   /* Code blocks, deeper inset elements */
+  --raised:      #222420;   /* Hover surfaces, modals */
+  --border:      #2A2C26;   /* Hairlines and dividers */
+  --border-2:    #34362F;   /* Stronger borders */
+  --text:        #E8E6DD;   /* Primary text */
+  --text-2:      #B8B6AD;   /* Secondary — dates, meta, labels */
+  --text-dim:    #6E7068;   /* Very dim — placeholders */
+  --accent:      #5DA67A;   /* Primary accent on dark — lighter green for legibility */
+  --accent-deep: #2E5842;   /* Forest green — deep decorative moments only */
+  --accent-bg:   #1A2620;   /* Green ambient tint — tag fills, /now hover */
+
+  /* ── v1/v2 backward-compat aliases ────────────────────────────────────────
+     Intentional. A future flip to warm-cream just reassigns these targets.   */
+  --hero-bg:        var(--bg);
+  --hero-text:      var(--text);
+  --green-dark:     var(--accent);
+  --parchment:      var(--bg);
+  --linen:          var(--surface);
+  --text-secondary: var(--text-2);
+  --code-surface:   var(--surface-2);
+
+  /* ── Font families (runtime values injected by next/font on <html>) ───────
+     Values below are system fallbacks only.                                  */
+  --font-structure: system-ui, sans-serif;    /* Archivo */
+  --font-reading:   Georgia, serif;           /* Literata */
+  --font-mono:      'Courier New', monospace; /* Geist Mono */
+
+  /* ── Motion ────────────────────────────────────────────────────────────── */
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* ── Grain texture ─────────────────────────────────────────────────────── */
   --grain-url: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bU9jdGF2ZXM9JzMnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48ZmVDb2xvck1hdHJpeCB0eXBlPSdzYXR1cmF0ZScgdmFsdWVzPScwJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzIwMCcgaGVpZ2h0PScyMDAnIGZpbHRlcj0ndXJsKCUyM25vaXNlKScgb3BhY2l0eT0nMScvPjwvc3ZnPg==");
 }
 
+/*
+ * ── RESERVED — Blog Body: Warm Register (Direction B · Workshop) ─────────────
+ * Not yet active. Applied under a .blog-body scope when /blog is built (PTASK-B01).
+ *
+ * --blog-bg:             #FAF8F4;   Post background — parchment
+ * --blog-surface:        #EDE0D4;   Card / surface lift — linen
+ * --blog-border:         #DDD0C4;   Dividers — warm border
+ * --blog-text:           #2C1A0E;   Body text — espresso
+ * --blog-text-secondary: #8C7060;   Meta, dates — warm secondary
+ * --blog-accent:         #2E5842;   Green on light background
+ * ───────────────────────────────────────────────────────────────────────────── */
+
 body {
-  background-color: var(--color-parchment);
-  color: var(--color-text-primary);
-  font-family: var(--font-archivo), system-ui, sans-serif;
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: var(--font-structure), system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
 }
 
