@@ -36,17 +36,19 @@ interface LiveLine extends TerminalLine {
 }
 
 function HeroLog() {
-  const [lines, setLines] = useState<LiveLine[]>(() => {
+  // Initialize empty — seeding happens in useEffect to avoid SSR/client timestamp mismatch
+  const [lines, setLines] = useState<LiveLine[]>([]);
+
+  useEffect(() => {
+    // Seed with initial lines on mount
     const seed: LiveLine[] = [];
     for (let i = 0; i < 8; i++) {
       const l = pickRandom(TERMINAL_LINES);
       if (!l) break;
       seed.push({ ...l, ts: nowTs(), id: Math.random() + i, fresh: false });
     }
-    return seed;
-  });
+    setLines(seed);
 
-  useEffect(() => {
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
 
