@@ -40,9 +40,9 @@ function HeroLog() {
   const [lines, setLines] = useState<LiveLine[]>([]);
 
   useEffect(() => {
-    // Seed with initial lines on mount
+    // Seed with a full screen of lines on mount
     const seed: LiveLine[] = [];
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < MAX_LINES; i++) {
       const l = pickRandom(TERMINAL_LINES);
       if (!l) break;
       seed.push({ ...l, ts: nowTs(), id: Math.random() + i, fresh: false });
