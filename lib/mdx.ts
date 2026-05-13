@@ -8,10 +8,19 @@ export interface PostMeta {
   title: string;
   date: string;
   slug: string;
+  tag: string;
+  description: string;
+}
+
+function calcReadTime(content: string): number {
+  const words = content.trim().split(/\s+/).length;
+  return Math.max(1, Math.round(words / 200));
 }
 
 export function getAllPosts(): PostMeta[] {
-  const files = fs.readdirSync(BLOG_DIR).filter((f) => f.endsWith(".mdx"));
+  const files = fs
+    .readdirSync(BLOG_DIR)
+    .filter((f) => f.endsWith(".mdx") && !f.startsWith("_"));
 
   return files
     .map((filename) => {
@@ -22,12 +31,18 @@ export function getAllPosts(): PostMeta[] {
         title: (data.title as string) ?? slug,
         date: (data.date as string) ?? "",
         slug,
+        tag: (data.tag as string) ?? "",
+        description: (data.description as string) ?? "",
       };
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));
 }
 
-export function getPostBySlug(slug: string): { meta: PostMeta; content: string } {
+export function getPostBySlug(slug: string): {
+  meta: PostMeta;
+  content: string;
+  readTime: number;
+} {
   const filePath = path.join(BLOG_DIR, `${slug}.mdx`);
   const raw = fs.readFileSync(filePath, "utf-8");
   const { data, content } = matter(raw);
@@ -36,7 +51,10 @@ export function getPostBySlug(slug: string): { meta: PostMeta; content: string }
       title: (data.title as string) ?? slug,
       date: (data.date as string) ?? "",
       slug,
+      tag: (data.tag as string) ?? "",
+      description: (data.description as string) ?? "",
     },
     content,
+    readTime: calcReadTime(content),
   };
 }
