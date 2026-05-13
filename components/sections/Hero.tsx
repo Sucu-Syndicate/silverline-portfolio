@@ -1,54 +1,138 @@
+'use client';
+
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { TERMINAL_LINES, type TerminalLine } from '@/lib/terminal-lines';
+
+const TICK_MIN = 700;
+const TICK_MAX = 1800;
+const MAX_LINES = 30;
+
+const MARKERS: Record<string, string> = {
+  commit: '◇',
+  build: '▸',
+  ship: '↑',
+  think: '~',
+  note: '·',
+};
+
+function pad(n: number) {
+  return String(n).padStart(2, '0');
+}
+
+function nowTs() {
+  const d = new Date();
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function pickRandom<T>(arr: T[]): T {
+  return arr[Math.floor(Math.random() * arr.length)];
+}
+
+interface LiveLine extends TerminalLine {
+  ts: string;
+  id: number;
+  fresh: boolean;
+}
+
+function HeroLog() {
+  const [lines, setLines] = useState<LiveLine[]>(() => {
+    const seed: LiveLine[] = [];
+    for (let i = 0; i < 8; i++) {
+      const l = pickRandom(TERMINAL_LINES);
+      if (!l) break;
+      seed.push({ ...l, ts: nowTs(), id: Math.random() + i, fresh: false });
+    }
+    return seed;
+  });
+
+  useEffect(() => {
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const tick = () => {
+      if (cancelled) return;
+      setLines((prev) => {
+        const pick = pickRandom(TERMINAL_LINES);
+        const next = [
+          ...prev.map((l) => ({ ...l, fresh: false })),
+          { ...pick, ts: nowTs(), id: Math.random(), fresh: true },
+        ];
+        return next.length > MAX_LINES
+          ? next.slice(next.length - MAX_LINES)
+          : next;
+      });
+      const delay = TICK_MIN + Math.random() * (TICK_MAX - TICK_MIN);
+      timer = setTimeout(tick, delay);
+    };
+
+    timer = setTimeout(tick, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+    };
+  }, []);
+
+  return (
+    <div className="hero-log" aria-hidden="true">
+      <div className="hero-log-stream">
+        {lines.map((l, i) => {
+          const isLast = i === lines.length - 1;
+          return (
+            <div
+              key={l.id}
+              className={
+                ['line', l.fresh ? 'fresh' : '', isLast ? 'cursor' : '']
+                  .filter(Boolean)
+                  .join(' ')
+              }
+            >
+              <span className="ts">{l.ts}</span>
+              <span className="marker">{MARKERS[l.tag] ?? '·'}</span>
+              <span className="body">{l.text}</span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
 
 export default function Hero() {
   return (
-    <section className="relative flex flex-col justify-center min-h-[100dvh] bg-hero-bg overflow-hidden">
-      {/* Enhanced grain overlay — 2× base opacity for darker hero texture */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0 pointer-events-none"
-        style={{ backgroundImage: 'var(--grain-url)', opacity: 0.06 }}
-      />
+    <section className="hero" id="hero">
+      <div className="grain hero-grain" aria-hidden="true" />
 
-      {/* Buenos Aires coordinates — Geist Mono instance 1 of 3 */}
-      <span className="absolute top-6 right-8 z-10 font-mono text-[10px] tracking-[0.02em] text-hero-text opacity-40">
-        -34.6037, -58.3816
-      </span>
-
-      {/* Main content — left-aligned, vertically centered */}
-      <div className="relative z-10 px-8 lg:px-16">
-        <h1 className="font-archivo font-black leading-none [letter-spacing:-0.03em]">
-          <span className="block text-[clamp(56px,9vw,120px)] text-hero-text">
-            Mathe Guevara
-          </span>
-          <span className="block text-[clamp(56px,9vw,120px)] text-accent-dark">
-            Builder.
-          </span>
-        </h1>
-
-        <p className="mt-6 font-archivo font-normal text-[17px] leading-[1.55] max-w-md text-hero-text opacity-70">
-          Building things at the intersection of product and code.
-        </p>
-
-        <div className="mt-8 flex items-center gap-6 font-archivo font-semibold text-[14px]">
-          <a href="#work" className="text-accent-dark">
-            See my work →
-          </a>
-          <Link href="/blog" className="text-hero-text opacity-60">
-            Read the blog
-          </Link>
-        </div>
+      {/* Coords — EasterEggs toggles .show class via DOM */}
+      <div className="coords" id="hero-coords" aria-hidden="true">
+        <span className="lbl">lat</span> -34.6037&nbsp;&nbsp;
+        <span className="lbl">lng</span> -58.3816
       </div>
 
-      {/* Gradient mask — fades hero into parchment on scroll */}
-      <div
-        aria-hidden="true"
-        className="absolute bottom-0 left-0 right-0 h-32 pointer-events-none z-10"
-        style={{ background: 'linear-gradient(to bottom, transparent, var(--color-parchment))' }}
-      />
+      <HeroLog />
 
-      {/* Sentinel — observed by Nav to switch between dark/light state */}
-      <div id="hero-sentinel" className="absolute bottom-0 left-0 w-full h-px" />
+      <div className="hero-inner">
+        <div className="hero-left">
+          <div className="hero-eyebrow">Independent · Buenos Aires</div>
+          <h1>
+            Software that<br />
+            <span className="green">earns its weight</span>
+            <span className="period">.</span>
+          </h1>
+          <p className="hero-sub">
+            I write code, I write about code, and I&apos;m trying to keep both
+            worth reading. Most of what I make starts as a problem
+            I had on a Tuesday.
+          </p>
+          <div className="hero-meta">
+            <Link href="/blog">Writing →</Link>
+            <a href="#projects">Work →</a>
+            <Link href="/about">About →</Link>
+          </div>
+        </div>
+        {/* right column reserved by .hero-log absolute positioning */}
+        <div />
+      </div>
     </section>
   );
 }
