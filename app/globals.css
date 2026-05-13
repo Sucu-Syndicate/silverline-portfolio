@@ -31,12 +31,6 @@
   --text-secondary: var(--text-2);
   --code-surface:   var(--surface-2);
 
-  /* ── Font families (runtime values injected by next/font on <html>) ───────
-     Values below are system fallbacks only.                                  */
-  --font-structure: system-ui, sans-serif;    /* Archivo */
-  --font-reading:   Georgia, serif;           /* Literata */
-  --font-mono:      'Courier New', monospace; /* Geist Mono */
-
   /* ── Motion ────────────────────────────────────────────────────────────── */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
@@ -169,15 +163,6 @@ a { color: inherit; text-decoration: none; }
   color: var(--text);
 }
 .hero h1 .green { color: var(--accent); }
-.hero h1 .period {
-  display: inline-block;
-  cursor: pointer;
-  transition: color 0.4s ease, filter 0.4s ease;
-}
-.hero h1 .period:hover {
-  color: rgba(245, 240, 232, 0.35);
-  filter: saturate(0.2);
-}
 
 .hero-sub {
   font-size: 18px;
@@ -480,137 +465,6 @@ a { color: inherit; text-decoration: none; }
   text-transform: uppercase;
 }
 
-/* ─── Demolition easter egg ──────────────────────────── */
-html.demo-1 *, html.demo-1 {
-  transition: filter 1.4s ease, color 1.4s ease, background-color 1.4s ease !important;
-  filter: saturate(0) !important;
-}
-html.demo-2 { background: #fff !important; }
-html.demo-2 body { background: #fff !important; color: #00e !important; font-family: "Times New Roman", serif !important; }
-html.demo-2 *,
-html.demo-2 *::before,
-html.demo-2 *::after {
-  background: transparent !important;
-  background-image: none !important;
-  background-color: transparent !important;
-  color: #000 !important;
-  border-color: #000 !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-  filter: none !important;
-  font-family: "Times New Roman", Times, serif !important;
-  font-weight: 400 !important;
-  letter-spacing: 0 !important;
-  border-radius: 0 !important;
-  -webkit-mask-image: none !important;
-          mask-image: none !important;
-}
-html.demo-2 a { color: #00e !important; text-decoration: underline !important; }
-html.demo-2 a:visited { color: #551a8b !important; }
-html.demo-2 h1, html.demo-2 h2, html.demo-2 h3, html.demo-2 h4 {
-  font-weight: 700 !important;
-  font-size: revert !important;
-}
-html.demo-2 .grain, html.demo-2 .hero-log, html.demo-2 .coords,
-html.demo-2 .cursor-dot, html.demo-2 .nav { display: none !important; }
-html.demo-2 .hero, html.demo-2 .section, html.demo-2 .footer,
-html.demo-2 .now-block, html.demo-2 .proj { padding: 8px !important; }
-
-/* Demolition modal survives the demo-2 strip */
-html.demo-2 .demo-overlay,
-html.demo-2 .demo-overlay *,
-html.demo-2 .demo-overlay *::before,
-html.demo-2 .demo-overlay *::after {
-  font-family: "Geist Mono", ui-monospace, monospace !important;
-  background: revert !important;
-  color: revert !important;
-  border-color: revert !important;
-  border-radius: revert !important;
-  font-weight: revert !important;
-  letter-spacing: revert !important;
-  font-size: revert !important;
-  text-decoration: none !important;
-  padding: revert !important;
-}
-html.demo-2 .demo-overlay { background: transparent !important; border: 0 !important; color: #15171A !important; pointer-events: auto !important; }
-html.demo-2 .demo-overlay .label,
-html.demo-2 .demo-overlay .text-bar { color: #15171A !important; }
-html.demo-2 .demo-overlay .restore-btn { cursor: pointer !important; pointer-events: auto !important; }
-
-.demo-overlay {
-  position: fixed;
-  top: 50%; left: 50%;
-  transform: translate(-50%, -50%) scale(0.96);
-  width: min(520px, 92vw);
-  background: transparent;
-  border: 0;
-  box-shadow: none;
-  z-index: 99999;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  font-family: var(--font-mono);
-  color: #15171A;
-  letter-spacing: 0.04em;
-  padding: 48px 40px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 20px;
-}
-.demo-overlay.show { opacity: 1; transform: translate(-50%, -50%) scale(1); pointer-events: auto; }
-.demo-overlay .restore-btn {
-  font-family: var(--font-mono);
-  font-size: 14px;
-  letter-spacing: 0.04em;
-  color: #15171A;
-  background: transparent;
-  border: 1px solid #15171A;
-  padding: 10px 22px;
-  cursor: pointer;
-  border-radius: 0;
-  transition: background 0.15s ease, color 0.15s ease;
-}
-.demo-overlay .restore-btn:hover { background: #15171A; color: #FAF8F4; }
-.demo-overlay .stage-prompt,
-.demo-overlay .stage-restore {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 18px;
-  width: 100%;
-}
-.demo-overlay:not(.restoring) .stage-restore { display: none; }
-.demo-overlay.restoring .stage-prompt { display: none; }
-.demo-overlay .prompt-text {
-  font-family: var(--font-mono);
-  font-size: 15px;
-  line-height: 1.55;
-  color: #15171A;
-  text-align: center;
-  max-width: 44ch;
-}
-.demo-overlay .prompt-actions {
-  display: flex;
-  gap: 12px;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-.demo-overlay .spin {
-  width: 16px; height: 16px;
-  border: 2px solid #15171A;
-  border-top-color: transparent;
-  border-radius: 50%;
-  animation: demoSpin 0.7s linear infinite;
-}
-@keyframes demoSpin { to { transform: rotate(360deg); } }
-.demo-overlay .label { font-size: 14px; color: #15171A; }
-.demo-overlay .text-bar {
-  font-size: 14px;
-  letter-spacing: 0.12em;
-  color: #15171A;
-  font-family: var(--font-mono);
-}
 
 /* ─── Projects index grid ────────────────────────────── */
 .projects-grid {

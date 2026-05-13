@@ -118,8 +118,7 @@ export default function Hero() {
           <div className="hero-eyebrow">Independent · Buenos Aires</div>
           <h1>
             Software that<br />
-            <span className="green">earns its weight</span>
-            <span className="period">.</span>
+            <span className="green">earns its weight</span>.
           </h1>
           <p className="hero-sub">
             I write code, I write about code, and I&apos;m trying to keep both
