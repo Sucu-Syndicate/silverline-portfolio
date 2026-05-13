@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { motion } from 'framer-motion';
 
 const PROJECTS = [
@@ -133,7 +134,7 @@ export default function Projects() {
             Three I&apos;m proud of,<br />more behind them.
           </h2>
         </div>
-        <a href="/work" className="section-link">All projects →</a>
+        <Link href="/work" className="section-link">All projects →</Link>
       </div>
 
       <div className="projects-grid">
