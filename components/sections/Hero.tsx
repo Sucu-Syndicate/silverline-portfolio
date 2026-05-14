@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'framer-motion';
 import { TERMINAL_LINES, type TerminalLine } from '@/lib/terminal-lines';
 
 const TICK_MIN = 700;
@@ -15,6 +16,15 @@ const MARKERS: Record<string, string> = {
   think: '~',
   note: '·',
 };
+
+const QUOTES = [
+  '"Nobody hates the good ones, they hate the great ones" — Kobe Bryant',
+  '"The worst thing I can be is the same as everybody else" — Arnold Schwarzenegger',
+  '"The world offers you comfort but you were not made for comfort, you were made for greatness" — Pope Benedict XVI',
+  '"You have power over your mind, not outside events" — Marcus Aurelius',
+  '"Don\'t worry about your individual potential. You\'ll never know how great you might\'ve become unless you try." — Mike Metzner',
+  '"A man cannot remake himself without suffering, for he is both the marble and the sculptor" — Alexis Carrel',
+];
 
 function pad(n: number) {
   return String(n).padStart(2, '0');
@@ -36,11 +46,9 @@ interface LiveLine extends TerminalLine {
 }
 
 function HeroLog() {
-  // Initialize empty — seeding happens in useEffect to avoid SSR/client timestamp mismatch
   const [lines, setLines] = useState<LiveLine[]>([]);
 
   useEffect(() => {
-    // Seed with a full screen of lines on mount
     const seed: LiveLine[] = [];
     for (let i = 0; i < MAX_LINES; i++) {
       const l = pickRandom(TERMINAL_LINES);
@@ -100,7 +108,70 @@ function HeroLog() {
   );
 }
 
+type WipKey = 'work' | 'about' | null;
+
+function WipLink({ label, wipLabel }: { label: string; wipLabel: string }) {
+  const [hovered, setHovered] = useState(false);
+  const [fallen, setFallen] = useState(false);
+
+  function handleClick() {
+    if (fallen) return;
+    setFallen(true);
+    setTimeout(() => setFallen(false), 600);
+  }
+
+  return (
+    <motion.span
+      className="hero-meta-wip"
+      onHoverStart={() => setHovered(true)}
+      onHoverEnd={() => setHovered(false)}
+      onClick={handleClick}
+      animate={fallen ? { rotate: -8, y: 80, opacity: 0 } : { rotate: 0, y: 0, opacity: 1 }}
+      transition={
+        fallen
+          ? { type: 'spring', damping: 18, stiffness: 200 }
+          : { type: 'spring', damping: 24, stiffness: 300 }
+      }
+      style={{ display: 'inline-block' }}
+    >
+      {/* Fixed-width container so swapped text doesn't shift layout */}
+      <span style={{ position: 'relative', display: 'inline-block', minWidth: '6ch' }}>
+        <AnimatePresence mode="wait" initial={false}>
+          {hovered ? (
+            <motion.span
+              key="wip"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12 }}
+              style={{ position: 'absolute', left: 0, whiteSpace: 'nowrap' }}
+            >
+              {wipLabel}
+            </motion.span>
+          ) : (
+            <motion.span
+              key="label"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.12 }}
+            >
+              {label}
+            </motion.span>
+          )}
+        </AnimatePresence>
+      </span>
+    </motion.span>
+  );
+}
+
 export default function Hero() {
+  const [quote, setQuote] = useState('');
+
+  useEffect(() => {
+    setQuote(pickRandom(QUOTES));
+  }, []);
+
   return (
     <section className="hero" id="hero">
       <div className="grain hero-grain" aria-hidden="true" />
@@ -115,7 +186,7 @@ export default function Hero() {
 
       <div className="hero-inner">
         <div className="hero-left">
-          <div className="hero-eyebrow">Independent · Buenos Aires</div>
+          {quote && <div className="hero-eyebrow">{quote}</div>}
           <h1>
             Software that<br />
             <span className="green">earns its weight</span>.
@@ -126,9 +197,9 @@ export default function Hero() {
             I had on a Tuesday.
           </p>
           <div className="hero-meta">
-            <Link href="/blog">Writing →</Link>
-            <a href="#projects">Work →</a>
-            <Link href="/about">About →</Link>
+            <Link href="/blog" className="hero-meta-primary">Blog →</Link>
+            <WipLink label="Work →" wipLabel="work in progress →" />
+            <WipLink label="About →" wipLabel="work in progress →" />
           </div>
         </div>
         {/* right column reserved by .hero-log absolute positioning */}
