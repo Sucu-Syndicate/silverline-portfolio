@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { TERMINAL_LINES, type TerminalLine } from '@/lib/terminal-lines';
 
 const TICK_MIN = 700;
@@ -109,56 +109,65 @@ function HeroLog() {
 }
 
 function WipLink({ label, wipLabel }: { label: string; wipLabel: string }) {
-  const [hovered, setHovered] = useState(false);
+  const [displayText, setDisplayText] = useState(label);
   const [fallen, setFallen] = useState(false);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const resetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function clearTimers() {
+    if (intervalRef.current) clearInterval(intervalRef.current);
+    if (resetRef.current) clearTimeout(resetRef.current);
+  }
+
+  function handleHoverStart() {
+    if (fallen) return;
+    clearTimers();
+    let i = 0;
+    setDisplayText('');
+    intervalRef.current = setInterval(() => {
+      i++;
+      setDisplayText(wipLabel.slice(0, i));
+      if (i >= wipLabel.length) {
+        clearInterval(intervalRef.current!);
+        intervalRef.current = null;
+      }
+    }, 40);
+  }
+
+  function handleHoverEnd() {
+    clearTimers();
+    setDisplayText(label);
+  }
 
   function handleClick() {
     if (fallen) return;
+    clearTimers();
+    setDisplayText(label);
     setFallen(true);
-    setTimeout(() => setFallen(false), 600);
+    resetRef.current = setTimeout(() => setFallen(false), 3000);
   }
+
+  useEffect(() => () => clearTimers(), []);
 
   return (
     <motion.span
       className="hero-meta-wip"
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
+      onHoverStart={handleHoverStart}
+      onHoverEnd={handleHoverEnd}
       onClick={handleClick}
-      animate={fallen ? { rotate: -8, y: 80, opacity: 0 } : { rotate: 0, y: 0, opacity: 1 }}
+      animate={
+        fallen
+          ? { y: [0, -10, 320], rotate: [0, 3, -14], opacity: [1, 1, 0] }
+          : { y: 0, rotate: 0, opacity: 1 }
+      }
       transition={
         fallen
-          ? { type: 'spring', damping: 18, stiffness: 200 }
-          : { type: 'spring', damping: 24, stiffness: 300 }
+          ? { duration: 1.1, times: [0, 0.07, 1], ease: 'easeIn' }
+          : { duration: 0.4, ease: 'easeOut' }
       }
-      style={{ display: 'inline-block' }}
+      style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
     >
-      {/* Fixed-width container so swapped text doesn't shift layout */}
-      <span style={{ position: 'relative', display: 'inline-block', minWidth: '6ch' }}>
-        <AnimatePresence mode="wait" initial={false}>
-          {hovered ? (
-            <motion.span
-              key="wip"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
-              style={{ position: 'absolute', left: 0, whiteSpace: 'nowrap' }}
-            >
-              {wipLabel}
-            </motion.span>
-          ) : (
-            <motion.span
-              key="label"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.12 }}
-            >
-              {label}
-            </motion.span>
-          )}
-        </AnimatePresence>
-      </span>
+      {displayText}
     </motion.span>
   );
 }
