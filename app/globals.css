@@ -551,37 +551,40 @@ a { color: inherit; text-decoration: none; }
     border-color 0.2s ease;
 }
 
-/* Page curl — top-left corner fold (cream = underside of the page) */
+/* Bottom-right page curl — rounded flap + shadow */
 .note-card::before {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 0;
-  height: 0;
-  border-style: solid;
-  border-width: 22px 22px 0 0;
-  border-color: #F5F0E8 transparent transparent transparent;
-  z-index: 3;
+  bottom: -1px;
+  right: -1px;
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(
+    225deg,
+    #0F100E 42%,
+    #C8C3B0 43%,
+    #A8A390 56%,
+    rgba(90, 88, 78, 0) 72%
+  );
+  border-top-left-radius: 100%;
+  z-index: 2;
   pointer-events: none;
 }
-/* Crease line along the fold hypotenuse — gradient perpendicular to the
-   hypotenuse direction places the band exactly along it */
+/* Shadow cast by the lifted corner onto the card surface */
 .note-card::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 22px;
-  height: 22px;
-  background: linear-gradient(
-    to bottom right,
-    transparent calc(50% - 1.5px),
-    rgba(70, 66, 54, 0.55) calc(50% - 1.5px),
-    rgba(70, 66, 54, 0.55) calc(50% + 1.5px),
-    transparent calc(50% + 1.5px)
+  bottom: 0;
+  right: 0;
+  width: 60px;
+  height: 60px;
+  background: radial-gradient(
+    ellipse at 100% 100%,
+    rgba(0, 0, 0, 0.28) 0%,
+    rgba(0, 0, 0, 0.10) 40%,
+    transparent 65%
   );
-  z-index: 4;
+  z-index: 1;
   pointer-events: none;
 }
 
