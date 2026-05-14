@@ -107,6 +107,11 @@ a { color: inherit; text-decoration: none; }
   padding: 0;
 }
 .nav a:hover { color: var(--accent); }
+.nav-disabled {
+  color: var(--text-dim);
+  cursor: default;
+  pointer-events: none;
+}
 
 /* ─── Hero ────────────────────────────────────────────── */
 .hero {

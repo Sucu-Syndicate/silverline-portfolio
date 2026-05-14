@@ -8,9 +8,9 @@ export default function Nav() {
       </Link>
 
       <ul>
-        <li><Link href="/blog">Writing</Link></li>
-        <li><Link href="#projects">Work</Link></li>
-        <li><Link href="/about">About</Link></li>
+        <li><Link href="/blog">Blog</Link></li>
+        <li><span className="nav-disabled">Work</span></li>
+        <li><span className="nav-disabled">About</span></li>
       </ul>
     </header>
   );
