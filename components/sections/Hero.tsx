@@ -108,8 +108,6 @@ function HeroLog() {
   );
 }
 
-type WipKey = 'work' | 'about' | null;
-
 function WipLink({ label, wipLabel }: { label: string; wipLabel: string }) {
   const [hovered, setHovered] = useState(false);
   const [fallen, setFallen] = useState(false);
