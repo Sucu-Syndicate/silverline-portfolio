@@ -560,26 +560,23 @@ a { color: inherit; text-decoration: none; }
   width: 0;
   height: 0;
   border-style: solid;
-  border-width: 44px 44px 0 0;
+  border-width: 22px 22px 0 0;
   border-color: #F5F0E8 transparent transparent transparent;
   z-index: 3;
   pointer-events: none;
 }
-/* Shadow cast by the lifted corner */
+/* Crease line along the fold hypotenuse */
 .note-card::after {
   content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 56px;
-  height: 56px;
-  background: linear-gradient(
-    135deg,
-    rgba(0, 0, 0, 0.32) 0%,
-    rgba(0, 0, 0, 0.10) 45%,
-    transparent 65%
-  );
-  z-index: 1;
+  top: 11px;
+  left: 11px;
+  width: 32px;
+  height: 1px;
+  background: rgba(0, 0, 0, 0.35);
+  transform: rotate(-45deg);
+  transform-origin: center center;
+  z-index: 4;
   pointer-events: none;
 }
 
@@ -606,7 +603,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 52px 14px 52px;
+  padding: 14px 52px 14px 28px;
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
   transition: border-color 0.25s ease;
@@ -617,13 +614,11 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   gap: 14px;
 }
-.note-num {
-  font-family: var(--font-mono);
-  font-size: 13px;
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  color: var(--accent);
+.note-icon {
+  color: var(--text-dim);
   flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 .note-date {
   font-family: var(--font-mono);
