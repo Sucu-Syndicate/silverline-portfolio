@@ -1,8 +1,7 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 import { TERMINAL_LINES, type TerminalLine } from '@/lib/terminal-lines';
 
 const TICK_MIN = 700;
@@ -108,69 +107,6 @@ function HeroLog() {
   );
 }
 
-function WipLink({ label, wipLabel }: { label: string; wipLabel: string }) {
-  const [displayText, setDisplayText] = useState(label);
-  const [fallen, setFallen] = useState(false);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const resetRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-  function clearTimers() {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    if (resetRef.current) clearTimeout(resetRef.current);
-  }
-
-  function handleHoverStart() {
-    if (fallen) return;
-    clearTimers();
-    let i = 0;
-    setDisplayText('');
-    intervalRef.current = setInterval(() => {
-      i++;
-      setDisplayText(wipLabel.slice(0, i));
-      if (i >= wipLabel.length) {
-        clearInterval(intervalRef.current!);
-        intervalRef.current = null;
-      }
-    }, 40);
-  }
-
-  function handleHoverEnd() {
-    clearTimers();
-    setDisplayText(label);
-  }
-
-  function handleClick() {
-    if (fallen) return;
-    clearTimers();
-    setDisplayText(label);
-    setFallen(true);
-    resetRef.current = setTimeout(() => setFallen(false), 3000);
-  }
-
-  useEffect(() => () => clearTimers(), []);
-
-  return (
-    <motion.span
-      className="hero-meta-wip"
-      onHoverStart={handleHoverStart}
-      onHoverEnd={handleHoverEnd}
-      onClick={handleClick}
-      animate={
-        fallen
-          ? { y: [0, -10, 320], rotate: [0, 3, -14], opacity: [1, 1, 0] }
-          : { y: 0, rotate: 0, opacity: 1 }
-      }
-      transition={
-        fallen
-          ? { duration: 1.1, times: [0, 0.07, 1], ease: 'easeIn' }
-          : { duration: 0.4, ease: 'easeOut' }
-      }
-      style={{ display: 'inline-block', whiteSpace: 'nowrap' }}
-    >
-      {displayText}
-    </motion.span>
-  );
-}
 
 export default function Hero() {
   const [quote, setQuote] = useState('');
@@ -205,8 +141,8 @@ export default function Hero() {
           </p>
           <div className="hero-meta">
             <Link href="/blog" className="hero-meta-primary">Blog →</Link>
-            <WipLink label="Work →" wipLabel="work in progress →" />
-            <WipLink label="About →" wipLabel="work in progress →" />
+            <span className="hero-meta-wip">Work →</span>
+            <span className="hero-meta-wip">About →</span>
           </div>
         </div>
         {/* right column reserved by .hero-log absolute positioning */}

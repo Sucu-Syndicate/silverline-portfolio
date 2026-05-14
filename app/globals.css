@@ -187,13 +187,13 @@ a { color: inherit; text-decoration: none; }
   background: var(--accent-bg);
 }
 
-/* WIP links — Work + About */
+/* WIP links — Work + About (greyed out, not interactive) */
 .hero-meta-wip {
   font-size: 11px;
   letter-spacing: 0.06em;
   color: var(--text-dim);
-  cursor: pointer;
-  user-select: none;
+  cursor: default;
+  pointer-events: none;
   white-space: nowrap;
 }
 
@@ -524,7 +524,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .blog-list-section {
-  background: var(--bg);
+  background: #F5F0E8;
   padding: clamp(48px, 6vh, 80px) clamp(20px, 4vw, 56px) clamp(80px, 12vh, 140px);
 }
 
@@ -550,6 +550,22 @@ a { color: inherit; text-decoration: none; }
     box-shadow   0.4s var(--ease-out-expo),
     border-color 0.2s ease;
 }
+
+/* Page curl — top-left corner fold revealing the cream background */
+.note-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 22px 22px 0 0;
+  border-color: #F5F0E8 transparent transparent transparent;
+  z-index: 2;
+  pointer-events: none;
+}
+
 .note-card:hover {
   background: var(--raised);
   transform: translateY(-3px);
@@ -573,7 +589,7 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 14px 52px 14px 28px;
+  padding: 14px 52px 14px 32px;
   border-bottom: 1px solid var(--border);
   background: var(--surface-2);
   transition: border-color 0.25s ease;
@@ -583,6 +599,14 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   gap: 14px;
+}
+.note-num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  color: var(--accent);
+  flex-shrink: 0;
 }
 .note-date {
   font-family: var(--font-mono);

@@ -24,7 +24,7 @@ export default function BlogPage() {
 
       <section className="blog-list-section">
         <div className="note-list">
-          {posts.map((post) => (
+          {posts.map((post, i) => (
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
@@ -33,6 +33,7 @@ export default function BlogPage() {
               <span className="note-arrow">↗</span>
               <div className="note-header">
                 <div className="note-header-left">
+                  <span className="note-num">{String(i + 1).padStart(2, '0')}</span>
                   <span className="note-date">{post.date}</span>
                   <div className="note-sep" />
                   <span className="note-tag">{post.tag}</span>
