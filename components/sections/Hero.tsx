@@ -114,7 +114,11 @@ export default function Hero() {
 
       <div className="hero-inner">
         <div className="hero-left">
-          <h1>I make things happen.</h1>
+          <h1>
+            I make<br />
+            things<br />
+            <span className="green">happen</span>.
+          </h1>
           <p className="hero-sub">
             I write code, I write about code, and I&apos;m trying to keep both
             worth reading. Most of what I make starts as a problem
