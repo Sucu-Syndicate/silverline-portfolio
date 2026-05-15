@@ -78,7 +78,7 @@ export default function EasterEggs() {
       timer = setTimeout(() => {
         const el = document.getElementById('hero-coords');
         if (el) el.classList.add('show');
-      }, 4000);
+      }, 15000);
     };
     const onAct = () => {
       const el = document.getElementById('hero-coords');
