@@ -120,9 +120,7 @@ export default function Hero() {
             <span className="green">happen</span>.
           </h1>
           <p className="hero-sub">
-            I write code, I write about code, and I&apos;m trying to keep both
-            worth reading. Most of what I make starts as a problem
-            I had on a Tuesday.
+            I think in systems, build things that didn&apos;t exist, and use AI at a level most people don&apos;t know is possible. Everything gets documented, nothing gets left to chance, and the work speaks for itself.
           </p>
           <div className="hero-meta">
             <Link href="/blog" className="hero-meta-primary">Blog →</Link>
