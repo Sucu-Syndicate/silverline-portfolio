@@ -51,72 +51,19 @@ function ChangelogOverlay({
 export default function EasterEggs() {
   const [changelogOpen, setChangelogOpen] = useState(false);
 
-  // Cursor trail — hero only
+
+  // Ctrl+C × 3 within 1.5s → changelog
   useEffect(() => {
-    const N = 6;
-    const dots: { el: HTMLDivElement; x: number; y: number }[] = [];
-    for (let i = 0; i < N; i++) {
-      const d = document.createElement('div');
-      d.className = 'cursor-dot';
-      d.style.opacity = String(0.55 - i * 0.08);
-      d.style.transform = `translate(-100px, -100px) scale(${1 - i * 0.12})`;
-      document.body.appendChild(d);
-      dots.push({ el: d, x: -100, y: -100 });
-    }
-
-    let mx = -100, my = -100;
-
-    const onMove = (e: MouseEvent) => {
-      mx = e.clientX;
-      my = e.clientY;
-      const heroEl = document.getElementById('hero');
-      if (!heroEl) return;
-      const r = heroEl.getBoundingClientRect();
-      const inHero = my >= r.top && my <= r.bottom;
-      const nearTop = inHero && my < r.top + 200;
-      const coordsEl = document.getElementById('hero-coords');
-      if (coordsEl) {
-        if (nearTop) coordsEl.classList.add('show');
-        else coordsEl.classList.remove('show');
-      }
-      dots.forEach((d, i) => {
-        d.el.style.opacity = inHero ? String(0.55 - i * 0.08) : '0';
-      });
-    };
-
-    let raf: number;
-    const tick = () => {
-      let px = mx, py = my;
-      dots.forEach((d) => {
-        d.x += (px - d.x) * 0.35;
-        d.y += (py - d.y) * 0.35;
-        d.el.style.transform = `translate(${d.x - 3}px, ${d.y - 3}px)`;
-        px = d.x;
-        py = d.y;
-      });
-      raf = requestAnimationFrame(tick);
-    };
-
-    window.addEventListener('mousemove', onMove);
-    raf = requestAnimationFrame(tick);
-
-    return () => {
-      window.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
-      dots.forEach((d) => d.el.remove());
-    };
-  }, []);
-
-  // Konami sequence → changelog
-  useEffect(() => {
-    const KONAMI = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
-    let buffer: string[] = [];
+    const presses: number[] = [];
     const onKey = (e: KeyboardEvent) => {
-      buffer.push(e.key);
-      if (buffer.length > KONAMI.length) buffer.shift();
-      if (buffer.length === KONAMI.length && buffer.every((k, i) => k === KONAMI[i])) {
-        setChangelogOpen((v) => !v);
-        buffer = [];
+      if (e.key === 'c' && e.ctrlKey) {
+        const now = Date.now();
+        presses.push(now);
+        while (presses.length > 3) presses.shift();
+        if (presses.length === 3 && now - presses[0] < 1500) {
+          setChangelogOpen((v) => !v);
+          presses.length = 0;
+        }
       }
     };
     window.addEventListener('keydown', onKey);
