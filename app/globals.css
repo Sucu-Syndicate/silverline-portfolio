@@ -365,9 +365,9 @@ a { color: inherit; text-decoration: none; }
   animation: nowShimmer 5s ease-in-out infinite;
 }
 @keyframes nowShimmer {
-  0%   { background-position: 0% center; }
-  35%  { background-position: 100% center; }
-  100% { background-position: 100% center; }
+  0%   { background-position: 100% center; }
+  35%  { background-position: 0% center; }
+  100% { background-position: 0% center; }
 }
 @media (prefers-reduced-motion: reduce) {
   .now-slug { animation: none; }
