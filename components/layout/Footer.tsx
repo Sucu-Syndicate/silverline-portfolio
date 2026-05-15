@@ -16,7 +16,7 @@ export default function Footer() {
         </h2>
         <div className="footer-meta">
           <div>
-            <a href="mailto:hi@matheog.com">hi@matheog.com</a>
+            <a href="mailto:teh.dsc@gmail.com">teh.dsc@gmail.com</a>
           </div>
           <div>
             <a href="https://github.com/ktehllama" target="_blank" rel="noreferrer">
@@ -24,7 +24,7 @@ export default function Footer() {
             </a>
           </div>
           <div>
-            <a href="https://linkedin.com/in/matheog" target="_blank" rel="noreferrer">
+            <a href="https://www.linkedin.com/in/matheoguevara/" target="_blank" rel="noreferrer">
               linkedin / matheog
             </a>
           </div>
