@@ -8,10 +8,10 @@ export default function WipBand() {
     <section
       style={{
         background: 'var(--surface)',
-        padding: 'clamp(80px, 12vh, 140px) clamp(20px, 4vw, 56px)',
+        padding: 'clamp(80px, 12vh, 140px) 0',
       }}
     >
-      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 clamp(20px, 4vw, 56px)' }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -22,8 +22,8 @@ export default function WipBand() {
           <div
             style={{
               fontFamily: 'var(--font-mono)',
-              fontSize: 10,
-              letterSpacing: '0.14em',
+              fontSize: 11,
+              letterSpacing: '0.10em',
               textTransform: 'uppercase',
               color: 'var(--accent)',
             }}
@@ -70,8 +70,7 @@ export default function WipBand() {
               maxWidth: 440,
             }}
           >
-            While you wait — the blog is where the real stuff happens.
-            That&apos;s the work.
+            While you wait — take a look at the blog, you&apos;ll find interesting notes about how the real stuff is made.
           </p>
 
           <div style={{ display: 'flex', alignItems: 'center', gap: 24, marginTop: 8 }}>
@@ -96,7 +95,7 @@ export default function WipBand() {
             <span
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: 10,
+                fontSize: 12,
                 letterSpacing: '0.06em',
                 color: 'var(--text-dim)',
               }}

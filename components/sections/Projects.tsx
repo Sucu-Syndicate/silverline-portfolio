@@ -106,7 +106,7 @@ export default function Projects() {
 
       <div className="section-head">
         <div>
-          <div className="section-label">The triumvirate</div>
+          <div className="section-label" style={{ color: 'var(--accent)' }}>The triumvirate</div>
           <h2 className="section-title" style={{ fontSize: 'clamp(32px, 4vw, 52px)' }}>
             Flagship projects
           </h2>

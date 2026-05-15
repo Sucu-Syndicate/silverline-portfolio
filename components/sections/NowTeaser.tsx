@@ -1,9 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 
 export default function NowTeaser() {
+  const router = useRouter();
+
   return (
     <section className="section" id="now" style={{ paddingTop: 0, background: 'var(--bg)' }}>
       <motion.div
@@ -12,7 +15,11 @@ export default function NowTeaser() {
         viewport={{ once: true, amount: 0.1 }}
         transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
       >
-        <Link href="/now" className="now-block">
+        <div
+          className="now-block"
+          onClick={() => router.push('/now')}
+          style={{ cursor: 'pointer' }}
+        >
           <div className="now-left">
             <div className="now-slug">/now</div>
           </div>
@@ -30,7 +37,7 @@ export default function NowTeaser() {
               </Link>
             </div>
           </div>
-        </Link>
+        </div>
       </motion.div>
     </section>
   );
