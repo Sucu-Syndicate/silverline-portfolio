@@ -19,15 +19,7 @@ export default function WipBand() {
           transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
         >
-          <div
-            style={{
-              fontFamily: 'var(--font-mono)',
-              fontSize: 11,
-              letterSpacing: '0.10em',
-              textTransform: 'uppercase',
-              color: 'var(--accent)',
-            }}
-          >
+          <div className="section-label" style={{ color: 'var(--accent)' }}>
             WIP
           </div>
 
