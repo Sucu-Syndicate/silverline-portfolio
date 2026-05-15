@@ -929,8 +929,8 @@ a { color: inherit; text-decoration: none; }
     width: 100%;
     height: 90%;
     opacity: 1;
-    mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.85) 65%, #000 80%, #000 100%);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, rgba(0,0,0,0.2) 25%, rgba(0,0,0,0.5) 45%, rgba(0,0,0,0.85) 65%, #000 80%, #000 100%);
+    mask-image: none;
+    -webkit-mask-image: none;
   }
   .projects-grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; }
