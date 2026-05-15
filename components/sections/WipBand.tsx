@@ -86,9 +86,8 @@ export default function WipBand() {
 
             <span
               style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 12,
-                letterSpacing: '0.06em',
+                fontFamily: 'var(--font-structure)',
+                fontSize: 14,
                 color: 'var(--text-dim)',
               }}
             >
