@@ -14,7 +14,7 @@ export default function BlogPage() {
     <main>
       <section className="blog-header">
         <div className="blog-header-inner">
-          <span className="blog-header-eyebrow">the notes.</span>
+          <span className="blog-header-eyebrow">the notes</span>
           <h1 className="blog-header-title">Writing.</h1>
           <p className="blog-header-sub">
             Code, decisions, and what I learned building in public.

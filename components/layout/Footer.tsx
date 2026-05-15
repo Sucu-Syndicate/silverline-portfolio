@@ -20,12 +20,12 @@ export default function Footer() {
           </div>
           <div>
             <a href="https://github.com/ktehllama" target="_blank" rel="noreferrer">
-              github / matheog
+              github / Matheo
             </a>
           </div>
           <div>
             <a href="https://www.linkedin.com/in/matheoguevara/" target="_blank" rel="noreferrer">
-              linkedin / matheog
+              linkedin / Matheo
             </a>
           </div>
           <div style={{ marginTop: 8, opacity: 0.6 }}>{ts}</div>
