@@ -323,42 +323,89 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── /now teaser ────────────────────────────────────── */
 .now-block {
-  position: relative;
   display: grid;
-  grid-template-columns: auto 1fr auto;
-  align-items: center;
-  gap: 32px;
-  margin-top: 80px;
-  padding: 36px 40px;
-  border-radius: 4px;
-  transition: background 0.3s ease;
-  cursor: pointer;
+  grid-template-columns: 140px 1fr;
   overflow: hidden;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  min-height: 160px;
+  margin-top: 80px;
   text-decoration: none;
   color: inherit;
 }
-.now-block .now-label {
-  font-family: var(--font-mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
+.now-left {
+  background: var(--accent-bg);
+  border-right: 1px solid var(--accent-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
 }
-.now-block .now-text {
+.now-slug {
   font-family: var(--font-structure);
-  font-weight: 600;
-  font-size: clamp(18px, 2.2vw, 24px);
-  letter-spacing: -0.015em;
+  font-weight: 800;
+  font-size: 42px;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  color: var(--accent);
+  opacity: 0.4;
+  animation: nowFloat 5s ease-in-out infinite;
+}
+@keyframes nowFloat {
+  0%, 100% { transform: translateY(0);    opacity: 0.40; }
+  50%       { transform: translateY(-6px); opacity: 0.55; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .now-slug { animation: none; }
+}
+.now-right {
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 20px;
+}
+.now-text {
+  font-family: var(--font-structure);
+  font-weight: 700;
+  font-size: clamp(18px, 2.4vw, 28px);
+  letter-spacing: -0.02em;
   line-height: 1.3;
   color: var(--text);
 }
-.now-block .now-greet {
+.now-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.now-updated {
   font-family: var(--font-mono);
   font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--text-2);
-  letter-spacing: 0.04em;
+  line-height: 1.6;
 }
+.now-updated .now-date {
+  color: var(--text-dim);
+}
+.now-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--bg);
+  background: var(--accent);
+  padding: 10px 18px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background 0.18s ease;
+}
+.now-cta:hover { background: #6ec28e; }
 
 /* ─── Footer ─────────────────────────────────────────── */
 .footer {
