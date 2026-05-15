@@ -330,7 +330,7 @@ a { color: inherit; text-decoration: none; }
 /* ─── /now teaser ────────────────────────────────────── */
 .now-block {
   display: grid;
-  grid-template-columns: 140px 1fr;
+  grid-template-columns: clamp(80px, 18vw, 140px) 1fr;
   overflow: hidden;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -350,7 +350,7 @@ a { color: inherit; text-decoration: none; }
 .now-slug {
   font-family: var(--font-structure);
   font-weight: 800;
-  font-size: 42px;
+  font-size: clamp(24px, 5vw, 42px);
   letter-spacing: -0.05em;
   line-height: 0.9;
   background: linear-gradient(
@@ -379,7 +379,7 @@ a { color: inherit; text-decoration: none; }
   .now-slug { animation: none; }
 }
 .now-right {
-  padding: 28px 32px;
+  padding: clamp(16px, 3vw, 28px) clamp(16px, 3vw, 32px);
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -934,18 +934,33 @@ a { color: inherit; text-decoration: none; }
 }
 
 @media (max-width: 640px) {
-  .blog-row {
-    flex-wrap: wrap;
-    gap: 8px 16px;
-  }
-  .blog-row-title {
-    width: 100%;
-    order: -1;
-    font-size: 17px;
-  }
+  /* Blog row (legacy) */
+  .blog-row { flex-wrap: wrap; gap: 8px 16px; }
+  .blog-row-title { width: 100%; order: -1; font-size: 17px; }
   .blog-row-date { min-width: auto; }
   .blog-row-tag { min-width: auto; }
   .blog-row-arrow { margin-left: auto; }
+
+  /* NowTeaser — stack columns */
+  .now-block { grid-template-columns: 1fr; }
+  .now-left {
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+    min-height: auto;
+    padding: 20px;
+  }
+
+  /* Projects — ghost number scaled down */
+  .proj-num { font-size: 80px; top: -8px; right: -6px; }
+
+  /* Blog note cards */
+  .note-header { padding: 14px 48px 14px 16px; }
+  .note-body { padding: 16px 16px 20px; }
+  .note-readtime { display: none; }
+
+  /* Nav */
+  .nav ul { gap: 16px; }
+  .nav { padding: 18px clamp(16px, 4vw, 56px); }
 }
 
 /* ─── Reduced motion ─────────────────────────────────── */
