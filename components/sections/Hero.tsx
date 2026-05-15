@@ -105,20 +105,16 @@ export default function Hero() {
     <section className="hero" id="hero">
       <div className="grain hero-grain" aria-hidden="true" />
 
-      {/* Coords — EasterEggs toggles .show class via DOM */}
+      {/* Idle reveal — EasterEggs toggles .show class via DOM */}
       <div className="coords" id="hero-coords" aria-hidden="true">
-        <span className="lbl">lat</span> -34.6037&nbsp;&nbsp;
-        <span className="lbl">lng</span> -58.3816
+        <span className="coords-prompt">&gt;</span> it works on my machine<span className="coords-cursor">_</span>
       </div>
 
       <HeroLog />
 
       <div className="hero-inner">
         <div className="hero-left">
-          <h1>
-            Software that<br />
-            <span className="green">earns its weight</span>.
-          </h1>
+          <h1>I make things happen.</h1>
           <p className="hero-sub">
             I write code, I write about code, and I&apos;m trying to keep both
             worth reading. Most of what I make starts as a problem
