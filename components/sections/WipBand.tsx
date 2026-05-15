@@ -70,7 +70,7 @@ export default function WipBand() {
               href="/blog"
               style={{
                 fontFamily: 'var(--font-mono)',
-                fontSize: 11,
+                fontSize: 12,
                 letterSpacing: '0.10em',
                 textTransform: 'uppercase',
                 color: 'var(--bg)',

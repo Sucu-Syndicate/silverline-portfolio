@@ -31,7 +31,7 @@ export default function HomeBody() {
         Things I&apos;ve built
       </h2>
 
-      <div className="grid grid-cols-2 gap-4 mb-16">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-16">
         {projects.map((project) => (
           <div key={project.title} className="bg-linen rounded-none p-6">
             <h3 className="font-archivo font-bold text-[18px] text-text-primary mb-1">
