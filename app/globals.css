@@ -903,9 +903,31 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 768px) {
+  .projects-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
 @media (max-width: 920px) {
-  .hero-inner { grid-template-columns: 1fr; }
-  .hero-log { min-height: 200px; opacity: 0.4; }
+  .hero-inner {
+    grid-template-columns: 1fr;
+    align-items: flex-start;
+    padding-top: clamp(100px, 14vh, 140px);
+  }
+  .hero-left {
+    justify-self: auto;
+    text-align: left;
+  }
+  .hero-log {
+    position: relative;
+    top: auto;
+    right: auto;
+    width: 100%;
+    height: 320px;
+    min-height: unset;
+    opacity: 0.35;
+    mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 85%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 30%, #000 85%, transparent 100%);
+  }
   .projects-grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; }
   .footer-meta { text-align: left; }
