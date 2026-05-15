@@ -88,10 +88,14 @@ export default function EasterEggs() {
     arm();
     window.addEventListener('mousemove', onAct);
     window.addEventListener('scroll', onAct);
+    window.addEventListener('touchstart', onAct);
+    window.addEventListener('touchmove', onAct);
     return () => {
       clearTimeout(timer);
       window.removeEventListener('mousemove', onAct);
       window.removeEventListener('scroll', onAct);
+      window.removeEventListener('touchstart', onAct);
+      window.removeEventListener('touchmove', onAct);
     };
   }, []);
 
