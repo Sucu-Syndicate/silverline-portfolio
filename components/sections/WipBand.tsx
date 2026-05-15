@@ -8,10 +8,10 @@ export default function WipBand() {
     <section
       style={{
         background: 'var(--surface)',
-        padding: 'clamp(80px, 12vh, 140px) 0',
+        padding: 'clamp(80px, 12vh, 140px) clamp(20px, 4vw, 56px)',
       }}
     >
-      <div style={{ maxWidth: 1400, margin: '0 auto', padding: '0 clamp(20px, 4vw, 56px)' }}>
+      <div style={{ maxWidth: 1400, margin: '0 auto' }}>
         <motion.div
           initial={{ opacity: 0, y: 16 }}
           whileInView={{ opacity: 1, y: 0 }}

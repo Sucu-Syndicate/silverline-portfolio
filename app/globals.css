@@ -282,7 +282,7 @@ a { color: inherit; text-decoration: none; }
 /* ─── Section scaffolding ────────────────────────────── */
 .section {
   padding: clamp(80px, 12vh, 140px) clamp(20px, 4vw, 56px);
-  max-width: 1400px;
+  max-width: calc(1400px + 2 * clamp(20px, 4vw, 56px));
   margin: 0 auto;
 }
 .section-head {
