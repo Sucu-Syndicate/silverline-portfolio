@@ -1,4 +1,4 @@
-export type TerminalTag = 'commit' | 'build' | 'ship' | 'think' | 'note';
+export type TerminalTag = 'commit' | 'build' | 'ship' | 'think' | 'note' | 'quote';
 
 export interface TerminalLine {
   tag: TerminalTag;
@@ -43,6 +43,14 @@ export const TERMINAL_LINES: TerminalLine[] = [
   { tag: 'think', text: "// 17 isn't the headline. the work is" },
   { tag: 'think', text: '// every problem starts on a tuesday' },
   { tag: 'think', text: '// less, and louder' },
+
+  // ── quotes ──────────────────────────────────────────────
+  { tag: 'quote', text: '"Nobody hates the good ones, they hate the great ones" — Kobe Bryant' },
+  { tag: 'quote', text: '"The worst thing I can be is the same as everybody else" — Arnold Schwarzenegger' },
+  { tag: 'quote', text: '"The world offers you comfort but you were not made for comfort, you were made for greatness" — Pope Benedict XVI' },
+  { tag: 'quote', text: '"You have power over your mind, not outside events" — Marcus Aurelius' },
+  { tag: 'quote', text: '"Don\'t worry about your individual potential. You\'ll never know how great you might\'ve become unless you try." — Mike Metzner' },
+  { tag: 'quote', text: '"A man cannot remake himself without suffering, for he is both the marble and the sculptor" — Alexis Carrel' },
 
   // ── system-y output ─────────────────────────────────────
   { tag: 'note', text: 'reading: designing data-intensive applications' },

@@ -14,16 +14,8 @@ const MARKERS: Record<string, string> = {
   ship: '↑',
   think: '~',
   note: '·',
+  quote: '"',
 };
-
-const QUOTES = [
-  '"Nobody hates the good ones, they hate the great ones" — Kobe Bryant',
-  '"The worst thing I can be is the same as everybody else" — Arnold Schwarzenegger',
-  '"The world offers you comfort but you were not made for comfort, you were made for greatness" — Pope Benedict XVI',
-  '"You have power over your mind, not outside events" — Marcus Aurelius',
-  '"Don\'t worry about your individual potential. You\'ll never know how great you might\'ve become unless you try." — Mike Metzner',
-  '"A man cannot remake himself without suffering, for he is both the marble and the sculptor" — Alexis Carrel',
-];
 
 function pad(n: number) {
   return String(n).padStart(2, '0');
@@ -109,12 +101,6 @@ function HeroLog() {
 
 
 export default function Hero() {
-  const [quote, setQuote] = useState('');
-
-  useEffect(() => {
-    setQuote(pickRandom(QUOTES));
-  }, []);
-
   return (
     <section className="hero" id="hero">
       <div className="grain hero-grain" aria-hidden="true" />
@@ -129,7 +115,6 @@ export default function Hero() {
 
       <div className="hero-inner">
         <div className="hero-left">
-          {quote && <div className="hero-eyebrow">{quote}</div>}
           <h1>
             Software that<br />
             <span className="green">earns its weight</span>.
