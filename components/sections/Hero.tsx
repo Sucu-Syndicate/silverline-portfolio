@@ -115,8 +115,8 @@ export default function Hero() {
       <div className="hero-inner">
         <div className="hero-left">
           <h1>
-            I make<br />
-            things<br />
+            I take ideas<br />
+            and make things<br />
             <span className="green">happen</span>.
           </h1>
           <p className="hero-sub">
