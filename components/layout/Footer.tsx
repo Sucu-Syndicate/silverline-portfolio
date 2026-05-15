@@ -12,7 +12,7 @@ export default function Footer() {
     <footer className="footer">
       <div className="footer-inner">
         <h2 className="footer-mark">
-          matheog<span style={{ color: 'var(--accent)' }}>.</span>
+          matheo<span style={{ color: 'var(--accent)' }}>.</span>
         </h2>
         <div className="footer-meta">
           <div>

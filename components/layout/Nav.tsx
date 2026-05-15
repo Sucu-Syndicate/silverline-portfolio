@@ -4,7 +4,7 @@ export default function Nav() {
   return (
     <header className="nav">
       <Link href="/" className="brand">
-        matheog<span style={{ color: 'var(--accent)' }}>.</span>
+        matheo<span style={{ color: 'var(--accent)' }}>.</span>
       </Link>
 
       <ul>
