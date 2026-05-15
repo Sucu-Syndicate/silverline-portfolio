@@ -651,11 +651,12 @@ a { color: inherit; text-decoration: none; }
 .blog-header-inner { max-width: 1400px; margin: 0 auto; }
 .blog-header-eyebrow {
   display: block;
-  font-family: var(--font-mono);
+  font-family: var(--font-structure);
+  font-weight: 700;
   font-size: 11px;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.10em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--accent);
   margin-bottom: 24px;
 }
 .blog-header-title {
