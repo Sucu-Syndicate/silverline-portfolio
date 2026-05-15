@@ -927,10 +927,24 @@ a { color: inherit; text-decoration: none; }
     left: 0;
     right: 0;
     width: 100%;
-    height: 75%;
+    height: 85%;
     opacity: 1;
-    mask-image: linear-gradient(180deg, transparent 0%, #000 25%, #000 100%);
-    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 25%, #000 100%);
+    mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 100%);
+    -webkit-mask-image: linear-gradient(180deg, transparent 0%, #000 28%, #000 100%);
+  }
+  .hero-log::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 45%;
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: transparent;
+    pointer-events: none;
+    mask-image: linear-gradient(180deg, black 0%, transparent 100%);
+    -webkit-mask-image: linear-gradient(180deg, black 0%, transparent 100%);
   }
   .projects-grid { grid-template-columns: 1fr; }
   .footer-inner { grid-template-columns: 1fr; }
