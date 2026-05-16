@@ -25,8 +25,8 @@ export default function NowTeaser() {
           </div>
           <div className="now-right">
             <div className="now-text">
-              Drafting v2 of the portfolio system. Reading Kleppmann.
-              Half a chapter behind on Velvet&apos;s task graph. Always Argentina time.
+              Portfolio MVP shipped, working on the first real posts.
+              Velvet&apos;s in active development, working on the frontend (again).
             </div>
             <div className="now-footer">
               <div className="now-updated">
