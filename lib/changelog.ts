@@ -8,6 +8,8 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+  { sha: 'c3f46aa', date: '2026-05-15', message: "Meridian Sage tagline: drop 'buried'" },
+  { sha: '46c051f', date: '2026-05-15', message: 'Changelog reads from static lib/changelog.ts — no API, no token needed' },
   { sha: '540d617', date: '2026-05-15', message: 'Changelog fetches via API route with server-side GitHub token' },
   { sha: '7aecdb6', date: '2026-05-15', message: 'Update /now date to May 15, 2026' },
   { sha: '46e1f1a', date: '2026-05-15', message: 'Update /now teaser copy' },

@@ -39,6 +39,7 @@ function ChangelogOverlay({
             <div key={entry.sha} className="cl-row">
               <span className="cl-date">{formatDate(entry.date)}</span>
               <span className="cl-msg">{entry.message}</span>
+              <span className="cl-sha">{entry.sha}</span>
             </div>
           ))}
         </div>
