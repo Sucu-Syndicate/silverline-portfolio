@@ -83,7 +83,7 @@ export default function EasterEggs() {
   useEffect(() => {
     const IDLE_MESSAGES = [
       'summoning human wisdom',
-      'waiting for organic keyboard activity',
+      'waiting for organic mouse activity',
       'admiring hero terminal and animations',
       'consulting the carbon unit',
       'awaiting divine keystrokes',
