@@ -49,8 +49,8 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
 
   useEffect(() => {
     const sequence = buildSequence();
-    setLines([sequence[0]]);
-    let i = 1;
+    let i = 0;
+    setLines([sequence[i++]]);
     const id = setInterval(() => {
       if (i < sequence.length) {
         setLines((prev) => [...prev, sequence[i++]]);
@@ -58,7 +58,10 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
         clearInterval(id);
       }
     }, 700);
-    return () => clearInterval(id);
+    return () => {
+      clearInterval(id);
+      setLines([]);
+    };
   }, []);
 
   useEffect(() => {
