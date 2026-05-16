@@ -161,7 +161,7 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
           minHeight: 80,
         }}
       >
-        {lines.map((line, i) => (
+        {lines.filter(Boolean).map((line, i) => (
           <motion.div
             key={i}
             initial={{ opacity: 0, x: -6 }}
