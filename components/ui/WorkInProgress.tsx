@@ -34,6 +34,8 @@ const ERR_POOL = [
   'ERR   auto-merge failed: codebase caught fire during reconciliation',
   'ERR   race condition won the race',
   'ERR   because why not',
+  'ERR   out of RAM, download more',
+  'ERR   build succeeded but nothing works',
 ];
 
 function buildSequence(): string[] {

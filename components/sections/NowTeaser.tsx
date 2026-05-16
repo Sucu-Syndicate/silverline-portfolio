@@ -32,9 +32,6 @@ export default function NowTeaser() {
               <div className="now-updated">
                 Updated — <span className="now-date">May 2026</span>
               </div>
-              <Link href="/blog" className="now-cta" onClick={(e) => e.stopPropagation()}>
-                Read more →
-              </Link>
             </div>
           </div>
         </div>
