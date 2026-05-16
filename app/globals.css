@@ -268,7 +268,7 @@ a { color: inherit; text-decoration: none; }
   to   { opacity: 1; transform: translateY(0); }
 }
 @keyframes blink { 50% { opacity: 0; } }
-@keyframes wip-line-in { to { opacity: 1; } }
+@keyframes wip-line-in { from { opacity: 0; transform: translateX(-4px); } to { opacity: 1; transform: translateX(0); } }
 
 /* ─── Idle reveal ─────────────────────────────────────── */
 .coords {

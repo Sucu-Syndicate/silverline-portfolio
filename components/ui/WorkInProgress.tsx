@@ -34,9 +34,13 @@ const ERR_POOL = [
 ];
 
 function buildSequence(): string[] {
-  const shuffled = [...LOG_POOL].sort(() => Math.random() - 0.5).slice(0, 5);
+  const shuffled = [...LOG_POOL].sort(() => Math.random() - 0.5).slice(0, 3);
   const err = ERR_POOL[Math.floor(Math.random() * ERR_POOL.length)];
   return [...shuffled, err];
+}
+
+function randDelay() {
+  return 300 + Math.random() * 700; // 300–1000ms
 }
 
 interface WorkInProgressProps {
@@ -47,12 +51,31 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
   const [lines, setLines] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
-  // Set all lines at once — CSS animation-delay handles the drip-in visually.
-  // This avoids interval + Strict Mode interaction that was cutting off lines.
+  // Recursive setTimeout with random 300–1000ms delays between lines.
+  // `cancelled` flag ensures Strict Mode's second effect invocation cleanly
+  // takes over without the first run's timeouts leaking through.
   useEffect(() => {
     const sequence = buildSequence();
-    setLines(sequence);
-    return () => setLines([]);
+    let idx = 0;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout>;
+
+    const addNext = () => {
+      if (cancelled || idx >= sequence.length) return;
+      const line = sequence[idx++];
+      setLines((prev) => [...prev, line]);
+      if (idx < sequence.length) {
+        timer = setTimeout(addNext, randDelay());
+      }
+    };
+
+    addNext();
+
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
+      setLines([]);
+    };
   }, []);
 
   useEffect(() => {
@@ -170,20 +193,14 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
             key={i}
             style={{
               color: line.startsWith('ERR') ? '#c97070' : 'var(--text-2)',
-              opacity: 0,
-              animation: `wip-line-in 0.3s ease ${i * 700}ms forwards`,
+              animation: 'wip-line-in 0.25s ease both',
             }}
           >
             <span style={{ color: 'var(--accent)', opacity: 0.5 }}>{'>'}</span>{' '}
             {line}
           </div>
         ))}
-        <span
-          style={{
-            color: 'var(--accent)',
-            animation: 'blink 1.1s step-end infinite',
-          }}
-        >
+        <span style={{ color: 'var(--accent)', animation: 'blink 1.1s step-end infinite' }}>
           _
         </span>
       </div>
