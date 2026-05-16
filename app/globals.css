@@ -920,6 +920,8 @@ a { color: inherit; text-decoration: none; }
     justify-self: auto;
     text-align: left;
   }
+  /* Terminal lines appear instantly on mobile — no GPU layer creation per tick */
+  .hero-log .line { animation: none; }
   .hero-log {
     position: absolute;
     top: auto;
