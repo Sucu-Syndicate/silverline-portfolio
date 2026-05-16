@@ -38,7 +38,12 @@ function ChangelogOverlay({
           {CHANGELOG.map((entry) => (
             <div key={entry.sha} className="cl-row">
               <span className="cl-date">{formatDate(entry.date)}</span>
-              <span className="cl-msg">{entry.message}</span>
+              <span className="cl-msg">
+                {entry.message.replace(/^\[PTASK-\d+\]\s*/, '') !== entry.message && (
+                  <span className="cl-tag">{entry.message.match(/^\[PTASK-\d+\]/)?.[0]}</span>
+                )}{' '}
+                {entry.message.replace(/^\[PTASK-\d+\]\s*/, '')}
+              </span>
               <span className="cl-sha">{entry.sha}</span>
             </div>
           ))}
