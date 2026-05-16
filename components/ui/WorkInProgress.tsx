@@ -32,7 +32,8 @@ const LOG_POOL = [
 const ERR_POOL = [
   'ERR   content was not found in this dimension, check the neighbouring ones',
   'ERR   auto-merge failed: codebase caught fire during reconciliation',
-  'ERR   race condition won the race, because why not',
+  'ERR   race condition won the race',
+  'ERR   because why not',
 ];
 
 function buildSequence(): string[] {
