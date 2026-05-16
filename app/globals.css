@@ -64,6 +64,11 @@ html, body {
   text-rendering: optimizeLegibility;
   overflow-anchor: none;
 }
+body {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+}
 
 a { color: inherit; text-decoration: none; }
 
@@ -811,21 +816,23 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── Blog post page ─────────────────────────────────── */
 .post-main {
+  flex: 1;
   display: flex;
   flex-direction: column;
-  min-height: 100svh;
 }
 .post-main .blog-reading-area {
   flex: 1;
 }
 .post-back {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
-  color: var(--text-dim);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--text);
   text-decoration: none;
-  margin-bottom: 28px;
+  margin-bottom: 32px;
   transition: color 0.2s ease;
 }
 .post-back:hover { color: var(--accent); }
