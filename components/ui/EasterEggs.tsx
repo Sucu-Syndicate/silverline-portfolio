@@ -1,25 +1,10 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
+import { CHANGELOG } from '@/lib/changelog';
 
-interface GHCommit {
-  sha: string;
-  commit: {
-    message: string;
-    author: { date: string };
-  };
-}
-
-function formatDate(iso: string): string {
-  const d = new Date(iso);
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, '0');
-  const day = String(d.getDate()).padStart(2, '0');
-  return `${y}.${m}.${day}`;
-}
-
-function stripTaskPrefix(msg: string): string {
-  return msg.replace(/^\[PTASK-\d+\]\s*/, '').split('\n')[0];
+function formatDate(date: string): string {
+  return date.replace(/-/g, '.');
 }
 
 /* ─── Changelog overlay ─── */
@@ -30,34 +15,14 @@ function ChangelogOverlay({
   open: boolean;
   onClose: () => void;
 }) {
-  const [commits, setCommits] = useState<GHCommit[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-
-  const fetchCommits = useCallback(async () => {
-    setLoading(true);
-    setError(false);
-    try {
-      const res = await fetch('/api/changelog');
-      if (!res.ok) throw new Error('non-200');
-      const data: GHCommit[] = await res.json();
-      setCommits(data);
-    } catch {
-      setError(true);
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
   useEffect(() => {
     if (!open) return;
-    if (commits.length === 0 && !loading) fetchCommits();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose, commits.length, loading, fetchCommits]);
+  }, [open, onClose]);
 
   return (
     <div className={`changelog${open ? ' open' : ''}`} onClick={onClose}>
@@ -70,18 +35,10 @@ function ChangelogOverlay({
         </div>
 
         <div className="cl-body">
-          {loading && (
-            <div className="cl-state">fetching commit history<span className="cl-blink">_</span></div>
-          )}
-          {error && (
-            <div className="cl-state cl-error">
-              {'>'} ERR github api unreachable — try again later
-            </div>
-          )}
-          {!loading && !error && commits.map((c) => (
-            <div key={c.sha} className="cl-row">
-              <span className="cl-date">{formatDate(c.commit.author.date)}</span>
-              <span className="cl-msg">{stripTaskPrefix(c.commit.message)}</span>
+          {CHANGELOG.map((entry) => (
+            <div key={entry.sha} className="cl-row">
+              <span className="cl-date">{formatDate(entry.date)}</span>
+              <span className="cl-msg">{entry.message}</span>
             </div>
           ))}
         </div>
