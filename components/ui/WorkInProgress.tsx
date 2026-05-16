@@ -20,15 +20,11 @@ const FACE_LABELS = ['WIP', '404', 'TBD', '////', 'NaN', '...'];
 
 const LOG_LINES = [
   'INIT  loading page assets...',
-  'SCAN  searching /dev/mathe/ideas...',
-  'WARN  content not found in this dimension',
-  'INFO  deploying placeholder consciousness',
-  'ERR   stack overflow in creative_process.ts',
-  'WAIT  negotiating with deadline (timeout: ∞)',
-  'INFO  running npm install coffee --save-mental-health',
-  'ERR   coffee not found in node_modules',
-  'HINT  try back after the next commit',
-  'SYS   ETA: soon™',
+  'WARN  printer ran out of ink',
+  'INFO  Claude requests a break',
+  'ERR   content was not found in this dimension, check the neighbouring ones',
+  'INFO  turning it off and on again',
+  'ERR   auto-merge failed: codebase caught fire during reconciliation',
 ];
 
 interface WorkInProgressProps {

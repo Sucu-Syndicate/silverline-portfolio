@@ -9,8 +9,8 @@ export default function Nav() {
 
       <ul>
         <li><Link href="/blog">Blog</Link></li>
-        <li><span className="nav-disabled">Work</span></li>
-        <li><span className="nav-disabled">About</span></li>
+        <li><Link href="/work">Work</Link></li>
+        <li><Link href="/about">About</Link></li>
       </ul>
     </header>
   );

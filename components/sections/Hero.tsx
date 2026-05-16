@@ -124,8 +124,8 @@ export default function Hero() {
           </p>
           <div className="hero-meta">
             <Link href="/blog" className="hero-meta-primary">Blog →</Link>
-            <span className="hero-meta-wip">Work →</span>
-            <span className="hero-meta-wip">About →</span>
+            <Link href="/work" className="hero-meta-primary">Work →</Link>
+            <Link href="/about" className="hero-meta-primary">About →</Link>
           </div>
         </div>
         {/* right column reserved by .hero-log absolute positioning */}
