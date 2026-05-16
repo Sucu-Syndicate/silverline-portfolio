@@ -21,6 +21,7 @@ const FACE_LABELS = ['WIP', '404', 'TBD', '////', 'NaN', '...'];
 const LOG_POOL = [
   'INIT  loading page assets...',
   'WARN  printer ran out of ink',
+  'WARN  container escaped into host ecosystem',
   'INFO  Claude requests a break',
   'INFO  turning it off and on again',
   'HINT  try back after the next commit',
@@ -31,6 +32,7 @@ const LOG_POOL = [
 const ERR_POOL = [
   'ERR   content was not found in this dimension, check the neighbouring ones',
   'ERR   auto-merge failed: codebase caught fire during reconciliation',
+  'ERR   race condition won the race, because why not',
 ];
 
 function buildSequence(): string[] {
@@ -192,7 +194,7 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
           <div
             key={i}
             style={{
-              color: line.startsWith('ERR') ? '#c97070' : 'var(--text-2)',
+              color: line.startsWith('ERR') ? '#c97070' : line.startsWith('WARN') ? '#c9a85c' : 'var(--text-2)',
               animation: 'wip-line-in 0.25s ease both',
             }}
           >
