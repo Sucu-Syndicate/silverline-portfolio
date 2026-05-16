@@ -70,13 +70,26 @@ export default function EasterEggs() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  // Idle 4s → coords reveal
+  // Idle → coords reveal with random message
   useEffect(() => {
+    const IDLE_MESSAGES = [
+      'summoning human wisdom',
+      'waiting for organic keyboard activity',
+      'requesting meatspace interaction',
+      'consulting the carbon unit',
+      'awaiting divine keystrokes',
+      'listening for clacky-clacky sounds',
+      'human your turn',
+      'please rotate your consciousness toward the keyboard',
+    ];
+
     let timer: ReturnType<typeof setTimeout>;
     const arm = () => {
       clearTimeout(timer);
       timer = setTimeout(() => {
         const el = document.getElementById('hero-coords');
+        const msg = document.getElementById('hero-coords-msg');
+        if (msg) msg.textContent = IDLE_MESSAGES[Math.floor(Math.random() * IDLE_MESSAGES.length)];
         if (el) el.classList.add('show');
       }, 15000);
     };

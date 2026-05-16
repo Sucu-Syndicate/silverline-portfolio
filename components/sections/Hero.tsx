@@ -107,7 +107,7 @@ export default function Hero() {
 
       {/* Idle reveal — EasterEggs toggles .show class via DOM */}
       <div className="coords" id="hero-coords" aria-hidden="true">
-        <span className="coords-prompt">&gt;</span> it works on my machine<span className="coords-cursor">_</span>
+        <span className="coords-prompt">&gt;</span>{' '}<span id="hero-coords-msg">it works on my machine</span><span className="coords-cursor">_</span>
       </div>
 
       <HeroLog />
