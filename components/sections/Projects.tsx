@@ -27,7 +27,7 @@ const PROJECTS = [
     num: '03',
     name: 'Meridian Sage',
     year: '2025',
-    tagline: "YouTube's buried knowledge, made searchable and citable.",
+    tagline: "YouTube's knowledge, made searchable and citable.",
     slug: 'meridian-sage-overview',
     description:
       'The best thinking in the world lives in YouTube. Decades of lectures, investor frameworks, scientific breakdowns, founder stories, all completely unsearchable, buried in video. Meridian Sage fixes that: a full RAG pipeline that scrapes transcripts, chunks and embeds them into ChromaDB, runs hybrid BM25 + semantic retrieval with cross-encoder reranking, and feeds the results into Gemini 2.0 Flash for query expansion, grounded synthesis, and inline citations linking back to the exact timestamp. 249,000+ chunks, 80+ channels across 15 domains, running as a full Next.js + FastAPI web app. Built from zero to production in a single sprint, then scaled into something genuinely useful.',
