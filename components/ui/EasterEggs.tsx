@@ -38,10 +38,7 @@ function ChangelogOverlay({
     setLoading(true);
     setError(false);
     try {
-      const res = await fetch(
-        'https://api.github.com/repos/Sucu-Syndicate/silverline-portfolio/commits?per_page=30',
-        { headers: { Accept: 'application/vnd.github+json' } }
-      );
+      const res = await fetch('/api/changelog');
       if (!res.ok) throw new Error('non-200');
       const data: GHCommit[] = await res.json();
       setCommits(data);
