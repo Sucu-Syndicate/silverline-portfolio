@@ -2,10 +2,10 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { TERMINAL_LINES, type TerminalLine } from '@/lib/terminal-lines';
+import { terminalLines, type TerminalLine } from '@/lib/terminal-lines';
 
-const TICK_MIN = 700;
-const TICK_MAX = 1800;
+const TICK_MIN = 1000;
+const TICK_MAX = 2000;
 const MAX_LINES = 30;
 
 const MARKERS: Record<string, string> = {
@@ -42,7 +42,7 @@ function HeroLog() {
   useEffect(() => {
     const seed: LiveLine[] = [];
     for (let i = 0; i < MAX_LINES; i++) {
-      const l = pickRandom(TERMINAL_LINES);
+      const l = pickRandom(terminalLines);
       if (!l) break;
       seed.push({ ...l, ts: nowTs(), id: Math.random() + i, fresh: false });
     }
@@ -54,7 +54,7 @@ function HeroLog() {
     const tick = () => {
       if (cancelled) return;
       setLines((prev) => {
-        const pick = pickRandom(TERMINAL_LINES);
+        const pick = pickRandom(terminalLines);
         const next = [
           ...prev.map((l) => ({ ...l, fresh: false })),
           { ...pick, ts: nowTs(), id: Math.random(), fresh: true },
