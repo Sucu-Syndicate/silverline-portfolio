@@ -8,6 +8,9 @@ export interface ChangelogEntry {
 }
 
 export const CHANGELOG: ChangelogEntry[] = [
+  { sha: 'a8b54a3', date: '2026-05-16', message: '[PTASK-007] Fix TERMINAL_LINES import, slow tick to 1-2s' },
+  { sha: 'b358623', date: '2026-05-15', message: '[PTASK-007] Changelog: PTASK tag rendered in accent green' },
+  { sha: 'b11a1c5', date: '2026-05-15', message: '[PTASK-007] Restore task IDs in changelog, trap scroll inside modal' },
   { sha: '7b4a70c', date: '2026-05-15', message: '[PTASK-007] Changelog: show SHA tiny in rows, backfill missing entries' },
   { sha: 'c3f46aa', date: '2026-05-15', message: "[PTASK-007] Meridian Sage tagline: drop 'buried'" },
   { sha: '46c051f', date: '2026-05-15', message: '[PTASK-007] Changelog reads from static lib/changelog.ts — no API, no token needed' },

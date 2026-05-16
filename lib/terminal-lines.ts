@@ -43,7 +43,7 @@ export const terminalLines: TerminalLine[] = [
 
   {
     tag: 'quote',
-    text: '"vibe coding is going with the flow blindly. this is collaborative coding — based on programming fundamentals and basics, using critical thinking and logic, using ai to enhance and challenge your brain, not offload your thinking."',
+    text: '"vibe coding is going with the flow blindly. instead, this is collaborative coding — based on programming fundamentals and basics, using critical thinking and logic, using ai to enhance and challenge your brain, not offload your thinking."',
   },
   { tag: 'quote', text: '"Nobody hates the good ones, they hate the great ones" — Kobe Bryant' },
   { tag: 'quote', text: '"The worst thing I can be is the same as everybody else" — Arnold Schwarzenegger' },
