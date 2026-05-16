@@ -1,3 +1,5 @@
+import WorkInProgress from '@/components/ui/WorkInProgress';
+
 export default function NowPage() {
-  return <main><p>Now — coming soon.</p></main>;
+  return <WorkInProgress label="now" />;
 }

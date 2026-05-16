@@ -1,3 +1,5 @@
+import WorkInProgress from '@/components/ui/WorkInProgress';
+
 export default function AboutPage() {
-  return <main><p>About — coming soon.</p></main>;
+  return <WorkInProgress label="about" />;
 }

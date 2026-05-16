@@ -1,3 +1,5 @@
+import WorkInProgress from '@/components/ui/WorkInProgress';
+
 export default function WorkPage() {
-  return <main><p>Work — coming soon.</p></main>;
+  return <WorkInProgress label="work" />;
 }

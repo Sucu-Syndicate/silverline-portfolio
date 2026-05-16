@@ -1,3 +1,5 @@
+import WorkInProgress from '@/components/ui/WorkInProgress';
+
 export default function UsesPage() {
-  return <main><p>Uses — coming soon.</p></main>;
+  return <WorkInProgress label="uses" />;
 }
