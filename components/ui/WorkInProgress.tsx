@@ -47,21 +47,12 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
   const [lines, setLines] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
+  // Set all lines at once — CSS animation-delay handles the drip-in visually.
+  // This avoids interval + Strict Mode interaction that was cutting off lines.
   useEffect(() => {
     const sequence = buildSequence();
-    let i = 0;
-    setLines([sequence[i++]]);
-    const id = setInterval(() => {
-      if (i < sequence.length) {
-        setLines((prev) => [...prev, sequence[i++]]);
-      } else {
-        clearInterval(id);
-      }
-    }, 700);
-    return () => {
-      clearInterval(id);
-      setLines([]);
-    };
+    setLines(sequence);
+    return () => setLines([]);
   }, []);
 
   useEffect(() => {
@@ -175,26 +166,26 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
         }}
       >
         {lines.filter(Boolean).map((line, i) => (
-          <motion.div
+          <div
             key={i}
-            initial={{ opacity: 0, x: -6 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.25 }}
             style={{
               color: line.startsWith('ERR') ? '#c97070' : 'var(--text-2)',
+              opacity: 0,
+              animation: `wip-line-in 0.3s ease ${i * 700}ms forwards`,
             }}
           >
             <span style={{ color: 'var(--accent)', opacity: 0.5 }}>{'>'}</span>{' '}
             {line}
-          </motion.div>
+          </div>
         ))}
-        <motion.span
-          animate={{ opacity: [1, 0] }}
-          transition={{ repeat: Infinity, duration: 1.1, ease: 'linear', repeatType: 'mirror' }}
-          style={{ color: 'var(--accent)' }}
+        <span
+          style={{
+            color: 'var(--accent)',
+            animation: 'blink 1.1s step-end infinite',
+          }}
         >
           _
-        </motion.span>
+        </span>
       </div>
 
       {/* Progress bar */}
