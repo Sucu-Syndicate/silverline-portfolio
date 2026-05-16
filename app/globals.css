@@ -545,6 +545,11 @@ a { color: inherit; text-decoration: none; }
 }
 
 /* ── Ghost number cards ──────────────────────────────── */
+.proj-link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
 .proj-shell {
   position: relative;
   padding: 1px;

@@ -9,7 +9,8 @@ const PROJECTS = [
     num: '01',
     name: 'Velvet',
     year: '2026',
-    tagline: 'Creator platform. The flagship.',
+    tagline: 'LMS platform, flagship project.',
+    slug: 'velvet-overview',
     description:
       'A full-stack SaaS LMS built for a client in the hairdressing education space. Authentication, course delivery, self-hosted encrypted video, dual-currency payments, admin panel, student management, analytics, progress tracking, the complete package, production-grade and actively growing. Five phases, 22 days, five months ahead of deadline. White-label architecture from day one.',
   },
@@ -17,7 +18,8 @@ const PROJECTS = [
     num: '02',
     name: 'Myobscelium',
     year: '2026',
-    tagline: 'Personal memory OS. Built to think with Claude.',
+    tagline: 'Personal memory OS and knowledge layer for Claude.',
+    slug: 'myobscelium-overview',
     description:
       'A 19-tool Python MCP server connecting Claude directly to an Obsidian vault, named after mycelium, the fungal network that invisibly passes signals between trees. Simple on paper. The real power is what it unlocks: context is the most valuable currency when working with AI, and Myobscelium gives you unlimited amounts of it, any note, any project, any depth, retrievable mid-session through a tiered system (L0/L1/L2) that loads exactly as much as needed without burning tokens. That persistent memory layer is what made larger and larger builds possible, spawned VARRO, a full dual-agent project operating system, and ultimately what let this portfolio site get built at the speed it did.',
   },
@@ -25,7 +27,8 @@ const PROJECTS = [
     num: '03',
     name: 'Meridian Sage',
     year: '2025',
-    tagline: 'AI research tool. Solved a real problem.',
+    tagline: "YouTube's buried knowledge, made searchable and citable.",
+    slug: 'meridian-sage-overview',
     description:
       'The best thinking in the world lives in YouTube. Decades of lectures, investor frameworks, scientific breakdowns, founder stories, all completely unsearchable, buried in video. Meridian Sage fixes that: a full RAG pipeline that scrapes transcripts, chunks and embeds them into ChromaDB, runs hybrid BM25 + semantic retrieval with cross-encoder reranking, and feeds the results into Gemini 2.0 Flash for query expansion, grounded synthesis, and inline citations linking back to the exact timestamp. 249,000+ chunks, 80+ channels across 15 domains, running as a full Next.js + FastAPI web app. Built from zero to production in a single sprint, then scaled into something genuinely useful.',
   },
@@ -130,25 +133,27 @@ export default function Projects() {
             transition={{ delay: i * 0.08, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
           >
             {/* card-shell: padding: 1px so the spinner gradient shows as the border */}
-            <div className="proj-shell">
-              <div
-                className="proj-spinner"
-                ref={(el) => { spinnerRefs.current[i] = el; }}
-              />
-              <div className="proj-card">
-                <div className="proj-bar" />
+            <Link href={`/blog/${p.slug}`} className="proj-link">
+              <div className="proj-shell">
                 <div
-                  className="proj-num"
-                  ref={(el) => { numRefs.current[i] = el; }}
-                >
-                  {p.num}
+                  className="proj-spinner"
+                  ref={(el) => { spinnerRefs.current[i] = el; }}
+                />
+                <div className="proj-card">
+                  <div className="proj-bar" />
+                  <div
+                    className="proj-num"
+                    ref={(el) => { numRefs.current[i] = el; }}
+                  >
+                    {p.num}
+                  </div>
+                  <div className="proj-year">{p.year}</div>
+                  <div className="proj-name">{p.name}</div>
+                  <div className="proj-tagline">{p.tagline}</div>
+                  <p className="proj-desc">{p.description}</p>
                 </div>
-                <div className="proj-year">{p.year}</div>
-                <div className="proj-name">{p.name}</div>
-                <div className="proj-tagline">{p.tagline}</div>
-                <p className="proj-desc">{p.description}</p>
               </div>
-            </div>
+            </Link>
           </motion.div>
         ))}
       </div>
