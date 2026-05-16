@@ -127,9 +127,8 @@ export default function EasterEggs() {
       'requesting meatspace interaction',
       'consulting the carbon unit',
       'awaiting divine keystrokes',
-      'listening for clacky-clacky sounds',
       'human your turn',
-      'please rotate your consciousness toward the keyboard',
+      'please rotate your consciousness toward the mouse',
     ];
 
     let timer: ReturnType<typeof setTimeout>;

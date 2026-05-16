@@ -25,6 +25,9 @@ const LOG_LINES = [
   'ERR   content was not found in this dimension, check the neighbouring ones',
   'INFO  turning it off and on again',
   'ERR   auto-merge failed: codebase caught fire during reconciliation',
+  'HINT  try back after the next commit',
+  'WAIT  negotiating with deadline (timeout: ∞)',
+  'SYS   ETA: Maybe.',
 ];
 
 interface WorkInProgressProps {
