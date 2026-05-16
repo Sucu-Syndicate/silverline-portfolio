@@ -44,11 +44,12 @@ interface WorkInProgressProps {
 }
 
 export default function WorkInProgress({ label }: WorkInProgressProps) {
-  const [sequence] = useState(buildSequence);
-  const [lines, setLines] = useState<string[]>([sequence[0]]);
+  const [lines, setLines] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
+    const sequence = buildSequence();
+    setLines([sequence[0]]);
     let i = 1;
     const id = setInterval(() => {
       if (i < sequence.length) {
@@ -58,7 +59,7 @@ export default function WorkInProgress({ label }: WorkInProgressProps) {
       }
     }, 700);
     return () => clearInterval(id);
-  }, [sequence]);
+  }, []);
 
   useEffect(() => {
     const id = setInterval(() => {
