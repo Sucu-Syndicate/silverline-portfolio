@@ -84,7 +84,7 @@ export default function EasterEggs() {
     const IDLE_MESSAGES = [
       'summoning human wisdom',
       'waiting for organic keyboard activity',
-      'requesting meatspace interaction',
+      'admiring hero terminal and animations',
       'consulting the carbon unit',
       'awaiting divine keystrokes',
       'human your turn',
