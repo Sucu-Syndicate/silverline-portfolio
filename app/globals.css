@@ -886,7 +886,7 @@ a { color: inherit; text-decoration: none; }
   background: #F5F0E8;
   color: #1A1916;
   padding: clamp(60px, 8vh, 100px) clamp(20px, 4vw, 56px) clamp(80px, 12vh, 140px);
-  min-height: 50vh;
+  min-height: 70vh;
 }
 .blog-prose {
   max-width: 65ch;
