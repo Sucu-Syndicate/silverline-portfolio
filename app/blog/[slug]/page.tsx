@@ -35,30 +35,32 @@ export default async function BlogPostPage({ params }: Props) {
   const { meta, content, readTime } = post;
 
   return (
-    <main className="post-main">
-      {/* Dark post header */}
-      <div className="post-header">
-        <div className="post-header-inner">
-          <Link href="/blog" className="post-back">← Writing</Link>
-          <div className="post-header-meta">
-            <span className="post-meta-date">{meta.date}</span>
-            <span className="post-meta-sep">/</span>
-            <span className="post-meta-tag">{meta.tag}</span>
-            <span className="post-meta-sep">/</span>
-            <span className="post-meta-readtime">{readTime} min read</span>
+    <>
+      <main className="post-main">
+        {/* Dark post header */}
+        <div className="post-header">
+          <div className="post-header-inner">
+            <Link href="/blog" className="post-back">← Writing</Link>
+            <div className="post-header-meta">
+              <span className="post-meta-date">{meta.date}</span>
+              <span className="post-meta-sep">/</span>
+              <span className="post-meta-tag">{meta.tag}</span>
+              <span className="post-meta-sep">/</span>
+              <span className="post-meta-readtime">{readTime} min read</span>
+            </div>
+            <h1 className="post-title">{meta.title}</h1>
           </div>
-          <h1 className="post-title">{meta.title}</h1>
         </div>
-      </div>
 
-      {/* Warm-cream reading area */}
-      <div className="blog-reading-area">
-        <article className="blog-prose">
-          <MDXRemote source={content} />
-        </article>
-      </div>
+        {/* Warm-cream reading area — flex:1 fills remaining post-main space */}
+        <div className="blog-reading-area">
+          <article className="blog-prose">
+            <MDXRemote source={content} />
+          </article>
+        </div>
+      </main>
 
       <Footer />
-    </main>
+    </>
   );
 }
