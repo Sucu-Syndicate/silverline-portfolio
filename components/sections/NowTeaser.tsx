@@ -30,7 +30,7 @@ export default function NowTeaser() {
             </div>
             <div className="now-footer">
               <div className="now-updated">
-                Updated — <span className="now-date">May 2026</span>
+                Updated — <span className="now-date">May 15, 2026</span>
               </div>
             </div>
           </div>
