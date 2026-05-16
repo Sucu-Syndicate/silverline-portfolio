@@ -14,7 +14,7 @@ const MARKERS: Record<string, string> = {
   ship: '↑',
   think: '~',
   note: '·',
-  quote: '"',
+  quote: '§',
 };
 
 function pad(n: number) {
