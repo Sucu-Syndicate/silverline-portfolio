@@ -1,6 +1,26 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+
+interface GHCommit {
+  sha: string;
+  commit: {
+    message: string;
+    author: { date: string };
+  };
+}
+
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${y}.${m}.${day}`;
+}
+
+function stripTaskPrefix(msg: string): string {
+  return msg.replace(/^\[PTASK-\d+\]\s*/, '').split('\n')[0];
+}
 
 /* ─── Changelog overlay ─── */
 function ChangelogOverlay({
@@ -10,38 +30,68 @@ function ChangelogOverlay({
   open: boolean;
   onClose: () => void;
 }) {
+  const [commits, setCommits] = useState<GHCommit[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(false);
+
+  const fetchCommits = useCallback(async () => {
+    setLoading(true);
+    setError(false);
+    try {
+      const res = await fetch(
+        'https://api.github.com/repos/Sucu-Syndicate/silverline-portfolio/commits?per_page=30',
+        { headers: { Accept: 'application/vnd.github+json' } }
+      );
+      if (!res.ok) throw new Error('non-200');
+      const data: GHCommit[] = await res.json();
+      setCommits(data);
+    } catch {
+      setError(true);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   useEffect(() => {
     if (!open) return;
+    if (commits.length === 0 && !loading) fetchCommits();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [open, onClose]);
-
-  const entries: [string, string][] = [
-    ['2026.05.06', 'Hero terminal ships. Five variants live behind a tweak panel.'],
-    ['2026.05.05', 'Design system v2 locked. Two-register typography. Forest green earned its place.'],
-    ['2026.05.02', 'Killed Playfair. Killed gold. Erased the April direction.'],
-    ['2026.04.28', 'Velvet VARRO scaffolds wired into Obsidian.'],
-    ['2026.04.18', 'matheog.com domain secured ($10).'],
-    ['2026.04.10', '/grill-me protocol formalized. First clean checkpoint.'],
-  ];
+  }, [open, onClose, commits.length, loading, fetchCommits]);
 
   return (
     <div className={`changelog${open ? ' open' : ''}`} onClick={onClose}>
       <div className="changelog-card" onClick={(e) => e.stopPropagation()}>
-        <h2>~/changelog</h2>
-        <p className="note">
-          ↑↑↓↓←→←→ba — you found it. these are the receipts.
-        </p>
-        {entries.map(([d, t]) => (
-          <div key={d} className="cl-row">
-            <span className="cl-date">{d}</span>
-            <span>{t}</span>
-          </div>
-        ))}
-        <div className="close-hint">esc to close</div>
+        <div className="cl-header">
+          <h2>~/changelog</h2>
+          <p className="note">
+            Tracing code ancestry, take a scroll through the commit trail for this very site
+          </p>
+        </div>
+
+        <div className="cl-body">
+          {loading && (
+            <div className="cl-state">fetching commit history<span className="cl-blink">_</span></div>
+          )}
+          {error && (
+            <div className="cl-state cl-error">
+              {'>'} ERR github api unreachable — try again later
+            </div>
+          )}
+          {!loading && !error && commits.map((c) => (
+            <div key={c.sha} className="cl-row">
+              <span className="cl-date">{formatDate(c.commit.author.date)}</span>
+              <span className="cl-msg">{stripTaskPrefix(c.commit.message)}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="cl-footer">
+          <span className="close-hint">esc to close</span>
+        </div>
       </div>
     </div>
   );
@@ -50,7 +100,6 @@ function ChangelogOverlay({
 /* ─── Main EasterEggs component ─── */
 export default function EasterEggs() {
   const [changelogOpen, setChangelogOpen] = useState(false);
-
 
   // Ctrl+C × 3 within 1.5s → changelog
   useEffect(() => {
