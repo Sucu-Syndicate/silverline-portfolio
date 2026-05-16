@@ -633,6 +633,19 @@ a { color: inherit; text-decoration: none; }
   position: relative;
   z-index: 2;
 }
+.proj-desc {
+  font-family: var(--font-structure);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--text-dim);
+  margin: 14px 0 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
 @media (prefers-reduced-motion: reduce) {
   .proj-spinner { display: none; }
   .proj-shell { background: var(--border); }
