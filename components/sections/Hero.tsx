@@ -50,10 +50,9 @@ function HeroLog() {
 
     let cancelled = false;
     let timer: ReturnType<typeof setTimeout>;
-    let touching = false;
 
     const tick = () => {
-      if (cancelled || touching) return;
+      if (cancelled) return;
       setLines((prev) => {
         const pick = pickRandom(TERMINAL_LINES);
         const next = [
@@ -68,29 +67,10 @@ function HeroLog() {
       timer = setTimeout(tick, delay);
     };
 
-    const onTouchStart = () => {
-      touching = true;
-      clearTimeout(timer);
-    };
-    const onTouchEnd = () => {
-      touching = false;
-      if (!cancelled) {
-        const delay = TICK_MIN + Math.random() * (TICK_MAX - TICK_MIN);
-        timer = setTimeout(tick, delay);
-      }
-    };
-
-    window.addEventListener('touchstart', onTouchStart, { passive: true });
-    window.addEventListener('touchend', onTouchEnd, { passive: true });
-    window.addEventListener('touchcancel', onTouchEnd, { passive: true });
-
     timer = setTimeout(tick, 600);
     return () => {
       cancelled = true;
       clearTimeout(timer);
-      window.removeEventListener('touchstart', onTouchStart);
-      window.removeEventListener('touchend', onTouchEnd);
-      window.removeEventListener('touchcancel', onTouchEnd);
     };
   }, []);
 
