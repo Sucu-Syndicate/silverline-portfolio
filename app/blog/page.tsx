@@ -3,7 +3,7 @@ import { getAllPosts } from "@/lib/mdx";
 import Footer from "@/components/layout/Footer";
 
 export const metadata = {
-  title: "Writing — Mathe",
+  title: "Writing · Matheo Guevara",
   description: "Code, decisions, and what I learned building in public.",
 };
 

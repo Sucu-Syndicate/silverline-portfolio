@@ -2,6 +2,7 @@ import { MDXRemote } from "next-mdx-remote/rsc";
 import { getAllPosts, getPostBySlug } from "@/lib/mdx";
 import Footer from "@/components/layout/Footer";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -15,7 +16,7 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params;
   try {
     const { meta } = getPostBySlug(slug);
-    return { title: `${meta.title} — Mathe`, description: meta.description };
+    return { title: `${meta.title} · Matheo Guevara`, description: meta.description };
   } catch {
     return {};
   }
@@ -34,10 +35,11 @@ export default async function BlogPostPage({ params }: Props) {
   const { meta, content, readTime } = post;
 
   return (
-    <main>
+    <main className="post-main">
       {/* Dark post header */}
       <div className="post-header">
         <div className="post-header-inner">
+          <Link href="/blog" className="post-back">← Writing</Link>
           <div className="post-header-meta">
             <span className="post-meta-date">{meta.date}</span>
             <span className="post-meta-sep">/</span>
