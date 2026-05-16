@@ -18,37 +18,47 @@ const FACE_STYLES: CSSProperties[] = [
 
 const FACE_LABELS = ['WIP', '404', 'TBD', '////', 'NaN', '...'];
 
-const LOG_LINES = [
+const LOG_POOL = [
   'INIT  loading page assets...',
   'WARN  printer ran out of ink',
   'INFO  Claude requests a break',
-  'ERR   content was not found in this dimension, check the neighbouring ones',
   'INFO  turning it off and on again',
-  'ERR   auto-merge failed: codebase caught fire during reconciliation',
   'HINT  try back after the next commit',
   'WAIT  negotiating with deadline (timeout: ∞)',
   'SYS   ETA: Maybe.',
 ];
+
+const ERR_POOL = [
+  'ERR   content was not found in this dimension, check the neighbouring ones',
+  'ERR   auto-merge failed: codebase caught fire during reconciliation',
+];
+
+function buildSequence(): string[] {
+  const shuffled = [...LOG_POOL].sort(() => Math.random() - 0.5).slice(0, 5);
+  const err = ERR_POOL[Math.floor(Math.random() * ERR_POOL.length)];
+  return [...shuffled, err];
+}
 
 interface WorkInProgressProps {
   label: string;
 }
 
 export default function WorkInProgress({ label }: WorkInProgressProps) {
-  const [lines, setLines] = useState<string[]>([LOG_LINES[0]]);
+  const [sequence] = useState(buildSequence);
+  const [lines, setLines] = useState<string[]>([sequence[0]]);
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
     let i = 1;
     const id = setInterval(() => {
-      if (i < LOG_LINES.length) {
-        setLines((prev) => [...prev, LOG_LINES[i++]]);
+      if (i < sequence.length) {
+        setLines((prev) => [...prev, sequence[i++]]);
       } else {
         clearInterval(id);
       }
     }, 700);
     return () => clearInterval(id);
-  }, []);
+  }, [sequence]);
 
   useEffect(() => {
     const id = setInterval(() => {
