@@ -1098,15 +1098,13 @@ a { color: inherit; text-decoration: none; }
 /* ─── Projects Stack ──────────────────────────────────── */
 /*
   Sticky scroll stack — one full-viewport card per project.
-  Container height = 4 cards × 100dvh + 100dvh exit buffer = 500dvh.
-  Each card sits at its natural flow position (0, 100dvh, 200dvh, 300dvh)
-  and sticks to top:0 as you scroll into it. Higher z-index cards overlap
-  lower ones, creating the slide-in-from-below stacking effect.
-  No scroll listeners — pure CSS sticky.
+  415dvh total: 400dvh for 4 × 100dvh cards + 15dvh exit leeway before Blog.
+  Cards sit at their natural flow position and stick to top:0 as you scroll.
+  Higher z-index cards slide up and cover lower ones — pure CSS, no listeners.
 */
 .projects-stack-outer {
   position: relative;
-  height: 415dvh; /* 400dvh for 4 cards + 15dvh of exit leeway before Blog */
+  height: 415dvh;
   border-top: 1px solid var(--border);
 }
 
@@ -1115,18 +1113,66 @@ a { color: inherit; text-decoration: none; }
   top: 0;
   height: 100dvh;
   width: 100%;
-  background: var(--bg);
-  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
   overflow: hidden;
+  /*
+    sticky elements are positioned elements — they act as the containing block
+    for position: absolute children. No extra position: relative needed.
+  */
 }
 
-/* Alternate surface color for visual distinction while placeholders are in use */
-.project-card:nth-child(2) { background: var(--surface); }
-.project-card:nth-child(4) { background: var(--surface); }
+/* Per-card backgrounds — each surface is distinct, scoped --card-bg for the veil gradient */
+.project-card--1 { background: var(--surface-2); --card-bg: var(--surface-2); }
+.project-card--2 { background: var(--surface);   --card-bg: var(--surface);   }
+.project-card--3 { background: var(--accent-bg); --card-bg: var(--accent-bg); }
+.project-card--4 { background: var(--bg);        --card-bg: var(--bg);        }
 
+/* Canvas background — fills the right side of each card, pointer-events off */
+.project-card-bg {
+  position: absolute;
+  inset: 0;
+  opacity: 0.45;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+}
+
+/*
+  Left-side gradient veil — bleeds the card's own bg over the canvas so text
+  stays readable. Uses the per-card --card-bg variable for a seamless match.
+*/
+.project-card-veil {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    var(--card-bg, var(--bg)) 32%,
+    transparent 68%
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/*
+  Top-edge shadow — casts a shallow dark band across the top of each card.
+  When the next card slides up over this one, this band reads as natural depth.
+*/
+.project-card-edge {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 90px;
+  background: linear-gradient(to bottom, var(--bg), transparent);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Content layer — sits above bg (0), veil (1), edge (2) */
 .project-card-inner {
+  position: relative;
+  z-index: 3;
   max-width: 1200px;
   width: 100%;
   margin: 0 auto;
@@ -1139,7 +1185,7 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  margin: 0 0 24px;
+  margin: 0 0 20px;
 }
 
 .project-card-title {
@@ -1149,17 +1195,36 @@ a { color: inherit; text-decoration: none; }
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--text);
-  margin: 0 0 32px;
+  margin: 0 0 24px;
   text-transform: uppercase;
 }
 
-.project-card-desc {
+/* Scrambled-state chars during DecryptedText animation */
+.project-title-enc { color: var(--text-dim); }
+
+.project-card-tagline {
   font-family: var(--font-structure);
-  font-size: 16px;
+  font-size: 15px;
   line-height: 1.6;
   color: var(--text-2);
-  margin: 0;
-  max-width: 560px;
+  margin: 0 0 28px;
+  max-width: 520px;
+}
+
+.project-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.project-card-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
 }
 
 /* ─── Blog ───────────────────────────────────────────── */
