@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Archivo, Literata, Geist_Mono } from "next/font/google";
 import Nav from "@/components/layout/Nav";
+import SmoothScroll from "@/components/SmoothScroll";
 import "./globals.css";
 
 const archivo = Archivo({
@@ -39,6 +40,7 @@ export default function RootLayout({
       className={`${archivo.variable} ${literata.variable} ${geistMono.variable}`}
     >
       <body>
+        <SmoothScroll />
         <div id="nav-sentinel" style={{ height: 1 }} />
         <Nav />
         {children}

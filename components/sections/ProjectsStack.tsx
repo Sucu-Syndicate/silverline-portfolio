@@ -2,6 +2,7 @@
 
 // @ts-ignore — React Bits component, no type declarations
 import DecryptedText from '@/components/DecryptedText';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 const projects = [
   {
@@ -48,15 +49,18 @@ export default function ProjectsStack() {
             <div className={`project-card-bg-fill project-card-bg-fill--${i + 1}`} />
           </div>
 
-          {/* Left gradient veil — bleeds card background over the canvas */}
+          {/* Left gradient veil */}
           <div className="project-card-veil" aria-hidden="true" />
 
-          {/* Top edge shadow — depth when card slides under the next */}
+          {/* Top edge shadow */}
           <div className="project-card-edge" aria-hidden="true" />
 
-          {/* Content */}
+          {/* Content — staggered fade in */}
           <div className="project-card-inner">
-            <p className="project-card-label">{project.label}</p>
+            <ScrollReveal delay={0}>
+              <p className="project-card-label">{project.label}</p>
+            </ScrollReveal>
+
             <h2 className="project-card-title">
               <DecryptedText
                 text={project.name}
@@ -69,12 +73,18 @@ export default function ProjectsStack() {
                 rootMargin="0px 0px 400px 0px"
               />
             </h2>
-            <p className="project-card-tagline">{project.tagline}</p>
-            <div className="project-card-tags">
-              {project.tags.map((tag) => (
-                <span key={tag} className="project-card-tag">{tag}</span>
-              ))}
-            </div>
+
+            <ScrollReveal delay={0.12}>
+              <p className="project-card-tagline">{project.tagline}</p>
+            </ScrollReveal>
+
+            <ScrollReveal delay={0.2}>
+              <div className="project-card-tags">
+                {project.tags.map((tag) => (
+                  <span key={tag} className="project-card-tag">{tag}</span>
+                ))}
+              </div>
+            </ScrollReveal>
           </div>
         </div>
       ))}

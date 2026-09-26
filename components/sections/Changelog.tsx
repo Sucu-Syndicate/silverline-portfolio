@@ -1,3 +1,5 @@
+import ScrollReveal from '@/components/ui/ScrollReveal';
+
 const entries = [
   'Terminal hero restored full-viewport with idle mouse detection',
   '3D stack installed (Three.js, R3F, Rapier) — archived for future embedded demos',
@@ -6,16 +8,20 @@ const entries = [
 export default function Changelog() {
   return (
     <section className="section" id="changelog">
-      <div className="section-head">
-        <div>
-          <p className="section-label">Changelog</p>
-          <h2 className="section-title">CHANGELOG</h2>
+      <ScrollReveal>
+        <div className="section-head">
+          <div>
+            <p className="section-label">Changelog</p>
+            <h2 className="section-title">CHANGELOG</h2>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       <ul className="changelog-list">
         {entries.map((e, i) => (
-          <li key={i} className="changelog-item">{e}</li>
+          <ScrollReveal key={i} delay={i * 0.09}>
+            <li className="changelog-item">{e}</li>
+          </ScrollReveal>
         ))}
       </ul>
     </section>

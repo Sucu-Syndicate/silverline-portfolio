@@ -3,6 +3,7 @@
 import { useRef } from 'react';
 import type { MouseEvent } from 'react';
 import { motion, useMotionValue, useSpring } from 'framer-motion';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 
 function MagneticButton() {
   const ref = useRef<HTMLButtonElement>(null);
@@ -41,29 +42,37 @@ function MagneticButton() {
 export default function Contact() {
   return (
     <section className="section" id="contact">
-      <div className="section-head">
-        <div>
-          <p className="section-label">Contact</p>
-          <h2 className="section-title">CONTACT</h2>
+      <ScrollReveal>
+        <div className="section-head">
+          <div>
+            <p className="section-label">Contact</p>
+            <h2 className="section-title">CONTACT</h2>
+          </div>
         </div>
-      </div>
+      </ScrollReveal>
 
       <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
-        <input
-          className="contact-input"
-          type="text"
-          name="name"
-          placeholder="Name"
-          autoComplete="off"
-        />
-        <textarea
-          className="contact-textarea"
-          name="message"
-          placeholder="Message"
-        />
-        <div className="magnetic-wrap">
-          <MagneticButton />
-        </div>
+        <ScrollReveal delay={0.08}>
+          <input
+            className="contact-input"
+            type="text"
+            name="name"
+            placeholder="Name"
+            autoComplete="off"
+          />
+        </ScrollReveal>
+        <ScrollReveal delay={0.15}>
+          <textarea
+            className="contact-textarea"
+            name="message"
+            placeholder="Message"
+          />
+        </ScrollReveal>
+        <ScrollReveal delay={0.22}>
+          <div className="magnetic-wrap">
+            <MagneticButton />
+          </div>
+        </ScrollReveal>
       </form>
     </section>
   );
