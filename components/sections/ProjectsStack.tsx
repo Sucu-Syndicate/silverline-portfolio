@@ -1,6 +1,8 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import dynamic from 'next/dynamic';
+import { useReducedMotion } from 'motion/react';
 // @ts-ignore — React Bits component, no type declarations
 import DecryptedText from '@/components/DecryptedText';
 
@@ -57,7 +59,7 @@ function ProjectBackground({ index }: { index: number }) {
       />
     );
   }
-  // Myopsilian — warm thread lines, delicate and analytical.
+  // Myobscelium — warm thread lines, delicate and analytical.
   if (index === 1) {
     return (
       <Threads
@@ -85,7 +87,7 @@ function ProjectBackground({ index }: { index: number }) {
       />
     );
   }
-  // Factorito — mechanical wave threads, rhythmic and precise.
+  // Factur2d2 — mechanical wave threads, rhythmic and precise.
   if (index === 3) {
     return (
       <Waves
@@ -104,18 +106,84 @@ function ProjectBackground({ index }: { index: number }) {
 }
 
 export default function ProjectsStack() {
+  const reducedMotion  = useReducedMotion();
+  const containerRef   = useRef<HTMLDivElement>(null);
+  const sentinelRefs   = useRef<(HTMLDivElement | null)[]>([]);
+  const [sectionVisible, setSectionVisible] = useState(false);
+  const [activeIndex,    setActiveIndex]    = useState(0);
+
+  // Track whether the whole section is on-screen at all.
+  // When it's off-screen every background is unmounted — zero GPU work.
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry]) => setSectionVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
+
+  // Three sentinel divs sit at 100dvh / 200dvh / 300dvh inside the container.
+  // When a sentinel scrolls above the viewport it means we've advanced past that
+  // transition point → increment activeIndex. Works equally well scrolling back up.
+  useEffect(() => {
+    const aboveFold = new Set<number>();
+
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const si = Number((entry.target as HTMLElement).dataset.si);
+          if (!entry.isIntersecting && entry.boundingClientRect.top < 0) {
+            aboveFold.add(si);
+          } else {
+            aboveFold.delete(si);
+          }
+        });
+        setActiveIndex(aboveFold.size);
+      },
+      { threshold: 0 }
+    );
+
+    sentinelRefs.current.forEach((s) => s && obs.observe(s));
+    return () => obs.disconnect();
+  }, []);
+
+  // Only render backgrounds for the active card and the one just beneath it.
+  // This keeps at most 2 WebGL/Canvas contexts alive at any time instead of 4.
+  // Reduced-motion: skip all canvas work entirely.
+  const showBg = (i: number) =>
+    !reducedMotion &&
+    sectionVisible &&
+    (i === activeIndex || i === activeIndex - 1);
+
   return (
-    <div className="projects-stack-outer" id="work">
+    <div className="projects-stack-outer" id="work" ref={containerRef}>
+      {/* Sentinel divs — zero height, trigger activeIndex transitions */}
+      {[0, 1, 2].map((si) => (
+        <div
+          key={si}
+          ref={(el) => { sentinelRefs.current[si] = el; }}
+          className="project-card-sentinel"
+          data-si={si}
+          style={{ top: `${(si + 1) * 100}dvh` }}
+          aria-hidden="true"
+        />
+      ))}
+
       {projects.map((project, i) => (
         <div
           key={project.number}
           className={`project-card project-card--${i + 1}`}
           style={{ zIndex: i + 1 }}
         >
-          {/* Canvas background — right half, faded */}
-          <div className="project-card-bg" aria-hidden="true">
-            <ProjectBackground index={i} />
-          </div>
+          {/* Canvas background — only mounted when this card is active/adjacent */}
+          {showBg(i) && (
+            <div className="project-card-bg" aria-hidden="true">
+              <ProjectBackground index={i} />
+            </div>
+          )}
 
           {/* Left gradient veil — bleeds card background over the canvas */}
           <div className="project-card-veil" aria-hidden="true" />

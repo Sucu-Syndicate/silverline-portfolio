@@ -1058,6 +1058,12 @@ a { color: inherit; text-decoration: none; }
 /* ─── Section divider ───────────────────────────────── */
 .section { border-top: 1px solid var(--border); }
 
+/* Defer below-fold sections — browser skips layout/paint until near viewport */
+#blog, #changelog, #contact {
+  content-visibility: auto;
+  contain-intrinsic-size: 0 500px;
+}
+
 /* ─── About ──────────────────────────────────────────── */
 .about-text {
   font-family: var(--font-structure);
@@ -1225,6 +1231,17 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-dim);
   border: 1px solid var(--border);
   padding: 4px 10px;
+}
+
+/* Sentinel elements — zero-height position markers inside the sticky container.
+   IntersectionObserver watches these to determine which card is active,
+   so only that card's background canvas is mounted. */
+.project-card-sentinel {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 0;
+  pointer-events: none;
 }
 
 /* ─── Blog ───────────────────────────────────────────── */
