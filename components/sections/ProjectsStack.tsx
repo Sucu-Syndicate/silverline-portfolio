@@ -21,7 +21,7 @@ const projects = [
   {
     number: '02',
     label:  'PROJECT 02',
-    name:   'MYOPSILIAN',
+    name:   'MYOBSCELIUM-MCP',
     tagline: 'Placeholder — add your tagline here.',
     tags:   ['Python', 'React', 'FastAPI'],
   },
@@ -35,7 +35,7 @@ const projects = [
   {
     number: '04',
     label:  'PROJECT 04',
-    name:   'FACTORITO',
+    name:   'FACTUR2D2',
     tagline: 'Placeholder — add your tagline here.',
     tags:   ['Python', 'Power Automate'],
   },
