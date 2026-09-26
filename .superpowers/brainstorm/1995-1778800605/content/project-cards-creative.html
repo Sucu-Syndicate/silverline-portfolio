@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714; --raised: #222420;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --accent-bg: #1A2620; --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: #0d0e0c; color: var(--text); font-family: var(--f); padding: 28px 20px 80px; }
+
+  .page-label { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .page-heading { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; color: var(--text-2); margin-bottom: 32px; }
+
+  /* shared section wrapper */
+  .option-wrap {
+    border: 2px solid transparent; border-radius: 6px; overflow: hidden;
+    cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px;
+  }
+  .option-wrap:hover { border-color: var(--accent-deep); }
+  .option-wrap.selected { border-color: var(--accent); }
+  .option-tag {
+    background: #0a0b09; border-bottom: 1px solid var(--border); padding: 10px 16px;
+    font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--text-dim);
+    display: flex; justify-content: space-between;
+  }
+  .option-tag .sel { color: var(--accent); display: none; }
+  .option-wrap.selected .option-tag .sel { display: block; }
+
+  /* shared section head */
+  .s-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    padding: 40px 40px 24px; background: var(--bg);
+  }
+  .s-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .s-title { font-weight: 800; font-size: 22px; letter-spacing: -0.025em; line-height: 1.05; color: var(--text); }
+  .s-link { font-size: 11px; font-weight: 500; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 2px; white-space: nowrap; font-family: var(--f); }
+
+  /* ──────────────────────────────────────────────────
+     OPTION A: TERMINAL
+  ────────────────────────────────────────────────── */
+  .term-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 12px; padding: 0 40px 40px; background: var(--bg);
+  }
+  .term-card {
+    background: var(--surface-2, #1A1B18); border: 1px solid var(--border);
+    font-family: var(--f-mono); font-size: 11px; overflow: hidden;
+  }
+  .term-bar {
+    background: var(--raised); padding: 7px 12px;
+    display: flex; align-items: center; gap: 6px; border-bottom: 1px solid var(--border);
+  }
+  .term-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--border); }
+  .term-bar-title { font-size: 9px; color: var(--text-dim); letter-spacing: 0.04em; margin-left: 4px; }
+  .term-body { padding: 16px; line-height: 1.7; }
+  .term-prompt { color: var(--accent); }
+  .term-cmd { color: var(--text); font-weight: 500; }
+  .term-out-key { color: var(--text-dim); }
+  .term-out-val { color: var(--text-2); }
+  .term-out-name { color: var(--text); font-weight: 500; font-size: 13px; }
+  .term-cursor { display: inline-block; width: 7px; height: 13px; background: var(--accent); margin-left: 2px; vertical-align: middle; animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ──────────────────────────────────────────────────
+     OPTION B: GIANT NUMBER WATERMARK
+  ────────────────────────────────────────────────── */
+  .giant-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr);
+    gap: 0; background: var(--border); padding: 0 40px 40px;
+    background: var(--bg);
+    gap: 16px;
+  }
+  .giant-card {
+    position: relative; overflow: hidden;
+    background: var(--surface); min-height: 280px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    padding: 24px;
+  }
+  .giant-num {
+    position: absolute; top: -10px; right: -8px;
+    font-family: var(--f); font-weight: 800;
+    font-size: clamp(100px, 14vw, 160px);
+    line-height: 1; letter-spacing: -0.06em;
+    color: var(--bg);
+    /* slightly lighter than bg so it shows as a ghosted mark */
+    color: transparent;
+    -webkit-text-stroke: 1px var(--raised);
+    pointer-events: none; user-select: none;
+  }
+  .giant-year {
+    font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+    position: relative; z-index: 2;
+  }
+  .giant-name {
+    font-weight: 800; font-size: clamp(20px, 2.5vw, 28px);
+    letter-spacing: -0.03em; line-height: 1.0; color: var(--text);
+    position: relative; z-index: 2; margin-bottom: 10px;
+  }
+  .giant-tagline {
+    font-family: var(--f-mono); font-size: 9px; color: var(--text-2);
+    line-height: 1.5; position: relative; z-index: 2;
+  }
+  .giant-accent-bar {
+    position: absolute; top: 0; left: 0; right: 0;
+    height: 2px; background: var(--accent);
+  }
+
+  /* ──────────────────────────────────────────────────
+     OPTION C: EDITORIAL ROWS (full-width horizontal)
+  ────────────────────────────────────────────────── */
+  .rows-wrap { background: var(--bg); padding: 0 40px 40px; }
+  .proj-row {
+    display: grid;
+    grid-template-columns: 80px 1fr 1fr auto;
+    gap: 24px; align-items: center;
+    padding: 28px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .proj-row:first-child { border-top: 1px solid var(--border); }
+  .row-num {
+    font-family: var(--f); font-weight: 800;
+    font-size: clamp(32px, 4vw, 52px);
+    letter-spacing: -0.04em; line-height: 1;
+    color: var(--border);
+  }
+  .row-name {
+    font-weight: 800; font-size: clamp(18px, 2.2vw, 26px);
+    letter-spacing: -0.025em; line-height: 1.05; color: var(--text);
+  }
+  .row-tagline {
+    font-family: var(--f-mono); font-size: 10px;
+    color: var(--text-2); line-height: 1.5; letter-spacing: 0.01em;
+  }
+  .row-year {
+    font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.1em;
+    text-transform: uppercase; color: var(--accent);
+    text-align: right; white-space: nowrap;
+  }
+
+  /* desc boxes */
+  .desc { background: #090a08; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .desc-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .desc-body { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+  .desc-note { font-family: var(--f-mono); font-size: 9px; color: var(--accent); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page-label">Selected Work — Card Direction</div>
+<div class="page-heading">How should the project cards look?</div>
+<div class="page-sub">All three use Option A (header link). Pick whichever card design clicks — or say what to mix.</div>
+
+<!-- ── OPTION A: Terminal ────────────────────────── -->
+<div class="option-wrap" data-choice="a" onclick="pick(this)">
+  <div class="option-tag"><span>A — Terminal cards</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="term-grid">
+    <div class="term-card">
+      <div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div><span class="term-bar-title">velvet.sh</span></div>
+      <div class="term-body">
+        <div><span class="term-prompt">$ </span><span class="term-cmd">./velvet --info</span></div>
+        <div style="margin-top:10px">
+          <div><span class="term-out-key">name&nbsp;&nbsp;&nbsp; </span><span class="term-out-name">Velvet</span></div>
+          <div><span class="term-out-key">year&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">2026</span></div>
+          <div><span class="term-out-key">type&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">creator platform</span></div>
+          <div><span class="term-out-key">status&nbsp; </span><span style="color:var(--accent)">in build</span></div>
+          <div style="margin-top:8px;color:var(--text-dim);font-size:10px"># The flagship.</div>
+        </div>
+        <div style="margin-top:12px"><span class="term-prompt">$ </span><span class="term-cursor"></span></div>
+      </div>
+    </div>
+    <div class="term-card">
+      <div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div><span class="term-bar-title">myobscelium.sh</span></div>
+      <div class="term-body">
+        <div><span class="term-prompt">$ </span><span class="term-cmd">./myobscelium --info</span></div>
+        <div style="margin-top:10px">
+          <div><span class="term-out-key">name&nbsp;&nbsp;&nbsp; </span><span class="term-out-name">Myobscelium</span></div>
+          <div><span class="term-out-key">year&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">2026</span></div>
+          <div><span class="term-out-key">type&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">memory OS</span></div>
+          <div><span class="term-out-key">status&nbsp; </span><span style="color:var(--accent)">in build</span></div>
+          <div style="margin-top:8px;color:var(--text-dim);font-size:10px"># Built to think with Claude.</div>
+        </div>
+        <div style="margin-top:12px"><span class="term-prompt">$ </span><span class="term-cursor"></span></div>
+      </div>
+    </div>
+    <div class="term-card">
+      <div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div><span class="term-bar-title">meridian.sh</span></div>
+      <div class="term-body">
+        <div><span class="term-prompt">$ </span><span class="term-cmd">./meridian --info</span></div>
+        <div style="margin-top:10px">
+          <div><span class="term-out-key">name&nbsp;&nbsp;&nbsp; </span><span class="term-out-name">Meridian Sage</span></div>
+          <div><span class="term-out-key">year&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">2025</span></div>
+          <div><span class="term-out-key">type&nbsp;&nbsp;&nbsp; </span><span class="term-out-val">AI research</span></div>
+          <div><span class="term-out-key">status&nbsp; </span><span style="color:var(--text-2)">shipped</span></div>
+          <div style="margin-top:8px;color:var(--text-dim);font-size:10px"># Solved a real problem.</div>
+        </div>
+        <div style="margin-top:12px"><span class="term-prompt">$ </span><span class="term-cursor"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Terminal / CLI cards</div>
+    <div class="desc-body">Each card looks like a shell session — project name as the command, info as key-value output. Fits the builder/developer voice perfectly.</div>
+    <div class="desc-note">→ Cursor blinks in real implementation</div>
+  </div>
+</div>
+
+<!-- ── OPTION B: Giant number watermark ────────────────────────── -->
+<div class="option-wrap" data-choice="b" onclick="pick(this)">
+  <div class="option-tag"><span>B — Giant number ghost</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="giant-grid">
+    <div class="giant-card">
+      <div class="giant-accent-bar"></div>
+      <div class="giant-num">01</div>
+      <div class="giant-year">2026</div>
+      <div class="giant-name">Velvet</div>
+      <div class="giant-tagline">Creator platform.<br>The flagship.</div>
+    </div>
+    <div class="giant-card">
+      <div class="giant-accent-bar"></div>
+      <div class="giant-num">02</div>
+      <div class="giant-year">2026</div>
+      <div class="giant-name">Myobscelium</div>
+      <div class="giant-tagline">Personal memory OS.<br>Built to think with Claude.</div>
+    </div>
+    <div class="giant-card">
+      <div class="giant-accent-bar" style="background:var(--text-dim)"></div>
+      <div class="giant-num">03</div>
+      <div class="giant-year" style="color:var(--text-dim)">2025</div>
+      <div class="giant-name">Meridian Sage</div>
+      <div class="giant-tagline">AI research tool.<br>Solved a real problem.</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Ghost number watermark</div>
+    <div class="desc-body">Project number in enormous outlined type bleeds off the corner. Name and tagline anchor at the bottom. Green top bar distinguishes active vs shipped.</div>
+    <div class="desc-note">→ Very graphic, zero clutter</div>
+  </div>
+</div>
+
+<!-- ── OPTION C: Editorial rows ────────────────────────── -->
+<div class="option-wrap" data-choice="c" onclick="pick(this)">
+  <div class="option-tag"><span>C — Full-width editorial rows</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="rows-wrap">
+    <div class="proj-row">
+      <div class="row-num">01</div>
+      <div class="row-name">Velvet</div>
+      <div class="row-tagline">Creator platform.<br>The flagship.</div>
+      <div class="row-year">2026</div>
+    </div>
+    <div class="proj-row">
+      <div class="row-num">02</div>
+      <div class="row-name">Myobscelium</div>
+      <div class="row-tagline">Personal memory OS.<br>Built to think with Claude.</div>
+      <div class="row-year">2026</div>
+    </div>
+    <div class="proj-row">
+      <div class="row-num" style="color: var(--border)">03</div>
+      <div class="row-name">Meridian Sage</div>
+      <div class="row-tagline">AI research tool.<br>Solved a real problem.</div>
+      <div class="row-year" style="color:var(--text-dim)">2025</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Full-width editorial rows</div>
+    <div class="desc-body">No card grid — each project is a full-width horizontal strip. Big number, name, tagline, year across four columns. Feels like a magazine feature or a track listing.</div>
+    <div class="desc-note">→ Most distinctive from typical portfolio grids</div>
+  </div>
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option-wrap').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714; --surface-2: #1A1B18;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --accent-bg: #1A2620; --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--f); margin: 0; padding: 0; }
+
+  .chrome { background: #0a0b09; border-bottom: 1px solid var(--border); padding: 12px 24px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .chrome-note { color: var(--accent); }
+
+  .section { padding: 64px 48px; }
+
+  /* ── THE BLOCK ── */
+  .now-block {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    overflow: hidden;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    min-height: 160px;
+  }
+
+  /* Left panel — green tint, /now centered */
+  .now-left {
+    background: var(--accent-bg);
+    border-right: 1px solid var(--accent-deep);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .now-slug {
+    font-family: var(--f);
+    font-weight: 800;
+    font-size: 42px;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    color: var(--accent);
+    opacity: 0.25;
+  }
+
+  /* Right panel */
+  .now-right {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .now-text {
+    font-family: var(--f);
+    font-weight: 700;
+    font-size: clamp(18px, 2.4vw, 28px);
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .now-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .now-updated {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-2);
+    line-height: 1.6;
+  }
+  .now-updated .date {
+    color: var(--text-dim);
+  }
+  .now-cta {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* confirm */
+  .confirm-bar { padding: 16px 48px; background: #090a08; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .confirm-label { font-family: var(--f-mono); font-size: 10px; color: var(--text-2); letter-spacing: 0.06em; }
+  .confirm-btn { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bg); background: var(--accent); padding: 10px 20px; cursor: pointer; border: none; }
+  .confirm-btn:hover { background: #6ec28e; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <span>/now Teaser — refined A-v2</span>
+  <span class="chrome-note">No live badge · ghost /now centered</span>
+</div>
+
+<div class="section">
+  <div class="now-block">
+    <div class="now-left">
+      <div class="now-slug">/now</div>
+    </div>
+    <div class="now-right">
+      <div class="now-text">
+        Drafting v2 of the portfolio system. Reading Kleppmann.
+        Half a chapter behind on Velvet's task graph. Always Argentina time.
+      </div>
+      <div class="now-footer">
+        <div class="now-updated">
+          Updated — <span class="date">May 2026</span>
+        </div>
+        <div class="now-cta">Read more →</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="confirm-bar">
+  <span class="confirm-label">Approve to lock in — then we write the full plan</span>
+  <button class="confirm-btn" onclick="approve()">Approve ✓</button>
+</div>
+
+<script>
+function approve() {
+  const btn = document.querySelector('.confirm-btn');
+  btn.textContent = '✓ Locked';
+  btn.style.background = 'var(--accent-deep)';
+  btn.style.color = 'var(--accent)';
+}
+</script>
+</body>
+</html>

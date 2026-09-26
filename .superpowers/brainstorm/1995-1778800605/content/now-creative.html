@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714; --surface-2: #1A1B18; --raised: #222420;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --accent-bg: #1A2620; --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: #0d0e0c; color: var(--text); font-family: var(--f); padding: 28px 20px 60px; }
+
+  .page-label { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .page-heading { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; color: var(--text-2); margin-bottom: 32px; }
+
+  .option-wrap { border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; margin-bottom: 20px; }
+  .option-wrap:hover { border-color: var(--accent-deep); }
+  .option-wrap.selected { border-color: var(--accent); }
+  .option-tag { background: #0a0b09; border-bottom: 1px solid var(--border); padding: 10px 16px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .option-tag .sel { color: var(--accent); display: none; }
+  .option-wrap.selected .option-tag .sel { display: block; }
+  .shell { background: var(--bg); padding: 32px 40px 40px; pointer-events: none; user-select: none; }
+  .desc { background: #090a08; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .desc-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .desc-body { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+  .desc-note { font-family: var(--f-mono); font-size: 9px; color: var(--accent); margin-top: 4px; }
+
+  /* ══════════════════════════════════════════
+     A — LIVE BROADCAST
+  ══════════════════════════════════════════ */
+  .now-broadcast {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    display: grid;
+    grid-template-columns: 160px 1fr;
+    min-height: 140px;
+    overflow: hidden;
+  }
+  .broadcast-left {
+    background: var(--accent-bg);
+    border-right: 1px solid var(--accent-deep);
+    padding: 24px 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .broadcast-live {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-family: var(--f-mono);
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%,100% { opacity: 1; box-shadow: 0 0 0 0 rgba(93,166,122,0.4); }
+    50%      { opacity: 0.7; box-shadow: 0 0 0 4px rgba(93,166,122,0); }
+  }
+  .broadcast-slug {
+    font-family: var(--f);
+    font-weight: 800;
+    font-size: 42px;
+    letter-spacing: -0.05em;
+    line-height: 0.9;
+    color: var(--accent);
+    opacity: 0.25;
+  }
+  .broadcast-right {
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .broadcast-text {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.45;
+    color: var(--text);
+    letter-spacing: -0.01em;
+  }
+  .broadcast-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .broadcast-date {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .broadcast-cta {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+  }
+
+  /* ══════════════════════════════════════════
+     B — GIANT /NOW SPLIT
+  ══════════════════════════════════════════ */
+  .now-split {
+    background: var(--surface);
+    display: grid;
+    grid-template-columns: auto 1fr;
+    overflow: hidden;
+    border: 1px solid var(--border);
+    min-height: 160px;
+  }
+  .split-left {
+    padding: 28px 24px;
+    border-right: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--surface-2);
+  }
+  .split-giant {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+  }
+  .split-right {
+    padding: 28px 32px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 20px;
+  }
+  .split-text {
+    font-size: clamp(15px, 1.8vw, 20px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .split-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+  }
+  .split-updated {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    line-height: 1.7;
+  }
+  .split-updated strong { display: block; color: var(--text-2); font-size: 10px; }
+  .split-arrow { font-size: 22px; color: var(--accent); }
+
+  /* ══════════════════════════════════════════
+     C — ACTIVITY FEED / STATUS LOG
+  ══════════════════════════════════════════ */
+  .now-feed {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 24px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+  }
+  .feed-title {
+    font-family: var(--f-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .feed-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 1.8s ease-in-out infinite; }
+  .feed-date {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .feed-body { padding: 0; }
+  .feed-row {
+    display: grid;
+    grid-template-columns: 28px 1fr;
+    gap: 12px;
+    align-items: baseline;
+    padding: 13px 24px;
+    border-bottom: 1px solid var(--border);
+  }
+  .feed-row:last-child { border-bottom: none; }
+  .feed-icon { font-family: var(--f-mono); font-size: 10px; color: var(--accent); text-align: center; }
+  .feed-item { font-size: 13px; font-weight: 600; color: var(--text); letter-spacing: -0.01em; line-height: 1.3; }
+  .feed-item span { color: var(--text-2); font-weight: 400; }
+  .feed-footer {
+    padding: 12px 24px;
+    display: flex;
+    justify-content: flex-end;
+    border-top: 1px solid var(--border);
+  }
+  .feed-cta { font-family: var(--f-mono); font-size: 9px; color: var(--accent); letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ══════════════════════════════════════════
+     D — PERFORATED TICKET
+  ══════════════════════════════════════════ */
+  .now-ticket {
+    position: relative;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .ticket-perf-top {
+    border-top: 2px dashed var(--border);
+    margin: 0 16px;
+  }
+  .ticket-inner {
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 24px;
+    align-items: start;
+  }
+  .ticket-left {}
+  .ticket-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ticket-label {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    border: 1px solid var(--accent-deep);
+    padding: 3px 8px;
+  }
+  .ticket-num {
+    font-family: var(--f-mono);
+    font-size: 9px;
+    color: var(--text-dim);
+    letter-spacing: 0.06em;
+  }
+  .ticket-text {
+    font-size: clamp(14px, 1.8vw, 18px);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.35;
+    color: var(--text);
+  }
+  .ticket-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    border-left: 1px dashed var(--border);
+    padding-left: 24px;
+    min-width: 120px;
+  }
+  .ticket-stamp-label {
+    font-family: var(--f-mono);
+    font-size: 8px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+  }
+  .ticket-stamp-date {
+    font-family: var(--f-mono);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    text-align: right;
+  }
+  .ticket-stamp-arrow {
+    font-size: 18px;
+    color: var(--text-dim);
+    margin-top: 8px;
+  }
+  .ticket-perf-bottom {
+    border-bottom: 2px dashed var(--border);
+    margin: 0 16px;
+  }
+</style>
+</head>
+<body>
+
+<div class="page-label">/now Teaser — Creative directions</div>
+<div class="page-heading">More creative — all include "last updated"</div>
+<div class="page-sub">Pick a direction or say what to mix from these. All block the time greeting entirely.</div>
+
+<!-- A: Live broadcast -->
+<div class="option-wrap" data-choice="a" onclick="pick(this)">
+  <div class="option-tag"><span>A — Live broadcast panel</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-broadcast">
+      <div class="broadcast-left">
+        <div class="broadcast-live"><div class="live-dot"></div>Live</div>
+        <div class="broadcast-slug">/now</div>
+      </div>
+      <div class="broadcast-right">
+        <div class="broadcast-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+        <div class="broadcast-footer">
+          <div class="broadcast-date">Updated May 2026</div>
+          <div class="broadcast-cta">Read more →</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Live broadcast panel</div>
+    <div class="desc-body">Left panel is a green-tinted column with a pulsing "Live" dot and the ghost /now label. Right side has the text + updated date + CTA. Feels like a live feed.</div>
+    <div class="desc-note">→ Most dramatic personality signal</div>
+  </div>
+</div>
+
+<!-- B: Rotated label split -->
+<div class="option-wrap" data-choice="b" onclick="pick(this)">
+  <div class="option-tag"><span>B — Vertical label split</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-split">
+      <div class="split-left">
+        <div class="split-giant">/now</div>
+      </div>
+      <div class="split-right">
+        <div class="split-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+        <div class="split-meta">
+          <div class="split-updated">
+            Last updated
+            <strong>May 2026</strong>
+          </div>
+          <div class="split-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Vertical label split</div>
+    <div class="desc-body">"/now" runs vertically up the left edge — a thin dark column with the label rotated. Text + date + arrow fill the right. Clean asymmetry, distinctive but not chaotic.</div>
+    <div class="desc-note">→ Most editorial, pairs well with the project section</div>
+  </div>
+</div>
+
+<!-- C: Activity feed -->
+<div class="option-wrap" data-choice="c" onclick="pick(this)">
+  <div class="option-tag"><span>C — Activity feed</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-feed">
+      <div class="feed-header">
+        <div class="feed-title"><div class="feed-dot"></div>/now — what's happening</div>
+        <div class="feed-date">Updated May 2026</div>
+      </div>
+      <div class="feed-body">
+        <div class="feed-row">
+          <div class="feed-icon">▸</div>
+          <div class="feed-item">Drafting v2 of the portfolio system <span>— in progress</span></div>
+        </div>
+        <div class="feed-row">
+          <div class="feed-icon">◇</div>
+          <div class="feed-item">Reading Kleppmann <span>— half a chapter behind</span></div>
+        </div>
+        <div class="feed-row">
+          <div class="feed-icon">~</div>
+          <div class="feed-item">Velvet's task graph <span>— catching up</span></div>
+        </div>
+      </div>
+      <div class="feed-footer">
+        <div class="feed-cta">See full /now →</div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Activity feed / status log</div>
+    <div class="desc-body">Break the /now text into individual feed rows — each item as a status line with a terminal-style icon. Header bar shows the updated date. Feels like a live status board.</div>
+    <div class="desc-note">→ Most information-dense, most builder/developer personality</div>
+  </div>
+</div>
+
+<!-- D: Perforated ticket -->
+<div class="option-wrap" data-choice="d" onclick="pick(this)">
+  <div class="option-tag"><span>D — Perforated ticket stub</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-ticket">
+      <div class="ticket-perf-top"></div>
+      <div class="ticket-inner">
+        <div class="ticket-left">
+          <div class="ticket-header">
+            <div class="ticket-label">/now</div>
+            <div class="ticket-num">#2026-05</div>
+          </div>
+          <div class="ticket-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+        </div>
+        <div class="ticket-right">
+          <div class="ticket-stamp-label">Updated</div>
+          <div class="ticket-stamp-date">May<br>2026</div>
+          <div class="ticket-stamp-arrow">↓</div>
+        </div>
+      </div>
+      <div class="ticket-perf-bottom"></div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Perforated ticket stub</div>
+    <div class="desc-body">Dashed top and bottom borders make it look like a physical ticket torn from a roll. Left side has the content, right "stub" column has the date stamp. Tactile, unexpected.</div>
+    <div class="desc-note">→ Most physically distinctive — nothing else on the page looks like this</div>
+  </div>
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option-wrap').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

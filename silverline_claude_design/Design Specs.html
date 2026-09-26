@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>matheog · design spec — palette directions</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Literata:ital,wght@0,400;0,500;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --font-structure: 'Archivo', system-ui, sans-serif;
+    --font-reading: 'Literata', Georgia, serif;
+    --font-mono: 'Geist Mono', ui-monospace, monospace;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: #0E0F0D;
+    color: #E8E6DD;
+    font-family: var(--font-structure);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+  body { padding: 64px clamp(20px, 4vw, 56px) 120px; max-width: 1600px; margin: 0 auto; }
+
+  .doc-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    padding-bottom: 32px;
+    border-bottom: 1px solid #2A2C26;
+    margin-bottom: 48px;
+  }
+  .doc-head h1 {
+    font-weight: 800;
+    font-size: clamp(28px, 4vw, 44px);
+    letter-spacing: -0.025em;
+  }
+  .doc-head .meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6E7068;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .lead {
+    max-width: 70ch;
+    font-family: var(--font-reading);
+    font-size: 17px;
+    line-height: 1.65;
+    color: #B8B6AD;
+    margin-bottom: 64px;
+  }
+  .lead em { color: #E8E6DD; font-style: normal; font-weight: 500; font-family: var(--font-structure); }
+
+  /* Section heads */
+  .sec {
+    margin: 96px 0 0;
+    border-top: 1px solid #2A2C26;
+    padding-top: 48px;
+  }
+  .sec-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #5DA67A;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .sec-title {
+    font-weight: 800;
+    font-size: clamp(24px, 3vw, 36px);
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+  .sec-sub {
+    font-family: var(--font-reading);
+    font-size: 16px;
+    color: #9C9E94;
+    max-width: 60ch;
+    margin-bottom: 32px;
+  }
+
+  /* Palette comparison grid */
+  .palette-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+  }
+  .palette {
+    border: 1px solid #2A2C26;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .palette .preview {
+    aspect-ratio: 4/3;
+    position: relative;
+    overflow: hidden;
+  }
+  .palette .meta {
+    padding: 20px;
+    border-top: 1px solid #2A2C26;
+  }
+  .palette h3 {
+    font-weight: 800;
+    font-size: 22px;
+    letter-spacing: -0.015em;
+    margin-bottom: 4px;
+  }
+  .palette .tag {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: #5DA67A;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .palette p {
+    font-family: var(--font-reading);
+    font-size: 14px;
+    line-height: 1.6;
+    color: #9C9E94;
+  }
+  .swatch-row {
+    display: flex;
+    gap: 0;
+  }
+  .swatch {
+    flex: 1;
+    aspect-ratio: 1;
+    position: relative;
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.05em;
+  }
+  .swatch span {
+    position: absolute;
+    bottom: 8px; left: 8px;
+    text-transform: uppercase;
+  }
+  .swatch.dark span { color: rgba(232, 230, 221, 0.7); }
+  .swatch.light span { color: rgba(28, 29, 26, 0.7); }
+
+  /* Palette previews — mini hero mocks */
+  .preview-mock {
+    width: 100%; height: 100%;
+    padding: 20px;
+    display: flex; flex-direction: column; justify-content: space-between;
+    font-size: 10px;
+  }
+  .preview-mock .head {
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    letter-spacing: 0.06em;
+    opacity: 0.55;
+  }
+  .preview-mock .h1 {
+    font-weight: 800; font-size: 22px; letter-spacing: -0.02em; line-height: 1;
+  }
+  .preview-mock .green { display: block; }
+  .preview-mock .sub {
+    font-family: var(--font-mono); font-size: 9px;
+    letter-spacing: 0.06em; opacity: 0.5;
+    border-top: 1px solid; padding-top: 8px;
+  }
+  .preview-mock .term {
+    position: absolute; right: 20px; top: 30%;
+    width: 40%; font-family: var(--font-mono); font-size: 8px;
+    line-height: 1.5; opacity: 0.32; text-align: right;
+  }
+
+  /* Palette A: Plotter */
+  .pal-a { background: #0F100E; color: #E8E6DD; }
+  .pal-a .green { color: #5DA67A; }
+  .pal-a .sub { border-color: #2A2C26; }
+
+  /* Palette B: Single dark */
+  .pal-b { background: #1C1D1A; color: #E8E6DD; }
+  .pal-b .green { color: #5DA67A; }
+  .pal-b .sub { border-color: #34362F; }
+
+  /* Palette C: Cold workshop */
+  .pal-c { background: #F2F2EE; color: #15171A; }
+  .pal-c .green { color: #2E5842; }
+  .pal-c .sub { border-color: #15171A; opacity: 0.6; }
+  .pal-c .term { color: #15171A; opacity: 0.25; }
+
+  /* Token tables */
+  .tokens {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+    margin-top: 24px;
+  }
+  .tok-col {
+    border: 1px solid #2A2C26;
+    border-radius: 4px;
+    padding: 20px;
+  }
+  .tok-col h4 {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5DA67A;
+    margin-bottom: 16px;
+  }
+  .tok-row {
+    display: grid;
+    grid-template-columns: 28px 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid #1F2120;
+    font-family: var(--font-mono);
+    font-size: 11px;
+  }
+  .tok-row:last-child { border-bottom: none; }
+  .tok-chip {
+    width: 24px; height: 24px;
+    border-radius: 3px;
+    border: 1px solid #2A2C26;
+  }
+  .tok-name { color: #B8B6AD; }
+  .tok-hex { color: #6E7068; }
+
+  /* Type spec */
+  .type-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    align-items: baseline;
+    padding: 24px 0;
+    border-bottom: 1px solid #2A2C26;
+  }
+  .type-grid:last-child { border-bottom: none; }
+  .type-meta {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6E7068;
+    letter-spacing: 0.06em;
+  }
+  .type-meta strong { color: #5DA67A; display: block; font-weight: 500; margin-bottom: 4px; letter-spacing: 0.1em; text-transform: uppercase; }
+  .type-display { color: #E8E6DD; }
+
+  /* Recommendation card */
+  .rec {
+    margin-top: 48px;
+    padding: 32px;
+    background: #161714;
+    border: 1px solid #2A2C26;
+    border-left: 3px solid #5DA67A;
+    border-radius: 4px;
+  }
+  .rec .lbl {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #5DA67A;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+  .rec h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; letter-spacing: -0.015em; }
+  .rec p { font-family: var(--font-reading); color: #B8B6AD; max-width: 70ch; line-height: 1.65; }
+
+  /* Pros/cons */
+  .pc-list {
+    margin-top: 16px;
+    display: grid;
+    gap: 6px;
+  }
+  .pc {
+    display: grid;
+    grid-template-columns: 14px 1fr;
+    gap: 10px;
+    font-family: var(--font-reading);
+    font-size: 14px;
+    color: #B8B6AD;
+    line-height: 1.5;
+  }
+  .pc::before {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    line-height: 1.7;
+  }
+  .pc.pro::before { content: "+"; color: #5DA67A; }
+  .pc.con::before { content: "−"; color: #C97060; }
+
+  /* Comparison row */
+  .compare-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    font-size: 13px;
+  }
+  .compare-table th,
+  .compare-table td {
+    text-align: left;
+    padding: 12px 16px;
+    border-bottom: 1px solid #2A2C26;
+    vertical-align: top;
+  }
+  .compare-table th {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #5DA67A;
+    font-weight: 500;
+  }
+  .compare-table td:first-child {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: #6E7068;
+    letter-spacing: 0.04em;
+  }
+  .compare-table td { color: #B8B6AD; font-family: var(--font-reading); line-height: 1.55; }
+
+  footer.foot {
+    margin-top: 120px;
+    padding-top: 32px;
+    border-top: 1px solid #2A2C26;
+    display: flex; justify-content: space-between;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: #6E7068;
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 920px) {
+    .palette-grid, .tokens { grid-template-columns: 1fr; }
+    .type-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<header class="doc-head">
+  <h1>Palette directions</h1>
+  <span class="meta">design spec · v0.3</span>
+</header>
+
+<p class="lead">
+  The current parchment + green register reads <em>environmental annual report</em>, not <em>developer portfolio</em>. Below are three directions that keep your forest green and OKLCH warm-tinted neutrals but shift the dominant surface so the site reads dev-coded immediately. Each has a mini hero preview in its actual colors, full token table, type system, and pros/cons. The recommended option is flagged at the bottom of each card.
+</p>
+
+<!-- ═══════════════════ THREE PALETTE PREVIEWS ═══════════════════ -->
+<section>
+  <div class="sec-label">01 — Direction</div>
+  <h2 class="sec-title">Three palettes, same green</h2>
+  <p class="sec-sub">Each preview shows the same hero composition rendered in its native palette. The green stays consistent — what shifts is the surface and contrast register.</p>
+
+  <div class="palette-grid">
+
+    <!-- ──── A: Plotter / IDE neutrals ──── -->
+    <div class="palette">
+      <div class="preview pal-a">
+        <div class="preview-mock">
+          <div class="head">
+            <span>matheog · 001</span>
+            <span>−34.6° / −58.4°</span>
+          </div>
+          <div>
+            <div class="h1">Notes from<br/>a working <span class="green">desk.</span></div>
+          </div>
+          <div class="sub">Writing, building, thinking — out loud</div>
+          <div class="term">
+            12:04:22 ◇ commit · velvet/main<br/>
+            12:04:39 ▸ build #284 · pass<br/>
+            12:05:11 ↑ ship · open-memory<br/>
+            12:05:48 ~ thinking · types as docs<br/>
+            12:06:02 · note · re-read DDIA ch.7
+          </div>
+        </div>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch dark" style="background: #0F100E"><span>0F100E</span></div>
+        <div class="swatch dark" style="background: #161714"><span>161714</span></div>
+        <div class="swatch dark" style="background: #222420"><span>222420</span></div>
+        <div class="swatch dark" style="background: #5DA67A"><span>5DA67A</span></div>
+        <div class="swatch dark" style="background: #2E5842"><span>2E5842</span></div>
+        <div class="swatch light" style="background: #E8E6DD"><span>E8E6DD</span></div>
+      </div>
+      <div class="meta">
+        <h3>A · Plotter</h3>
+        <div class="tag">Recommended</div>
+        <p>Near-black with a warm graphite tilt. Reads like vim, Obsidian dark, a well-themed terminal. Green sits like a prompt color, not a leaf. Single dark register — the parchment register comes back later when /blog ships and warm cream actually serves long-form reading.</p>
+      </div>
+    </div>
+
+    <!-- ──── B: Mid-dark monochrome ──── -->
+    <div class="palette">
+      <div class="preview pal-b">
+        <div class="preview-mock">
+          <div class="head">
+            <span>matheog · 001</span>
+            <span>−34.6° / −58.4°</span>
+          </div>
+          <div>
+            <div class="h1">Notes from<br/>a working <span class="green">desk.</span></div>
+          </div>
+          <div class="sub">Writing, building, thinking — out loud</div>
+          <div class="term">
+            12:04:22 ◇ commit · velvet/main<br/>
+            12:04:39 ▸ build #284 · pass<br/>
+            12:05:11 ↑ ship · open-memory<br/>
+            12:05:48 ~ thinking · types as docs<br/>
+            12:06:02 · note · re-read DDIA ch.7
+          </div>
+        </div>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch dark" style="background: #1C1D1A"><span>1C1D1A</span></div>
+        <div class="swatch dark" style="background: #24251F"><span>24251F</span></div>
+        <div class="swatch dark" style="background: #34362F"><span>34362F</span></div>
+        <div class="swatch dark" style="background: #5DA67A"><span>5DA67A</span></div>
+        <div class="swatch dark" style="background: #2E5842"><span>2E5842</span></div>
+        <div class="swatch light" style="background: #E8E6DD"><span>E8E6DD</span></div>
+      </div>
+      <div class="meta">
+        <h3>B · Workshop</h3>
+        <div class="tag">Alternative</div>
+        <p>Same idea but lighter and more chromatic — closer to a stained-wood desk than a void. More inviting, less serious. Use if A reads too cold or "tech-bro hacker." Same tokens, just shifted up two stops.</p>
+      </div>
+    </div>
+
+    <!-- ──── C: Cold workshop ──── -->
+    <div class="palette">
+      <div class="preview pal-c">
+        <div class="preview-mock">
+          <div class="head">
+            <span>matheog · 001</span>
+            <span>−34.6° / −58.4°</span>
+          </div>
+          <div>
+            <div class="h1">Notes from<br/>a working <span class="green">desk.</span></div>
+          </div>
+          <div class="sub">Writing, building, thinking — out loud</div>
+          <div class="term">
+            12:04:22 ◇ commit · velvet/main<br/>
+            12:04:39 ▸ build #284 · pass<br/>
+            12:05:11 ↑ ship · open-memory<br/>
+            12:05:48 ~ thinking · types as docs<br/>
+            12:06:02 · note · re-read DDIA ch.7
+          </div>
+        </div>
+      </div>
+      <div class="swatch-row">
+        <div class="swatch light" style="background: #F2F2EE"><span>F2F2EE</span></div>
+        <div class="swatch light" style="background: #E5E5E0"><span>E5E5E0</span></div>
+        <div class="swatch dark" style="background: #1F211D"><span>1F211D</span></div>
+        <div class="swatch dark" style="background: #2E5842"><span>2E5842</span></div>
+        <div class="swatch light" style="background: #15171A"><span>15171A</span></div>
+        <div class="swatch dark" style="background: #5DA67A"><span>5DA67A</span></div>
+      </div>
+      <div class="meta">
+        <h3>C · Spec sheet</h3>
+        <div class="tag">Wildcard</div>
+        <p>Inverted: cold bone-grey light surface (no warm paper) with heavy black blocks and one accent. Linear / Vercel-doc / blueprint energy. Most editorial and quiet. Risks reading "tasteful but generic" without strong personality work elsewhere.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TOKEN TABLES ═══════════════════ -->
+<section class="sec">
+  <div class="sec-label">02 — Tokens</div>
+  <h2 class="sec-title">Surface, ink, accent</h2>
+  <p class="sec-sub">Full token map per direction. All values are OKLCH-derived hex. Neutrals stay tinted warm (hue 60–80) — no pure greys. Forest <code>#2E5842</code> is preserved across all three; only the surface changes.</p>
+
+  <div class="tokens">
+
+    <!-- A tokens -->
+    <div class="tok-col">
+      <h4>A · Plotter</h4>
+      <div class="tok-row"><span class="tok-chip" style="background:#0F100E"></span><span class="tok-name">--bg</span><span class="tok-hex">#0F100E</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#161714"></span><span class="tok-name">--surface</span><span class="tok-hex">#161714</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#1A1B18"></span><span class="tok-name">--surface-2</span><span class="tok-hex">#1A1B18</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#222420"></span><span class="tok-name">--raised</span><span class="tok-hex">#222420</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2A2C26"></span><span class="tok-name">--border</span><span class="tok-hex">#2A2C26</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#E8E6DD"></span><span class="tok-name">--text</span><span class="tok-hex">#E8E6DD</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#B8B6AD"></span><span class="tok-name">--text-2</span><span class="tok-hex">#B8B6AD</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#6E7068"></span><span class="tok-name">--text-dim</span><span class="tok-hex">#6E7068</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#5DA67A"></span><span class="tok-name">--accent</span><span class="tok-hex">#5DA67A</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2E5842"></span><span class="tok-name">--accent-deep</span><span class="tok-hex">#2E5842</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#D4D0C4"></span><span class="tok-name">--mono-light</span><span class="tok-hex">#D4D0C4</span></div>
+    </div>
+
+    <!-- B tokens -->
+    <div class="tok-col">
+      <h4>B · Workshop</h4>
+      <div class="tok-row"><span class="tok-chip" style="background:#1C1D1A"></span><span class="tok-name">--bg</span><span class="tok-hex">#1C1D1A</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#24251F"></span><span class="tok-name">--surface</span><span class="tok-hex">#24251F</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2C2E27"></span><span class="tok-name">--surface-2</span><span class="tok-hex">#2C2E27</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#34362F"></span><span class="tok-name">--raised</span><span class="tok-hex">#34362F</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#3D3F37"></span><span class="tok-name">--border</span><span class="tok-hex">#3D3F37</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#EAE7DC"></span><span class="tok-name">--text</span><span class="tok-hex">#EAE7DC</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#B8B5AB"></span><span class="tok-name">--text-2</span><span class="tok-hex">#B8B5AB</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#7C7D74"></span><span class="tok-name">--text-dim</span><span class="tok-hex">#7C7D74</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#5DA67A"></span><span class="tok-name">--accent</span><span class="tok-hex">#5DA67A</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2E5842"></span><span class="tok-name">--accent-deep</span><span class="tok-hex">#2E5842</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#D4D0C4"></span><span class="tok-name">--mono-light</span><span class="tok-hex">#D4D0C4</span></div>
+    </div>
+
+    <!-- C tokens -->
+    <div class="tok-col">
+      <h4>C · Spec sheet</h4>
+      <div class="tok-row"><span class="tok-chip" style="background:#F2F2EE"></span><span class="tok-name">--bg</span><span class="tok-hex">#F2F2EE</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#E5E5E0"></span><span class="tok-name">--surface</span><span class="tok-hex">#E5E5E0</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#D6D6D0"></span><span class="tok-name">--surface-2</span><span class="tok-hex">#D6D6D0</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#1F211D"></span><span class="tok-name">--raised</span><span class="tok-hex">#1F211D</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2A2C26"></span><span class="tok-name">--border</span><span class="tok-hex">#2A2C26</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#15171A"></span><span class="tok-name">--text</span><span class="tok-hex">#15171A</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#3F423D"></span><span class="tok-name">--text-2</span><span class="tok-hex">#3F423D</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#7C7D74"></span><span class="tok-name">--text-dim</span><span class="tok-hex">#7C7D74</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#2E5842"></span><span class="tok-name">--accent</span><span class="tok-hex">#2E5842</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#5DA67A"></span><span class="tok-name">--accent-light</span><span class="tok-hex">#5DA67A</span></div>
+      <div class="tok-row"><span class="tok-chip" style="background:#1F211D"></span><span class="tok-name">--ink-block</span><span class="tok-hex">#1F211D</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ TYPE ═══════════════════ -->
+<section class="sec">
+  <div class="sec-label">03 — Type</div>
+  <h2 class="sec-title">Three registers, unchanged</h2>
+  <p class="sec-sub">Type system stays identical across all three palettes. Archivo for structure, Literata for reading, Geist Mono for technical signal.</p>
+
+  <div class="type-grid">
+    <div class="type-meta">
+      <strong>Display</strong>
+      Archivo · 800/900<br/>
+      −0.025em · 1.0–1.05<br/>
+      Hero h1 only
+    </div>
+    <div class="type-display" style="font-family: var(--font-structure); font-weight: 800; font-size: 56px; letter-spacing: -0.025em; line-height: 1;">
+      Notes from<br/>a working <span style="color:#5DA67A">desk.</span>
+    </div>
+  </div>
+
+  <div class="type-grid">
+    <div class="type-meta">
+      <strong>Section title</strong>
+      Archivo · 700<br/>
+      −0.02em · 1.1<br/>
+      36px / 28px responsive
+    </div>
+    <div class="type-display" style="font-family: var(--font-structure); font-weight: 700; font-size: 36px; letter-spacing: -0.02em; line-height: 1.1;">
+      From the desk
+    </div>
+  </div>
+
+  <div class="type-grid">
+    <div class="type-meta">
+      <strong>Body — UI</strong>
+      Archivo · 400/500<br/>
+      0em · 1.5<br/>
+      14–16px
+    </div>
+    <div class="type-display" style="font-family: var(--font-structure); font-size: 16px; line-height: 1.5; max-width: 56ch; color: #B8B6AD;">
+      Default UI text. Used for project descriptions, nav, button labels, anything that lives outside long-form reading. Crisp, neutral, never asked to do display work.
+    </div>
+  </div>
+
+  <div class="type-grid">
+    <div class="type-meta">
+      <strong>Body — reading</strong>
+      Literata · 400<br/>
+      0em · 1.75 · 65ch<br/>
+      18px on /blog
+    </div>
+    <div class="type-display" style="font-family: var(--font-reading); font-size: 18px; line-height: 1.75; max-width: 65ch; color: #B8B6AD;">
+      Long-form. Blog body, pull quotes, anywhere ideas need room to breathe. Hard 65-character line cap. Never appears in UI chrome — Literata in a button is a bug, not a feature.
+    </div>
+  </div>
+
+  <div class="type-grid">
+    <div class="type-meta">
+      <strong>Mono — technical</strong>
+      Geist Mono · 400/500<br/>
+      0.04–0.12em · 1.5<br/>
+      10–15px · max 3 per page outside /blog
+    </div>
+    <div class="type-display" style="font-family: var(--font-mono); font-size: 13px; line-height: 1.6; color: #B8B6AD;">
+      12:04:22 <span style="color:#5DA67A">◇</span> commit · velvet/main · auth flow refactor<br/>
+      12:04:39 <span style="color:#5DA67A">▸</span> build #284 · pass · 1.2s<br/>
+      12:05:11 <span style="color:#5DA67A">↑</span> ship · open-memory v0.2.0
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════ COMPARISON ═══════════════════ -->
+<section class="sec">
+  <div class="sec-label">04 — Comparison</div>
+  <h2 class="sec-title">How they read</h2>
+
+  <table class="compare-table">
+    <thead>
+      <tr>
+        <th>Dimension</th>
+        <th>A · Plotter</th>
+        <th>B · Workshop</th>
+        <th>C · Spec sheet</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>First read</td><td>terminal · ide · tasteful tool</td><td>quiet workshop · stained wood</td><td>linear · spec doc · blueprint</td></tr>
+      <tr><td>Energy</td><td>focused, serious, cold</td><td>warm, inviting, lived-in</td><td>editorial, quiet, formal</td></tr>
+      <tr><td>Risk</td><td>edges into "tech-bro hacker"</td><td>can read soft / underconfident</td><td>generic without strong personality</td></tr>
+      <tr><td>Green role</td><td>prompt accent · 5–8% surface</td><td>natural fit · 8–12% surface</td><td>structural — heavy on borders/blocks</td></tr>
+      <tr><td>Reading register later</td><td>warm cream returns on /blog</td><td>same surface, lighter type only</td><td>already light, /blog gets serif body</td></tr>
+      <tr><td>Hero terminal fit</td><td>★★★ native</td><td>★★★ native</td><td>★ requires inverted block</td></tr>
+      <tr><td>Recruiter scan</td><td>"this person ships"</td><td>"this person is thoughtful"</td><td>"this person designs systems"</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ═══════════════════ PROS / CONS ═══════════════════ -->
+<section class="sec">
+  <div class="sec-label">05 — Trade-offs</div>
+  <h2 class="sec-title">Pick by what you want first</h2>
+
+  <div class="palette-grid" style="margin-top: 32px;">
+    <div class="tok-col">
+      <h4>A · Plotter</h4>
+      <div class="pc-list">
+        <div class="pc pro">Hero terminal lives in its native habitat — no register fight</div>
+        <div class="pc pro">Reads dev-coded in 1 second to anyone scanning</div>
+        <div class="pc pro">Green has the highest contrast and impact here</div>
+        <div class="pc pro">Demolition easter egg lands hardest on dark</div>
+        <div class="pc con">Less differentiated from other dev portfolios at first glance</div>
+        <div class="pc con">Long-form reading needs a second register on /blog</div>
+      </div>
+    </div>
+    <div class="tok-col">
+      <h4>B · Workshop</h4>
+      <div class="pc-list">
+        <div class="pc pro">Warmer + more lived-in than A</div>
+        <div class="pc pro">Reads as one register everywhere — simplest system</div>
+        <div class="pc pro">Best for "thoughtful builder" angle</div>
+        <div class="pc con">Less crisp than A — green pops less</div>
+        <div class="pc con">Risks reading hobbyist if executed soft</div>
+      </div>
+    </div>
+    <div class="tok-col">
+      <h4>C · Spec sheet</h4>
+      <div class="pc-list">
+        <div class="pc pro">Most editorial — closest to a design publication</div>
+        <div class="pc pro">Strongest "designs systems, not just ships features" read</div>
+        <div class="pc pro">Long-form reading already at home</div>
+        <div class="pc con">Hero terminal becomes inverted block — loses some cool factor</div>
+        <div class="pc con">Heaviest lift to keep from looking like every Vercel landing page</div>
+        <div class="pc con">Cursor trail and grain effects are weaker on light</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="rec">
+    <div class="lbl">My recommendation</div>
+    <h3>Direction A · Plotter</h3>
+    <p>The site's central concept is the hero terminal — a live worklog as the headline. That concept needs to live on a dark surface to read correctly, and dropping the register switch means the worklog hero never has to argue with parchment. Direction B is the safe second choice if A reads too cold once built. C is interesting but is fighting the worklog concept, not amplifying it. <strong>Ship A. Bring back warm cream as the /blog body register only — that's where it earns its place.</strong></p>
+  </div>
+</section>
+
+<footer class="foot">
+  <span>matheog · design spec</span>
+  <span>v0.3 · palette directions</span>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --eslint --tailwind --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(mv CLAUDE.md CLAUDE.md.bak)",
+      "Bash(npx create-next-app@15 . --typescript --eslint --tailwind --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(mv CLAUDE.md.bak CLAUDE.md)",
+      "Bash(npx create-next-app@15 _scaffold --typescript --eslint --tailwind --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(npx create-next-app@15 scaffold-tmp --typescript --eslint --tailwind --app --no-src-dir --import-alias \"@/*\" --yes)",
+      "Bash(robocopy scaffold-tmp:*)",
+      "Bash(echo \"Exit: $?\")",
+      "Bash(cp -r scaffold-tmp/app .)",
+      "Bash(cp scaffold-tmp/.gitignore .)",
+      "Bash(cp scaffold-tmp/eslint.config.mjs .)",
+      "Bash(cp scaffold-tmp/next-env.d.ts .)",
+      "Bash(cp scaffold-tmp/next.config.ts .)",
+      "Bash(cp scaffold-tmp/package.json .)",
+      "Bash(cp scaffold-tmp/package-lock.json .)",
+      "Bash(cp scaffold-tmp/postcss.config.mjs .)",
+      "Bash(cp scaffold-tmp/tsconfig.json .)",
+      "Bash(cp -r scaffold-tmp/public .)",
+      "Bash(rm -rf scaffold-tmp)",
+      "Bash(echo \"22\")",
+      "Bash(npm install:*)",
+      "Bash(npm run:*)",
+      "Bash(ls \"C:\\\\Users\\\\mathe\\\\Documents\\\\_projects\\\\silverline_portfolio\"/TASKS*.md)"
+    ]
+  }
+}

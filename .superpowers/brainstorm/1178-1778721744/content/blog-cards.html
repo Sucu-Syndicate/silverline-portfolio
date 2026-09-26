@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Entry Card — Design Options</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #0F100E;
+      --surface:    #161714;
+      --surface-2:  #1A1B18;
+      --raised:     #222420;
+      --border:     #2A2C26;
+      --border-2:   #34362F;
+      --text:       #E8E6DD;
+      --text-2:     #B8B6AD;
+      --text-dim:   #6E7068;
+      --accent:     #5DA67A;
+      --accent-bg:  #1A2620;
+      --font-structure: 'Archivo', sans-serif;
+      --font-mono:      'Geist Mono', monospace;
+      --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-structure);
+      padding: 40px 32px 80px;
+      min-height: 100vh;
+    }
+
+    .page-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+    }
+
+    h1 {
+      font-family: var(--font-structure);
+      font-weight: 800;
+      font-size: 28px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      font-family: var(--font-structure);
+      font-size: 15px;
+      color: var(--text-2);
+      margin-bottom: 48px;
+    }
+
+    /* ─── SPLIT LAYOUT ─────────────────────────────── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 48px;
+      max-width: 1100px;
+    }
+
+    .variant-label {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .variant-label .rec {
+      background: var(--accent-bg);
+      color: var(--accent);
+      padding: 2px 8px;
+      border-radius: 2px;
+      font-size: 9px;
+      letter-spacing: 0.08em;
+    }
+
+    .variant-desc {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      margin-bottom: 24px;
+    }
+
+    /* ─── BLOG LISTING SECTION MOCKUP ─────────────── */
+    .blog-section {
+      background: var(--bg);
+      padding: 32px;
+      border: 1px solid var(--border-2);
+      border-radius: 4px;
+    }
+
+    .blog-section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    .blog-section-title {
+      font-family: var(--font-structure);
+      font-weight: 800;
+      font-size: 40px;
+      letter-spacing: -0.025em;
+      color: var(--text);
+      margin-bottom: 32px;
+    }
+
+    /* ─── VARIANT A: TAG-FIRST NOTE CARD ──────────── */
+    .card-a {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 28px 28px 24px;
+      position: relative;
+      cursor: pointer;
+      transition:
+        background 0.4s var(--ease),
+        transform   0.4s var(--ease),
+        border-top  0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .card-a:hover,
+    .card-a.hovered {
+      background: var(--raised);
+      transform: translateY(-2px);
+      border-top: 2px solid var(--accent);
+    }
+
+    .card-a-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 14px;
+    }
+
+    .card-a-title {
+      font-family: var(--font-structure);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .card-a-desc {
+      font-family: var(--font-structure);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--text-2);
+      margin-bottom: 20px;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-a-meta {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+
+    .card-a-arrow {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-size: 16px;
+      color: var(--text-dim);
+      transition: color 0.25s ease;
+    }
+
+    .card-a:hover .card-a-arrow,
+    .card-a.hovered .card-a-arrow {
+      color: var(--accent);
+    }
+
+    /* ─── VARIANT B: DATE-LED (COMMIT LOG) ────────── */
+    .card-b {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      padding: 24px 28px;
+      position: relative;
+      cursor: pointer;
+      transition:
+        background 0.4s var(--ease),
+        transform   0.4s var(--ease),
+        border-top  0.15s ease;
+      margin-bottom: 2px;
+    }
+
+    .card-b:hover,
+    .card-b.hovered {
+      background: var(--raised);
+      transform: translateY(-2px);
+      border-top: 2px solid var(--accent);
+    }
+
+    .card-b-meta-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 12px;
+    }
+
+    .card-b-date {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+
+    .card-b-divider {
+      width: 1px;
+      height: 10px;
+      background: var(--border-2);
+    }
+
+    .card-b-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .card-b-title {
+      font-family: var(--font-structure);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.2;
+      margin-bottom: 10px;
+    }
+
+    .card-b-desc {
+      font-family: var(--font-structure);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.55;
+      color: var(--text-2);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-b-readtime {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-top: 16px;
+    }
+
+    .card-b-arrow {
+      position: absolute;
+      top: 24px;
+      right: 24px;
+      font-size: 16px;
+      color: var(--text-dim);
+      transition: color 0.25s ease;
+    }
+
+    .card-b:hover .card-b-arrow,
+    .card-b.hovered .card-b-arrow {
+      color: var(--accent);
+    }
+
+    /* ─── HOVER TOGGLE BUTTON ─────────────────────── */
+    .hover-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 20px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+
+    .hover-toggle:hover { color: var(--accent); border-color: var(--accent); }
+    .hover-toggle .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--text-dim); }
+    .hover-toggle.active .dot { background: var(--accent); }
+    .hover-toggle.active { color: var(--accent); border-color: var(--accent); }
+
+    /* ─── CHOICE OVERLAY ──────────────────────────── */
+    .choose-row {
+      display: flex;
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .choose-btn {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      background: none;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .choose-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .choose-btn.selected { border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+
+    .note {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.06em;
+      color: var(--text-dim);
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-label">silverline · blog entry card · design options</div>
+  <h1>Blog entry card</h1>
+  <p class="subtitle">Two approaches for the /blog listing page. Hover toggle shows the hover state on each card.</p>
+
+  <div class="split">
+
+    <!-- VARIANT A -->
+    <div>
+      <div class="variant-label">
+        A — Tag-first note card
+        <span class="rec">recommended</span>
+      </div>
+      <p class="variant-desc">Tag leads. You know what kind of post it is before reading the title. More editorial, less archive.</p>
+
+      <div class="blog-section">
+        <div class="blog-section-eyebrow">the notes.</div>
+        <div class="blog-section-title">Writing.</div>
+
+        <!-- Card 1 -->
+        <div class="card-a" id="a1" onclick="toggleHover('a1')">
+          <div class="card-a-arrow">↗</div>
+          <div class="card-a-tag">process</div>
+          <div class="card-a-title">Why I'm building in public at 17</div>
+          <div class="card-a-desc">I'm not doing it for the audience. I'm doing it so there's a record.</div>
+          <div class="card-a-meta">2026-05-13 · 3 min read</div>
+        </div>
+
+        <!-- Card 2 (placeholder to show list) -->
+        <div class="card-a" id="a2" onclick="toggleHover('a2')">
+          <div class="card-a-arrow">↗</div>
+          <div class="card-a-tag">decision</div>
+          <div class="card-a-title">Why I scrapped the first version of Gloss after 3 weeks</div>
+          <div class="card-a-desc">The architecture was fine. The problem was I was solving for scale before I had a single user.</div>
+          <div class="card-a-meta">2026-04-28 · 5 min read</div>
+        </div>
+
+        <button class="hover-toggle" id="toggle-a" onclick="toggleAll('a')">
+          <span class="dot"></span> Preview hover state
+        </button>
+
+        <div class="choose-row">
+          <button class="choose-btn" id="btn-a" data-choice="a" onclick="choose('a')">Choose A</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- VARIANT B -->
+    <div>
+      <div class="variant-label">B — Date-led log</div>
+      <p class="variant-desc">Date and tag in a meta bar at the top. Feels like a commit log or changelog — more archive-y.</p>
+
+      <div class="blog-section">
+        <div class="blog-section-eyebrow">the notes.</div>
+        <div class="blog-section-title">Writing.</div>
+
+        <!-- Card 1 -->
+        <div class="card-b" id="b1" onclick="toggleHover('b1')">
+          <div class="card-b-arrow">↗</div>
+          <div class="card-b-meta-top">
+            <span class="card-b-date">2026-05-13</span>
+            <div class="card-b-divider"></div>
+            <span class="card-b-tag">process</span>
+          </div>
+          <div class="card-b-title">Why I'm building in public at 17</div>
+          <div class="card-b-desc">I'm not doing it for the audience. I'm doing it so there's a record.</div>
+          <div class="card-b-readtime">3 min read</div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="card-b" id="b2" onclick="toggleHover('b2')">
+          <div class="card-b-arrow">↗</div>
+          <div class="card-b-meta-top">
+            <span class="card-b-date">2026-04-28</span>
+            <div class="card-b-divider"></div>
+            <span class="card-b-tag">decision</span>
+          </div>
+          <div class="card-b-title">Why I scrapped the first version of Gloss after 3 weeks</div>
+          <div class="card-b-desc">The architecture was fine. The problem was I was solving for scale before I had a single user.</div>
+          <div class="card-b-readtime">5 min read</div>
+        </div>
+
+        <button class="hover-toggle" id="toggle-b" onclick="toggleAll('b')">
+          <span class="dot"></span> Preview hover state
+        </button>
+
+        <div class="choose-row">
+          <button class="choose-btn" id="btn-b" data-choice="b" onclick="choose('b')">Choose B</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <p class="note">click any card to toggle its hover state individually · or use the "preview hover" button to see all at once</p>
+
+  <script>
+    function toggleHover(id) {
+      document.getElementById(id).classList.toggle('hovered');
+    }
+
+    function toggleAll(variant) {
+      const btn = document.getElementById('toggle-' + variant);
+      const cards = document.querySelectorAll('.card-' + variant);
+      const isActive = btn.classList.toggle('active');
+      cards.forEach(c => isActive ? c.classList.add('hovered') : c.classList.remove('hovered'));
+    }
+
+    function choose(variant) {
+      document.querySelectorAll('.choose-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('btn-' + variant).classList.add('selected');
+      if (window.selectOption) selectOption(variant, 'Variant ' + variant.toUpperCase());
+    }
+  </script>
+</body>
+</html>

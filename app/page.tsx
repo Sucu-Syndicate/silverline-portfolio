@@ -1,3 +1,5 @@
+import OfficeLoader from '@/components/3d/OfficeLoader';
+
 export default function Page() {
-  return null;
+  return <OfficeLoader />;
 }

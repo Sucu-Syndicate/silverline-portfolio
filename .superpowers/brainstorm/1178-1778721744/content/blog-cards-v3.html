@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Cards v3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:         #0F100E;
+      --surface:    #161714;
+      --surface-2:  #1A1B18;
+      --raised:     #222420;
+      --border:     #2A2C26;
+      --border-2:   #34362F;
+      --text:       #E8E6DD;
+      --text-2:     #B8B6AD;
+      --text-dim:   #6E7068;
+      --accent:     #5DA67A;
+      --accent-bg:  #1A2620;
+      --font-structure: 'Archivo', sans-serif;
+      --font-mono:      'Geist Mono', monospace;
+      --ease:       cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-structure);
+      padding: 48px 40px 80px;
+      min-height: 100vh;
+    }
+
+    .page-label {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    h1 {
+      font-family: var(--font-structure);
+      font-weight: 800;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .subtitle {
+      font-size: 13px;
+      color: var(--text-2);
+      margin-bottom: 40px;
+      line-height: 1.5;
+    }
+
+    .page-shell { max-width: 860px; margin: 0 auto; }
+
+    .blog-header {
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    .blog-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 20px;
+    }
+
+    .blog-title {
+      font-family: var(--font-structure);
+      font-weight: 800;
+      font-size: clamp(40px, 6vw, 64px);
+      letter-spacing: -0.03em;
+      line-height: 1.0;
+      color: var(--text);
+      margin-bottom: 14px;
+    }
+
+    .blog-sub {
+      font-family: var(--font-structure);
+      font-size: 16px;
+      font-weight: 400;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 44ch;
+    }
+
+    /* ─── NOTE CARD ─────────────────────── */
+    .note-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .note-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      position: relative;
+      cursor: pointer;
+      transition:
+        background  0.4s var(--ease),
+        transform   0.4s var(--ease),
+        box-shadow  0.4s var(--ease),
+        border-color 0.2s ease;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    /* Arrow — absolute, lives inside note-header vertically */
+    .note-arrow {
+      position: absolute;
+      top: 15px;
+      right: 28px;
+      font-size: 15px;
+      color: var(--text-dim);
+      transition: color 0.25s ease, transform 0.25s ease;
+      line-height: 1;
+    }
+
+    /* Header bar — push right padding far enough to clear the arrow */
+    .note-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 28px 14px 28px;
+      /* right-side items end before the arrow: arrow is at right:28px ~16px wide,
+         so give the read-time 52px of clearance on the right */
+      padding-right: 52px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface-2);
+    }
+
+    .note-header-left {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .note-date {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.04em;
+      color: var(--text-dim);
+    }
+
+    .note-sep {
+      width: 1px;
+      height: 10px;
+      background: var(--border-2);
+      flex-shrink: 0;
+    }
+
+    .note-tag {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.10em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    .note-readtime {
+      font-family: var(--font-mono);
+      font-size: 11px;
+      color: var(--text-dim);
+      flex-shrink: 0;
+    }
+
+    /* Note body */
+    .note-body {
+      padding: 28px 28px 24px;
+    }
+
+    .note-title {
+      font-family: var(--font-structure);
+      font-weight: 700;
+      font-size: 22px;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      line-height: 1.25;
+      margin-bottom: 12px;
+    }
+
+    .note-desc {
+      font-family: var(--font-structure);
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1.6;
+      color: var(--text-2);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    /* Hover */
+    .note-card:hover,
+    .note-card.hovered {
+      background: var(--raised);
+      transform: translateY(-3px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      border-color: var(--border-2);
+    }
+
+    .note-card:hover .note-header,
+    .note-card.hovered .note-header {
+      border-bottom-color: var(--accent);
+    }
+
+    .note-card:hover .note-arrow,
+    .note-card.hovered .note-arrow {
+      color: var(--accent);
+      transform: translate(2px, -2px);
+    }
+
+    /* ─── CONTROLS ─────────────────────── */
+    .controls {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 48px;
+      padding-top: 32px;
+      border-top: 1px solid var(--border);
+    }
+
+    .hover-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      background: none;
+      border: 1px solid var(--border);
+      padding: 8px 14px;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+    }
+    .hover-toggle:hover, .hover-toggle.active { color: var(--accent); border-color: var(--accent); }
+    .hover-toggle .dot { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+
+    .approve-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      border: 1px solid var(--accent);
+      padding: 8px 18px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .approve-btn:hover { background: #1e2e25; }
+    .approve-btn.selected { background: var(--accent); color: #0F100E; }
+
+    .note-small {
+      font-family: var(--font-mono);
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.06em;
+      margin-left: auto;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="page-label">silverline · blog cards · v3 — arrow overlap fix</div>
+  <h1>Note cards v3</h1>
+  <p class="subtitle">Read time pushed left — no longer under the arrow.</p>
+
+  <div class="page-shell">
+
+    <div class="blog-header">
+      <div class="blog-eyebrow">the notes.</div>
+      <div class="blog-title">Writing.</div>
+      <p class="blog-sub">Code, decisions, and what I learned building in public.</p>
+    </div>
+
+    <div class="note-list">
+
+      <div class="note-card" id="n1" onclick="toggleHover('n1')">
+        <div class="note-arrow">↗</div>
+        <div class="note-header">
+          <div class="note-header-left">
+            <span class="note-date">2026-05-13</span>
+            <div class="note-sep"></div>
+            <span class="note-tag">process</span>
+          </div>
+          <span class="note-readtime">3 min read</span>
+        </div>
+        <div class="note-body">
+          <div class="note-title">Why I'm building in public at 17</div>
+          <div class="note-desc">I'm not doing it for the audience. I'm doing it so there's a record. When I write about a decision I made, it stops being a thing I tried and becomes a thing I actually did.</div>
+        </div>
+      </div>
+
+      <div class="note-card" id="n2" onclick="toggleHover('n2')">
+        <div class="note-arrow">↗</div>
+        <div class="note-header">
+          <div class="note-header-left">
+            <span class="note-date">2026-04-28</span>
+            <div class="note-sep"></div>
+            <span class="note-tag">decision</span>
+          </div>
+          <span class="note-readtime">5 min read</span>
+        </div>
+        <div class="note-body">
+          <div class="note-title">Why I scrapped the first version of Gloss after 3 weeks</div>
+          <div class="note-desc">The architecture was fine. The problem was I was solving for scale before I had a single user. That's the mistake you make when you're building for your imagination instead of reality.</div>
+        </div>
+      </div>
+
+      <div class="note-card" id="n3" onclick="toggleHover('n3')">
+        <div class="note-arrow">↗</div>
+        <div class="note-header">
+          <div class="note-header-left">
+            <span class="note-date">2026-04-10</span>
+            <div class="note-sep"></div>
+            <span class="note-tag">reflection</span>
+          </div>
+          <span class="note-readtime">4 min read</span>
+        </div>
+        <div class="note-body">
+          <div class="note-title">On taking feedback from people who've never shipped anything</div>
+          <div class="note-desc">There's a kind of feedback that sounds like wisdom but is actually just pattern-matching from the outside. You can't always tell in the moment — but you can learn to notice it faster.</div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="controls">
+      <button class="hover-toggle" id="hover-all-btn" onclick="toggleAllHover()">
+        <span class="dot"></span> Preview hover state
+      </button>
+
+      <button class="approve-btn" id="approve-btn" onclick="approve()" data-choice="approved">
+        Looks good — use this
+      </button>
+
+      <span class="note-small">click any card to toggle hover individually</span>
+    </div>
+
+  </div>
+
+  <script>
+    function toggleHover(id) {
+      document.getElementById(id).classList.toggle('hovered');
+    }
+
+    let allHovered = false;
+    function toggleAllHover() {
+      allHovered = !allHovered;
+      document.querySelectorAll('.note-card').forEach(c =>
+        allHovered ? c.classList.add('hovered') : c.classList.remove('hovered')
+      );
+      document.getElementById('hover-all-btn').classList.toggle('active', allHovered);
+    }
+
+    function approve() {
+      const btn = document.getElementById('approve-btn');
+      btn.classList.add('selected');
+      btn.textContent = '✓ Approved';
+      if (window.selectOption) selectOption('approved', 'Approved');
+    }
+  </script>
+</body>
+</html>

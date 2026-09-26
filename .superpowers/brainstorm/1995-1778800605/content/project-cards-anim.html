@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714; --raised: #222420;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --accent-bg: #1A2620; --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: #0d0e0c; color: var(--text); font-family: var(--f); padding: 28px 20px 80px; }
+
+  .page-label { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .page-heading { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; color: var(--text-2); margin-bottom: 32px; }
+
+  .option-wrap { border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; margin-bottom: 24px; }
+  .option-wrap:hover { border-color: var(--accent-deep); }
+  .option-wrap.selected { border-color: var(--accent); }
+  .option-tag { background: #0a0b09; border-bottom: 1px solid var(--border); padding: 10px 16px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .option-tag .sel { color: var(--accent); display: none; }
+  .option-wrap.selected .option-tag .sel { display: block; }
+  .s-head { display: flex; justify-content: space-between; align-items: flex-end; padding: 36px 36px 20px; background: var(--bg); }
+  .s-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .s-title { font-weight: 800; font-size: 22px; letter-spacing: -0.025em; line-height: 1.05; color: var(--text); }
+  .s-link { font-size: 11px; font-weight: 500; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 2px; white-space: nowrap; }
+  .desc { background: #090a08; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .desc-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .desc-body { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+  .desc-note { font-family: var(--f-mono); font-size: 9px; color: var(--accent); margin-top: 4px; }
+
+  /* ── SHARED GRID ── */
+  .giant-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding: 0 36px 36px; background: var(--bg); }
+
+  /* ── SHARED CARD BASE ── */
+  .gc { position: relative; overflow: hidden; background: var(--surface); min-height: 260px; display: flex; flex-direction: column; justify-content: flex-end; padding: 22px; }
+  .gc-num { position: absolute; top: -10px; right: -10px; font-family: var(--f); font-weight: 800; font-size: 140px; line-height: 1; letter-spacing: -0.06em; color: transparent; -webkit-text-stroke: 1px var(--raised); pointer-events: none; user-select: none; }
+  .gc-year { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; position: relative; z-index: 2; }
+  .gc-name { font-weight: 800; font-size: 22px; letter-spacing: -0.03em; line-height: 1.0; color: var(--text); position: relative; z-index: 2; margin-bottom: 8px; }
+  .gc-tag { font-family: var(--f-mono); font-size: 9px; color: var(--text-2); line-height: 1.5; position: relative; z-index: 2; }
+  .gc-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+
+  /* ═══════════════════════════════════════════
+     OPTION A — Rotating border glow
+     A conic gradient spins inside a 1px padding wrapper
+  ═══════════════════════════════════════════ */
+  .spin-wrap {
+    position: relative;
+    padding: 1px;
+    overflow: hidden;
+    background: var(--border); /* fallback: static border */
+  }
+  .spin-wrap::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 250%; height: 250%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    background: conic-gradient(
+      from 0deg,
+      transparent 0%,
+      transparent 60%,
+      rgba(93,166,122,0.0) 68%,
+      rgba(93,166,122,0.9) 73%,
+      rgba(93,166,122,1.0) 75%,
+      rgba(93,166,122,0.9) 77%,
+      rgba(93,166,122,0.0) 82%,
+      transparent 90%,
+      transparent 100%
+    );
+    animation: spinBorder 3.5s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+  @keyframes spinBorder {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to   { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+  .spin-inner {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ═══════════════════════════════════════════
+     OPTION B — Ghost number breathes (opacity pulse)
+     + subtle ambient card glow on accent
+  ═══════════════════════════════════════════ */
+  .breathe-card .gc-num {
+    -webkit-text-stroke: 1.5px rgba(93,166,122,0.15);
+    animation: breatheNum 3s ease-in-out infinite;
+  }
+  @keyframes breatheNum {
+    0%, 100% { -webkit-text-stroke-color: rgba(93,166,122,0.08); opacity: 0.7; }
+    50%       { -webkit-text-stroke-color: rgba(93,166,122,0.35); opacity: 1.0; }
+  }
+  .breathe-card {
+    box-shadow: 0 0 0 1px var(--border);
+    animation: ambientGlow 3s ease-in-out infinite;
+  }
+  @keyframes ambientGlow {
+    0%, 100% { box-shadow: 0 0 0 1px var(--border), 0 0 0px rgba(93,166,122,0); }
+    50%       { box-shadow: 0 0 0 1px var(--accent-deep), 0 8px 32px -8px rgba(93,166,122,0.18); }
+  }
+  .breathe-grid .gc-bar { background: var(--accent); animation: barPulse 3s ease-in-out infinite; }
+  @keyframes barPulse {
+    0%, 100% { opacity: 0.5; box-shadow: none; }
+    50%       { opacity: 1.0; box-shadow: 0 0 8px rgba(93,166,122,0.6); }
+  }
+
+  /* ═══════════════════════════════════════════
+     OPTION C — Shimmer sweep across the card
+     (diagonal highlight sweeps left→right)
+  ═══════════════════════════════════════════ */
+  .shimmer-card {
+    box-shadow: 0 0 0 1px var(--border);
+  }
+  .shimmer-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      105deg,
+      transparent 30%,
+      rgba(255,255,255,0.04) 45%,
+      rgba(93,166,122,0.08) 50%,
+      rgba(255,255,255,0.04) 55%,
+      transparent 70%
+    );
+    background-size: 300% 100%;
+    background-position: 200% 0;
+    animation: shimmerSweep 3.5s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 3;
+  }
+  @keyframes shimmerSweep {
+    0%   { background-position: 200% 0; opacity: 0; }
+    10%  { opacity: 1; }
+    60%  { background-position: -100% 0; opacity: 1; }
+    70%  { opacity: 0; }
+    100% { background-position: -100% 0; opacity: 0; }
+  }
+  /* stagger the 3 cards */
+  .shimmer-grid .gc:nth-child(2)::after { animation-delay: 0.4s; }
+  .shimmer-grid .gc:nth-child(3)::after { animation-delay: 0.8s; }
+  .shimmer-grid .gc-bar { background: var(--accent); }
+</style>
+</head>
+<body>
+
+<div class="page-label">Selected Work — Animation Direction</div>
+<div class="page-heading">Pick a glow / shimmer style for the ghost number cards</div>
+<div class="page-sub">All three are animated right now — scroll through and watch them. Click to select.</div>
+
+<!-- ── OPTION A: Rotating border glow ── -->
+<div class="option-wrap" data-choice="a" onclick="pick(this)">
+  <div class="option-tag"><span>A — Rotating border glow</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="giant-grid">
+    <div class="spin-wrap">
+      <div class="spin-inner gc">
+        <div class="gc-bar" style="background:var(--accent)"></div>
+        <div class="gc-num">01</div>
+        <div class="gc-year">2026</div>
+        <div class="gc-name">Velvet</div>
+        <div class="gc-tag">Creator platform.<br>The flagship.</div>
+      </div>
+    </div>
+    <div class="spin-wrap" style="--delay:1.1s">
+      <div class="spin-inner gc">
+        <div class="gc-bar" style="background:var(--accent)"></div>
+        <div class="gc-num">02</div>
+        <div class="gc-year">2026</div>
+        <div class="gc-name">Myobscelium</div>
+        <div class="gc-tag">Personal memory OS.<br>Built to think with Claude.</div>
+      </div>
+    </div>
+    <div class="spin-wrap">
+      <div class="spin-inner gc">
+        <div class="gc-bar" style="background:var(--text-dim)"></div>
+        <div class="gc-num">03</div>
+        <div class="gc-year" style="color:var(--text-dim)">2025</div>
+        <div class="gc-name">Meridian Sage</div>
+        <div class="gc-tag">AI research tool.<br>Solved a real problem.</div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Rotating border glow</div>
+    <div class="desc-body">A single bright green point of light orbits the card border continuously. Subtle — the border is mostly dark, just one passing highlight. All 3 cards spin in sync.</div>
+    <div class="desc-note">→ Most dramatic of the three</div>
+  </div>
+</div>
+
+<!-- ── OPTION B: Breathing number + ambient glow ── -->
+<div class="option-wrap" data-choice="b" onclick="pick(this)">
+  <div class="option-tag"><span>B — Breathing number + ambient glow</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="giant-grid breathe-grid">
+    <div class="gc breathe-card">
+      <div class="gc-bar"></div>
+      <div class="gc-num">01</div>
+      <div class="gc-year">2026</div>
+      <div class="gc-name">Velvet</div>
+      <div class="gc-tag">Creator platform.<br>The flagship.</div>
+    </div>
+    <div class="gc breathe-card" style="animation-delay:0.5s">
+      <div class="gc-bar" style="animation-delay:0.5s"></div>
+      <div class="gc-num" style="animation-delay:0.5s">02</div>
+      <div class="gc-year">2026</div>
+      <div class="gc-name">Myobscelium</div>
+      <div class="gc-tag">Personal memory OS.<br>Built to think with Claude.</div>
+    </div>
+    <div class="gc breathe-card" style="animation-delay:1s; box-shadow: none; animation: none;">
+      <div class="gc-bar" style="background:var(--text-dim); animation:none;"></div>
+      <div class="gc-num" style="animation:none; -webkit-text-stroke-color:rgba(100,100,100,0.2)">03</div>
+      <div class="gc-year" style="color:var(--text-dim)">2025</div>
+      <div class="gc-name">Meridian Sage</div>
+      <div class="gc-tag">AI research tool.<br>Solved a real problem.</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Breathing number + ambient glow</div>
+    <div class="desc-body">The ghost number behind the card slowly pulses — the outline fades green and back. The card itself breathes a soft ambient glow. The shipped project (03) stays static — intentional contrast.</div>
+    <div class="desc-note">→ Calm, organic — live projects feel alive, shipped feels done</div>
+  </div>
+</div>
+
+<!-- ── OPTION C: Shimmer sweep ── -->
+<div class="option-wrap" data-choice="c" onclick="pick(this)">
+  <div class="option-tag"><span>C — Diagonal shimmer sweep</span><span class="sel">✓ selected</span></div>
+  <div class="s-head">
+    <div><div class="s-label">Selected work</div><div class="s-title">Three I'm proud of,<br>more behind them.</div></div>
+    <span class="s-link">Read about the process →</span>
+  </div>
+  <div class="giant-grid shimmer-grid">
+    <div class="gc shimmer-card">
+      <div class="gc-bar"></div>
+      <div class="gc-num">01</div>
+      <div class="gc-year">2026</div>
+      <div class="gc-name">Velvet</div>
+      <div class="gc-tag">Creator platform.<br>The flagship.</div>
+    </div>
+    <div class="gc shimmer-card">
+      <div class="gc-bar"></div>
+      <div class="gc-num">02</div>
+      <div class="gc-year">2026</div>
+      <div class="gc-name">Myobscelium</div>
+      <div class="gc-tag">Personal memory OS.<br>Built to think with Claude.</div>
+    </div>
+    <div class="gc shimmer-card" style="box-shadow: 0 0 0 1px var(--border)">
+      <div class="gc-bar" style="background:var(--text-dim)"></div>
+      <div class="gc-num">03</div>
+      <div class="gc-year" style="color:var(--text-dim)">2025</div>
+      <div class="gc-name">Meridian Sage</div>
+      <div class="gc-tag">AI research tool.<br>Solved a real problem.</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Diagonal shimmer sweep</div>
+    <div class="desc-body">A faint light sweep passes diagonally across each card — slightly staggered across the three. Like light catching a surface. Very subtle, continuous loop with a pause between each sweep.</div>
+    <div class="desc-note">→ Most subtle — feels physical, like a material surface</div>
+  </div>
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option-wrap').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

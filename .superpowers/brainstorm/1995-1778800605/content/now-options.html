@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714; --raised: #222420;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --accent-bg: #1A2620; --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: #0d0e0c; color: var(--text); font-family: var(--f); padding: 28px 20px 60px; }
+
+  .page-label { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+  .page-heading { font-size: 20px; font-weight: 700; color: var(--text); letter-spacing: -0.02em; margin-bottom: 4px; }
+  .page-sub { font-size: 12px; color: var(--text-2); margin-bottom: 32px; }
+
+  .option-wrap { border: 2px solid transparent; border-radius: 6px; overflow: hidden; cursor: pointer; transition: border-color 0.2s; margin-bottom: 16px; }
+  .option-wrap:hover { border-color: var(--accent-deep); }
+  .option-wrap.selected { border-color: var(--accent); }
+  .option-tag { background: #0a0b09; border-bottom: 1px solid var(--border); padding: 10px 16px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .option-tag .sel { color: var(--accent); display: none; }
+  .option-wrap.selected .option-tag .sel { display: block; }
+
+  /* shared section shell */
+  .shell { background: var(--bg); padding: 0 40px 40px; pointer-events: none; user-select: none; }
+
+  /* ── NOW BLOCK BASE ── */
+  .now-block {
+    display: grid;
+    align-items: center;
+    gap: 32px;
+    margin-top: 0;
+    padding: 36px 40px;
+    border-radius: 4px;
+    background: var(--surface);
+    text-decoration: none;
+    color: inherit;
+  }
+  .now-label {
+    font-family: var(--f-mono); font-size: 11px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent);
+    white-space: nowrap;
+  }
+  .now-text {
+    font-family: var(--f); font-weight: 600;
+    font-size: clamp(16px, 2vw, 22px); letter-spacing: -0.015em;
+    line-height: 1.3; color: var(--text);
+  }
+
+  /* ── A: 3-col, right = plain arrow ── */
+  .now-a { grid-template-columns: auto 1fr auto; }
+  .now-arrow { font-family: var(--f-mono); font-size: 18px; color: var(--text-2); }
+
+  /* ── B: 3-col, right = updated date ── */
+  .now-b { grid-template-columns: auto 1fr auto; }
+  .now-updated { font-family: var(--f-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em; text-align: right; line-height: 1.6; }
+  .now-updated span { display: block; color: var(--text-2); font-size: 11px; }
+
+  /* ── C: 2-col, no right element ── */
+  .now-c { grid-template-columns: auto 1fr; }
+
+  /* ── D: stacked — label top, big text, date + arrow row at bottom ── */
+  .now-d { grid-template-columns: 1fr; gap: 16px; }
+  .now-d-bottom { display: flex; justify-content: space-between; align-items: center; }
+  .now-d-date { font-family: var(--f-mono); font-size: 10px; color: var(--text-dim); letter-spacing: 0.06em; }
+  .now-d-arrow { font-size: 20px; color: var(--accent); }
+
+  /* desc */
+  .desc { background: #090a08; padding: 12px 16px; border-top: 1px solid var(--border); }
+  .desc-name { font-size: 11px; font-weight: 700; color: var(--text); margin-bottom: 3px; }
+  .desc-body { font-size: 11px; color: var(--text-2); line-height: 1.5; }
+  .desc-note { font-family: var(--f-mono); font-size: 9px; color: var(--accent); margin-top: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page-label">/now Teaser — Section 3 of 3</div>
+<div class="page-heading">What replaces the time greeting?</div>
+<div class="page-sub">Currently: "evening · winding down" (time-based, confusing). The block still links to /now — question is what the right side becomes.</div>
+
+<!-- A: Just an arrow -->
+<div class="option-wrap" data-choice="a" onclick="pick(this)">
+  <div class="option-tag"><span>A — Plain arrow</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-block now-a">
+      <div class="now-label">/now</div>
+      <div class="now-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+      <div class="now-arrow">→</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Plain arrow</div>
+    <div class="desc-body">Remove the greeting entirely. Right column becomes a single → — clean signal that the block is clickable. Nothing distracts from the text.</div>
+    <div class="desc-note">→ Most minimal</div>
+  </div>
+</div>
+
+<!-- B: Updated date -->
+<div class="option-wrap" data-choice="b" onclick="pick(this)">
+  <div class="option-tag"><span>B — "Last updated" date</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-block now-b">
+      <div class="now-label">/now</div>
+      <div class="now-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+      <div class="now-updated">last updated<span>May 2026 →</span></div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Last updated date</div>
+    <div class="desc-body">Right column shows when the /now page was last updated. Signals this is actively maintained — not a static placeholder. The date is something you control.</div>
+    <div class="desc-note">→ Communicates "this is current" without the clock weirdness</div>
+  </div>
+</div>
+
+<!-- C: Two columns, no right element -->
+<div class="option-wrap" data-choice="c" onclick="pick(this)">
+  <div class="option-tag"><span>C — Label + text only</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-block now-c">
+      <div class="now-label">/now</div>
+      <div class="now-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Label + text only</div>
+    <div class="desc-body">Drop the third column entirely. Two-column block — /now label on the left, the actual text filling the rest. The whole block is still clickable.</div>
+    <div class="desc-note">→ Most focus on the content itself</div>
+  </div>
+</div>
+
+<!-- D: Stacked layout -->
+<div class="option-wrap" data-choice="d" onclick="pick(this)">
+  <div class="option-tag"><span>D — Stacked with bottom row</span><span class="sel">✓ selected</span></div>
+  <div class="shell">
+    <div class="now-block now-d">
+      <div class="now-label">/now</div>
+      <div class="now-text">Drafting v2 of the portfolio system. Reading Kleppmann. Half a chapter behind on Velvet's task graph. Always Argentina time.</div>
+      <div class="now-d-bottom">
+        <div class="now-d-date">Updated May 2026</div>
+        <div class="now-d-arrow">→</div>
+      </div>
+    </div>
+  </div>
+  <div class="desc">
+    <div class="desc-name">Stacked with bottom row</div>
+    <div class="desc-body">Full-width layout — label at top, text fills the middle, date + arrow pinned to the bottom. Feels more like a card than a horizontal strip.</div>
+    <div class="desc-note">→ Most structured, gives the content room to breathe</div>
+  </div>
+</div>
+
+<script>
+function pick(el) {
+  document.querySelectorAll('.option-wrap').forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+}
+</script>
+</body>
+</html>

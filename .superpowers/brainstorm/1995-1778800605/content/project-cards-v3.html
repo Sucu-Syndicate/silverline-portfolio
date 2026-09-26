@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0F100E; --surface: #161714;
+    --border: #2A2C26; --text: #E8E6DD; --text-2: #B8B6AD;
+    --text-dim: #6E7068; --accent: #5DA67A; --accent-deep: #2E5842;
+    --f: 'Archivo', sans-serif; --f-mono: 'Geist Mono', monospace;
+  }
+  body { background: var(--bg); color: var(--text); font-family: var(--f); margin: 0; padding: 0; }
+
+  .chrome { background: #0a0b09; border-bottom: 1px solid var(--border); padding: 12px 24px; font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-dim); display: flex; justify-content: space-between; }
+  .chrome-note { color: var(--accent); }
+
+  .section { padding: 64px 48px; }
+  .section-head { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; }
+  .section-label { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+  .section-title { font-weight: 800; font-size: clamp(22px, 2.6vw, 32px); letter-spacing: -0.025em; line-height: 1.05; color: var(--text); }
+  .section-link { font-size: 12px; font-weight: 500; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 2px; white-space: nowrap; }
+
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+
+  .card-shell { position: relative; padding: 1px; overflow: hidden; background: var(--border); }
+
+  .card-spinner {
+    position: absolute;
+    top: 50%; left: 50%;
+    width: 260%; height: 260%;
+    transform: translate(-50%, -50%) rotate(0deg);
+    /* longer comet: dim tail trailing in, bright head at the tip */
+    background: conic-gradient(
+      from 0deg,
+      transparent   0%,
+      transparent   88%,
+      rgba(93,166,122,0.00) 89%,
+      rgba(93,166,122,0.12) 91%,
+      rgba(93,166,122,0.30) 93%,
+      rgba(93,166,122,0.65) 96%,
+      rgba(93,166,122,1.00) 97.8%,
+      rgba(93,166,122,0.65) 98.8%,
+      rgba(93,166,122,0.00) 100%
+    );
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .card {
+    position: relative; z-index: 1; background: var(--surface);
+    min-height: 270px; display: flex; flex-direction: column;
+    justify-content: flex-end; padding: 22px; overflow: hidden;
+  }
+  .card-bar { position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); }
+
+  .card-num {
+    position: absolute; top: -12px; right: -10px;
+    font-family: var(--f); font-weight: 800; font-size: 148px;
+    line-height: 1; letter-spacing: -0.06em;
+    color: transparent;
+    -webkit-text-stroke: 1px rgba(93,166,122,0.07);
+    pointer-events: none; user-select: none;
+    will-change: filter, -webkit-text-stroke-color;
+  }
+
+  .card-year    { font-family: var(--f-mono); font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 9px; position: relative; z-index: 2; }
+  .card-name    { font-weight: 800; font-size: clamp(18px, 2vw, 24px); letter-spacing: -0.03em; line-height: 1.0; color: var(--text); position: relative; z-index: 2; margin-bottom: 9px; }
+  .card-tagline { font-family: var(--f-mono); font-size: 9px; color: var(--text-2); line-height: 1.5; position: relative; z-index: 2; }
+
+  .confirm-bar { padding: 16px 48px; background: #090a08; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+  .confirm-label { font-family: var(--f-mono); font-size: 10px; color: var(--text-2); letter-spacing: 0.06em; }
+  .confirm-btn { font-family: var(--f-mono); font-size: 10px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--bg); background: var(--accent); padding: 10px 20px; cursor: pointer; border: none; }
+  .confirm-btn:hover { background: #6ec28e; }
+</style>
+</head>
+<body>
+
+<div class="chrome">
+  <span>Selected Work — v3</span>
+  <span class="chrome-note">Longer line · number breathes after trigger</span>
+</div>
+
+<div class="section">
+  <div class="section-head">
+    <div>
+      <div class="section-label">Selected work</div>
+      <div class="section-title">Three I'm proud of,<br>more behind them.</div>
+    </div>
+    <span class="section-link">Read about the process →</span>
+  </div>
+
+  <div class="grid">
+    <div class="card-shell">
+      <div class="card-spinner"></div>
+      <div class="card">
+        <div class="card-bar"></div>
+        <div class="card-num">01</div>
+        <div class="card-year">2026</div>
+        <div class="card-name">Velvet</div>
+        <div class="card-tagline">Creator platform.<br>The flagship.</div>
+      </div>
+    </div>
+    <div class="card-shell">
+      <div class="card-spinner"></div>
+      <div class="card">
+        <div class="card-bar"></div>
+        <div class="card-num">02</div>
+        <div class="card-year">2026</div>
+        <div class="card-name">Myobscelium</div>
+        <div class="card-tagline">Personal memory OS.<br>Built to think with Claude.</div>
+      </div>
+    </div>
+    <div class="card-shell">
+      <div class="card-spinner"></div>
+      <div class="card">
+        <div class="card-bar"></div>
+        <div class="card-num">03</div>
+        <div class="card-year">2025</div>
+        <div class="card-name">Meridian Sage</div>
+        <div class="card-tagline">AI research tool.<br>Solved a real problem.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="confirm-bar">
+  <span class="confirm-label">Approve to lock in — then we move to /now</span>
+  <button class="confirm-btn" onclick="approve()">Approve ✓</button>
+</div>
+
+<script>
+const SPIN_MS  = 4000;
+const CORNER   = 53;    // deg CW from top — top-right corner where number lives
+const GLOW_WIN = 16;    // degrees from corner that start the trigger
+const DECAY    = 0.972; // per-frame decay — slower = longer breath after trigger
+
+const spinners = document.querySelectorAll('.card-spinner');
+const nums     = document.querySelectorAll('.card-num');
+
+let glowLevel = 0; // shared — all cards same glow (no offset)
+
+function smoothstep(t) { return t * t * (3 - 2 * t); }
+
+function loop(ts) {
+  const angle = ((ts % SPIN_MS) / SPIN_MS) * 360;
+
+  // All spinners share the same rotation
+  spinners.forEach(s => {
+    s.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+  });
+
+  // Distance from glow head to the number corner
+  const raw  = Math.abs(angle - CORNER);
+  const dist = Math.min(raw, 360 - raw);
+
+  if (dist < GLOW_WIN) {
+    // Ramp up quickly on approach
+    const proximity = smoothstep(1 - dist / GLOW_WIN);
+    glowLevel = Math.min(1, glowLevel + 0.15 * proximity);
+  } else {
+    // Let it breathe — slow exponential decay, not a hard stop
+    glowLevel *= DECAY;
+  }
+
+  // Apply glow to all numbers identically
+  const g = glowLevel;
+  if (g > 0.005) {
+    const strokeA = (0.07 + 0.83 * g).toFixed(3);
+    const g1px    = (20 * g).toFixed(1);
+    const g1a     = (0.55 * g).toFixed(3);
+    const g2px    = (42 * g).toFixed(1);
+    const g2a     = (0.16 * g).toFixed(3);
+
+    nums.forEach(n => {
+      n.style.webkitTextStrokeColor = `rgba(93,166,122,${strokeA})`;
+      n.style.filter = `drop-shadow(0 0 ${g1px}px rgba(93,166,122,${g1a})) drop-shadow(0 0 ${g2px}px rgba(93,166,122,${g2a}))`;
+    });
+  } else {
+    nums.forEach(n => {
+      n.style.webkitTextStrokeColor = 'rgba(93,166,122,0.07)';
+      n.style.filter = 'none';
+    });
+  }
+
+  requestAnimationFrame(loop);
+}
+
+requestAnimationFrame(loop);
+
+function approve() {
+  const btn = document.querySelector('.confirm-btn');
+  btn.textContent = '✓ Locked';
+  btn.style.background = 'var(--accent-deep)';
+  btn.style.color = 'var(--accent)';
+}
+</script>
+</body>
+</html>
