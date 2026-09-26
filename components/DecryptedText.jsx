@@ -32,6 +32,7 @@ export default function DecryptedText({
   encryptedClassName = '',
   animateOn = 'hover',
   clickMode = 'once',
+  rootMargin = '0px',
   ...props
 }) {
   const [displayText, setDisplayText] = useState(text);
@@ -325,7 +326,7 @@ export default function DecryptedText({
 
     const observerOptions = {
       root: null,
-      rootMargin: '0px',
+      rootMargin,
       threshold: 0.1
     };
 
@@ -340,7 +341,7 @@ export default function DecryptedText({
         observer.unobserve(currentRef);
       }
     };
-  }, [animateOn, hasAnimated, triggerDecrypt]);
+  }, [animateOn, hasAnimated, triggerDecrypt, rootMargin]);
 
   useEffect(() => {
     if (animateOn === 'click') {
