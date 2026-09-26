@@ -1095,100 +1095,71 @@ a { color: inherit; text-decoration: none; }
   background: transparent;
 }
 
-/* ─── Work ───────────────────────────────────────────── */
-.work-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-.work-card {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--border);
-  background: var(--surface);
-  overflow: hidden;
-}
-.work-card-preview {
+/* ─── Projects Stack ──────────────────────────────────── */
+/*
+  Sticky scroll stack — one full-viewport card per project.
+  Container height = 4 cards × 100dvh + 100dvh exit buffer = 500dvh.
+  Each card sits at its natural flow position (0, 100dvh, 200dvh, 300dvh)
+  and sticks to top:0 as you scroll into it. Higher z-index cards overlap
+  lower ones, creating the slide-in-from-below stacking effect.
+  No scroll listeners — pure CSS sticky.
+*/
+.projects-stack-outer {
   position: relative;
-  aspect-ratio: 4 / 3;
-  background: var(--surface-2);
+  height: 500dvh;
+  border-top: 1px solid var(--border);
+}
+
+.project-card {
+  position: sticky;
+  top: 0;
+  height: 100dvh;
+  width: 100%;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
   display: flex;
   align-items: center;
-  justify-content: center;
   overflow: hidden;
-  border-bottom: 1px solid var(--border);
 }
-.work-card-placeholder-svg {
-  position: absolute;
-  inset: 0;
+
+/* Alternate surface color for visual distinction while placeholders are in use */
+.project-card:nth-child(2) { background: var(--surface); }
+.project-card:nth-child(4) { background: var(--surface); }
+
+.project-card-inner {
+  max-width: 1200px;
   width: 100%;
-  height: 100%;
+  margin: 0 auto;
+  padding: 0 clamp(24px, 6vw, 80px);
 }
-.work-card-preview-label {
-  position: relative;
+
+.project-card-label {
   font-family: var(--font-mono);
   font-size: 11px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-dim);
-}
-.work-card-preview.work-card-terminal {
-  aspect-ratio: 4 / 3;
-  background: #0C0E0B;
-  font-family: var(--font-mono);
-  font-size: 13px;
-  line-height: 1.9;
-  color: rgba(245, 240, 232, 0.35);
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-}
-.work-card-terminal .t-prompt { color: var(--text-dim); margin-right: 8px; }
-.work-card-terminal .t-ok { color: var(--accent); }
-.work-card-footer {
-  padding: 18px 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  flex: 1;
-}
-.work-card-outcome {
-  font-family: var(--font-structure);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1.4;
-  color: var(--text);
-  margin: 0;
-}
-.work-card-tags { display: flex; gap: 8px; flex-wrap: wrap; }
-.work-tag {
-  font-family: var(--font-mono);
-  font-size: 10px;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   color: var(--accent);
-  background: var(--accent-bg);
-  padding: 4px 10px;
+  margin: 0 0 24px;
 }
-.work-card-links {
-  display: flex;
-  gap: 20px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  letter-spacing: 0.06em;
+
+.project-card-title {
+  font-family: var(--font-structure);
+  font-size: clamp(40px, 7vw, 96px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+  margin: 0 0 32px;
   text-transform: uppercase;
 }
-.work-card-links a {
+
+.project-card-desc {
+  font-family: var(--font-structure);
+  font-size: 16px;
+  line-height: 1.6;
   color: var(--text-2);
-  border-bottom: 1px solid var(--border-2);
-  padding-bottom: 2px;
-  transition: color 0.18s ease, border-color 0.18s ease;
-}
-.work-card-links a:hover { color: var(--accent); border-color: var(--accent); }
-@media (max-width: 900px) {
-  .work-grid { grid-template-columns: 1fr; }
+  margin: 0;
+  max-width: 560px;
 }
 
 /* ─── Blog ───────────────────────────────────────────── */
