@@ -4,27 +4,20 @@ import { Suspense } from 'react';
 import { Canvas, useLoader } from '@react-three/fiber';
 import { OrbitControls, Environment } from '@react-three/drei';
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader.js';
-import * as THREE from 'three';
+import { MTLLoader } from 'three/examples/jsm/loaders/MTLLoader.js';
 
-function ObjModel({ url }: { url: string }) {
-  const obj = useLoader(OBJLoader, url);
-
-  // Apply a clean silver material to all meshes (no texture maps shipped for web)
-  obj.traverse((child) => {
-    if ((child as THREE.Mesh).isMesh) {
-      (child as THREE.Mesh).material = new THREE.MeshStandardMaterial({
-        color: new THREE.Color(0xc8c8d0),
-        metalness: 0.8,
-        roughness: 0.25,
-      });
-    }
+function LaptopModel({ objUrl, mtlUrl }: { objUrl: string; mtlUrl: string }) {
+  const materials = useLoader(MTLLoader, mtlUrl);
+  const obj = useLoader(OBJLoader, objUrl, (loader) => {
+    materials.preload();
+    (loader as OBJLoader).setMaterials(materials);
   });
-
   return <primitive object={obj} />;
 }
 
 export interface ModelViewerProps {
   url: string;
+  mtlUrl?: string;
   width?: number | string;
   height?: number | string;
   autoRotate?: boolean;
@@ -35,6 +28,7 @@ export interface ModelViewerProps {
 
 export default function ModelViewer({
   url,
+  mtlUrl,
   width  = 400,
   height = 400,
   autoRotate  = true,
@@ -50,12 +44,16 @@ export default function ModelViewer({
         gl={{ antialias: false, alpha: true, preserveDrawingBuffer: false }}
         style={{ width: '100%', height: '100%' }}
       >
-        <ambientLight intensity={0.6} />
-        <directionalLight position={[8, 8, 4]} intensity={1.2} castShadow />
-        <directionalLight position={[-4, 2, -4]} intensity={0.4} color="#a0c8ff" />
+        <ambientLight intensity={0.7} />
+        <directionalLight position={[8, 8, 4]} intensity={1.4} castShadow />
+        <directionalLight position={[-4, 2, -4]} intensity={0.45} color="#a0c8ff" />
 
         <Suspense fallback={null}>
-          <ObjModel url={url} />
+          {mtlUrl ? (
+            <LaptopModel objUrl={url} mtlUrl={mtlUrl} />
+          ) : (
+            <ObjOnly url={url} />
+          )}
           <Environment preset="city" />
           <OrbitControls
             autoRotate={autoRotate}
@@ -69,4 +67,10 @@ export default function ModelViewer({
       </Canvas>
     </div>
   );
+}
+
+// Fallback for OBJ-only (no MTL) with a default silver material
+function ObjOnly({ url }: { url: string }) {
+  const obj = useLoader(OBJLoader, url);
+  return <primitive object={obj} />;
 }

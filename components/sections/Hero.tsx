@@ -151,7 +151,14 @@ export default function Hero() {
         </div>
         {/* right half — 3D laptop model */}
         <div className="hero-right">
-          <ModelViewer url="/3d_assets/thin_laptop.obj" width="100%" height={420} />
+          <ModelViewer
+            url="/3d_assets/silver-laptop/laptop.obj"
+            mtlUrl="/3d_assets/silver-laptop/laptop.mtl"
+            width="100%"
+            height={420}
+            cameraZ={6}
+            rotateSpeed={0.6}
+          />
         </div>
       </div>
     </section>

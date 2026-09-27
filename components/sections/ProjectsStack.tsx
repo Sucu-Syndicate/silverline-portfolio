@@ -1,7 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useRef, useState, useEffect, useCallback, useMemo } from 'react';
+import { useRef, useState, useEffect, useCallback } from 'react';
 // @ts-ignore — React Bits component, no type declarations
 import DecryptedText from '@/components/DecryptedText';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -126,22 +126,16 @@ interface ProjectCardProps {
   index: number;
   isActive: boolean;
   isMounted: boolean;
-  onIntersect: (index: number, intersecting: boolean) => void;
+  onCardRef: (index: number, el: HTMLDivElement | null) => void;
 }
 
-function ProjectCard({ project, index, isActive, isMounted, onIntersect }: ProjectCardProps) {
+function ProjectCard({ project, index, isActive, isMounted, onCardRef }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  // Tell parent when this card enters/leaves viewport
   useEffect(() => {
-    if (!cardRef.current) return;
-    const obs = new IntersectionObserver(
-      ([entry]) => onIntersect(index, entry.isIntersecting),
-      { threshold: 0 },
-    );
-    obs.observe(cardRef.current);
-    return () => obs.disconnect();
-  }, [index, onIntersect]);
+    onCardRef(index, cardRef.current);
+    return () => { onCardRef(index, null); };
+  }, [index, onCardRef]);
 
   return (
     <div
@@ -149,7 +143,7 @@ function ProjectCard({ project, index, isActive, isMounted, onIntersect }: Proje
       className={`project-card project-card--${index + 1}`}
       style={{ zIndex: index + 1 }}
     >
-      {/* WebGL background — only mounted when this is the active card */}
+      {/* WebGL background — mounted for active + entering card */}
       <div className="project-card-bg" aria-hidden="true">
         {isMounted && <CardBackground index={index} />}
       </div>
@@ -199,49 +193,61 @@ function ProjectCard({ project, index, isActive, isMounted, onIntersect }: Proje
 }
 
 // ── Container ─────────────────────────────────────────────────────────────────
+/*
+  Scroll-based background management — avoids IntersectionObserver sticky quirks.
+
+  Uses getBoundingClientRect on each card element to determine:
+    • "stuck" card   — rect.top near 0 (is the topmost visible sticky card)
+    • "entering" card — rect.top in (STUCK_THRESH, viewport height)
+                        (visible in viewport but not yet stuck)
+
+  activeIndex = highest-indexed "stuck" card (it's visually on top)
+  mountedSet  = stuck cards ∪ entering cards  (max 2 at a time during transitions)
+
+  This fires on every Lenis tick because Lenis uses window.scrollTo(), so
+  window.scroll events fire in real-time during smooth scroll animations.
+*/
 export default function ProjectsStack() {
-  // Active = highest-indexed intersecting card (the one visually on top)
-  // Mounted = active + previous card kept alive during scroll transitions
-  const intersectingRef  = useRef(new Set<number>());
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const [mountedSet, setMountedSet]   = useState<ReadonlySet<number>>(new Set());
-  const clearTimerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const prevActiveRef    = useRef(-1);
+  const cardEls = useRef<(HTMLDivElement | null)[]>([]);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [mountedSet, setMountedSet]   = useState<ReadonlySet<number>>(new Set([0]));
 
-  const handleIntersect = useCallback((index: number, intersecting: boolean) => {
-    if (intersecting) {
-      intersectingRef.current.add(index);
-    } else {
-      intersectingRef.current.delete(index);
-    }
-    const next = intersectingRef.current.size > 0
-      ? Math.max(...Array.from(intersectingRef.current))
-      : -1;
+  const handleCardRef = useCallback((index: number, el: HTMLDivElement | null) => {
+    cardEls.current[index] = el;
+  }, []);
 
-    if (next !== prevActiveRef.current) {
-      const prev = prevActiveRef.current;
-      prevActiveRef.current = next;
+  useEffect(() => {
+    const STUCK_THRESH = 10; // px — tolerance for "stuck at top"
 
-      setActiveIndex(next);
+    const update = () => {
+      const vh = window.innerHeight;
+      let nextActive  = 0;
+      let enteringIdx = -1;
 
-      // Keep both prev and next backgrounds mounted during transition
-      setMountedSet((cur) => {
-        const s = new Set(cur);
-        if (next >= 0) s.add(next);
-        if (prev >= 0) s.add(prev);
-        return s;
+      cardEls.current.forEach((el, i) => {
+        if (!el) return;
+        const top = el.getBoundingClientRect().top;
+
+        if (top >= -STUCK_THRESH && top <= STUCK_THRESH) {
+          // Card is stuck at viewport top → track highest index
+          nextActive = Math.max(nextActive, i);
+        } else if (top > STUCK_THRESH && top < vh) {
+          // Card is entering from below → track highest index
+          enteringIdx = Math.max(enteringIdx, i);
+        }
       });
 
-      // After transition settles, unmount the previous background
-      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
-      clearTimerRef.current = setTimeout(() => {
-        setMountedSet((cur) => {
-          const s = new Set(cur);
-          if (prev >= 0 && s.has(prev) && prev !== prevActiveRef.current) s.delete(prev);
-          return s;
-        });
-      }, 700);
-    }
+      const next = new Set<number>();
+      next.add(nextActive);
+      if (enteringIdx >= 0) next.add(enteringIdx);
+
+      setActiveIndex(nextActive);
+      setMountedSet(next);
+    };
+
+    update();
+    window.addEventListener('scroll', update, { passive: true });
+    return () => window.removeEventListener('scroll', update);
   }, []);
 
   return (
@@ -253,7 +259,7 @@ export default function ProjectsStack() {
           index={i}
           isActive={activeIndex === i}
           isMounted={mountedSet.has(i)}
-          onIntersect={handleIntersect}
+          onCardRef={handleCardRef}
         />
       ))}
     </div>
