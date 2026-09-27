@@ -1,7 +1,6 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { useRef, useState, useEffect, useCallback } from 'react';
 // @ts-ignore — React Bits component, no type declarations
 import DecryptedText from '@/components/DecryptedText';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -124,28 +123,17 @@ function CardBackground({ index }: { index: number }) {
 interface ProjectCardProps {
   project: (typeof projects)[number];
   index: number;
-  isActive: boolean;
-  isMounted: boolean;
-  onCardRef: (index: number, el: HTMLDivElement | null) => void;
 }
 
-function ProjectCard({ project, index, isActive, isMounted, onCardRef }: ProjectCardProps) {
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    onCardRef(index, cardRef.current);
-    return () => { onCardRef(index, null); };
-  }, [index, onCardRef]);
-
+function ProjectCard({ project, index }: ProjectCardProps) {
   return (
     <div
-      ref={cardRef}
       className={`project-card project-card--${index + 1}`}
       style={{ zIndex: index + 1 }}
     >
-      {/* WebGL background — mounted for active + entering card */}
+      {/* WebGL background — always mounted */}
       <div className="project-card-bg" aria-hidden="true">
-        {isMounted && <CardBackground index={index} />}
+        <CardBackground index={index} />
       </div>
 
       {/* Top edge fade — casts a shadow band when the next card slides in */}
@@ -193,63 +181,7 @@ function ProjectCard({ project, index, isActive, isMounted, onCardRef }: Project
 }
 
 // ── Container ─────────────────────────────────────────────────────────────────
-/*
-  Scroll-based background management — avoids IntersectionObserver sticky quirks.
-
-  Uses getBoundingClientRect on each card element to determine:
-    • "stuck" card   — rect.top near 0 (is the topmost visible sticky card)
-    • "entering" card — rect.top in (STUCK_THRESH, viewport height)
-                        (visible in viewport but not yet stuck)
-
-  activeIndex = highest-indexed "stuck" card (it's visually on top)
-  mountedSet  = stuck cards ∪ entering cards  (max 2 at a time during transitions)
-
-  This fires on every Lenis tick because Lenis uses window.scrollTo(), so
-  window.scroll events fire in real-time during smooth scroll animations.
-*/
 export default function ProjectsStack() {
-  const cardEls = useRef<(HTMLDivElement | null)[]>([]);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [mountedSet, setMountedSet]   = useState<ReadonlySet<number>>(new Set([0]));
-
-  const handleCardRef = useCallback((index: number, el: HTMLDivElement | null) => {
-    cardEls.current[index] = el;
-  }, []);
-
-  useEffect(() => {
-    const STUCK_THRESH = 10; // px — tolerance for "stuck at top"
-
-    const update = () => {
-      const vh = window.innerHeight;
-      let nextActive  = 0;
-      let enteringIdx = -1;
-
-      cardEls.current.forEach((el, i) => {
-        if (!el) return;
-        const top = el.getBoundingClientRect().top;
-
-        if (top >= -STUCK_THRESH && top <= STUCK_THRESH) {
-          // Card is stuck at viewport top → track highest index
-          nextActive = Math.max(nextActive, i);
-        } else if (top > STUCK_THRESH && top < vh) {
-          // Card is entering from below → track highest index
-          enteringIdx = Math.max(enteringIdx, i);
-        }
-      });
-
-      const next = new Set<number>();
-      next.add(nextActive);
-      if (enteringIdx >= 0) next.add(enteringIdx);
-
-      setActiveIndex(nextActive);
-      setMountedSet(next);
-    };
-
-    update();
-    window.addEventListener('scroll', update, { passive: true });
-    return () => window.removeEventListener('scroll', update);
-  }, []);
-
   return (
     <div className="projects-stack-outer" id="work">
       {projects.map((project, i) => (
@@ -257,9 +189,6 @@ export default function ProjectsStack() {
           key={project.number}
           project={project}
           index={i}
-          isActive={activeIndex === i}
-          isMounted={mountedSet.has(i)}
-          onCardRef={handleCardRef}
         />
       ))}
     </div>

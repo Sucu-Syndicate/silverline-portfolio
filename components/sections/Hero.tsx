@@ -125,19 +125,16 @@ export default function Hero() {
 
       <div className="hero-inner">
         <div className="hero-left">
-          <motion.div
-            className="hero-ascii-heading"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            aria-label="Matheo Guevara"
-          >
+          <div className="hero-ascii-heading" aria-label="Matheo Guevara">
             <ASCIIText
               text="Matheo Guevara"
               enableWaves={false}
               asciiFontSize={8}
+              textFontSize={200}
+              textColor="#fdf9f3"
+              planeBaseHeight={8}
             />
-          </motion.div>
+          </div>
 
           <motion.p className="hero-sub" {...fadeUp(0.9)}>
             AI agent developer. Directs and ships full products solo, using
@@ -155,8 +152,9 @@ export default function Hero() {
             url="/3d_assets/silver-laptop/laptop.obj"
             mtlUrl="/3d_assets/silver-laptop/laptop.mtl"
             width="100%"
-            height={420}
-            cameraZ={6}
+            height={560}
+            cameraZ={4}
+            fov={55}
             rotateSpeed={0.6}
           />
         </div>
