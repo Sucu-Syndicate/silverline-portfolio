@@ -14,26 +14,18 @@ export default function Nav() {
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
+    const sentinel = document.getElementById('nav-sentinel');
+    if (!sentinel) return;
     const obs = new IntersectionObserver(
       ([e]) => setScrolled(!e.isIntersecting),
       { threshold: 0 },
     );
-    const sentinel = document.getElementById('nav-sentinel');
-    if (sentinel) obs.observe(sentinel);
+    obs.observe(sentinel);
     return () => obs.disconnect();
   }, []);
 
   return (
-    <header
-      className="nav"
-      style={{
-        borderBottom: scrolled ? '1px solid var(--border)' : '1px solid transparent',
-        background: scrolled ? 'rgba(15,16,14,0.92)' : 'transparent',
-        backdropFilter: scrolled ? 'blur(12px)' : 'none',
-        WebkitBackdropFilter: scrolled ? 'blur(12px)' : 'none',
-        transition: 'background 0.3s ease, border-color 0.3s ease',
-      }}
-    >
+    <header className={`nav${scrolled ? ' nav--pill' : ''}`}>
       <Link href="/" className="brand">matheo.guevara.ar</Link>
       <nav>
         <ul>

@@ -116,10 +116,22 @@ a { color: inherit; text-decoration: none; }
 .grain.hero-grain { opacity: 0.04; }
 
 /* ─── Nav ────────────────────────────────────────────── */
+/*
+  Two-state nav:
+  Default  — transparent full-width strip, flush with page frame (8px inset)
+  --pill   — floating centered pill with glass background
+
+  Position is always left:50% + translateX(-50%) so the nav contracts
+  symmetrically as max-width shrinks. width:calc(100%-16px) equals left:8px+right:8px.
+*/
 .nav {
   position: fixed;
-  top: 8px; left: 8px; right: 8px; /* sits inside the 8px page-frame ring */
-  z-index: 999; /* above the frame overlay (z-index: 998) */
+  top: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: calc(100% - 16px);
+  max-width: 2400px; /* effectively unconstrained in bar state */
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -129,11 +141,55 @@ a { color: inherit; text-decoration: none; }
   font-size: 13px;
   letter-spacing: 0.02em;
   color: var(--text);
+  border-radius: 0;
+  background: transparent;
+  border: 1px solid transparent;
+  transition:
+    max-width      0.55s var(--ease-out-expo),
+    top            0.45s var(--ease-out-expo),
+    padding        0.45s var(--ease-out-expo),
+    border-radius  0.45s var(--ease-out-expo),
+    background     0.3s ease,
+    backdrop-filter       0.3s ease,
+    -webkit-backdrop-filter 0.3s ease,
+    border-color   0.35s ease,
+    box-shadow     0.35s ease,
+    justify-content 0s;
 }
+/* Pill state — compact floating capsule */
+.nav.nav--pill {
+  top: 16px;
+  max-width: 360px;
+  padding: 10px 28px;
+  border-radius: 999px;
+  background: rgba(15, 16, 14, 0.88);
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border-color: var(--border);
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  justify-content: center;
+}
+/* Brand fades out and collapses in pill state */
 .nav .brand {
   font-weight: 800;
   letter-spacing: -0.01em;
   font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  max-width: 280px;
+  opacity: 1;
+  transition:
+    opacity   0.25s ease,
+    max-width 0.35s var(--ease-out-expo),
+    margin    0.35s var(--ease-out-expo);
+}
+.nav.nav--pill .brand {
+  opacity: 0;
+  max-width: 0;
+  margin-right: 0;
+  pointer-events: none;
 }
 .nav ul {
   display: flex;
@@ -141,7 +197,9 @@ a { color: inherit; text-decoration: none; }
   list-style: none;
   margin: 0;
   padding: 0;
+  transition: gap 0.35s var(--ease-out-expo);
 }
+.nav.nav--pill ul { gap: 22px; }
 .nav a:hover { color: var(--accent); }
 .nav-disabled {
   color: var(--text-dim);
@@ -1082,8 +1140,9 @@ a { color: inherit; text-decoration: none; }
   .note-readtime { display: none; }
 
   /* Nav */
-  .nav ul { gap: 16px; }
-  .nav { padding: 18px clamp(16px, 4vw, 56px); }
+  .nav ul { gap: 14px; }
+  .nav:not(.nav--pill) { padding: 18px clamp(16px, 4vw, 56px); }
+  .nav.nav--pill { max-width: calc(100% - 32px); padding: 8px 18px; }
 }
 
 /* ─── Section divider ───────────────────────────────── */
@@ -1132,12 +1191,22 @@ a { color: inherit; text-decoration: none; }
   background: transparent;
 }
 
+/* ─── Background canvas fill — shared by all WebGL bg components ─────────── */
+.bg-canvas-fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
 /* ─── Projects Stack ──────────────────────────────────── */
 /*
   Sticky scroll stack — one full-viewport card per project.
   415dvh total: 400dvh for 4 × 100dvh cards + 15dvh exit leeway before Blog.
   Cards sit at their natural flow position and stick to top:0 as you scroll.
   Higher z-index cards slide up and cover lower ones — pure CSS, no listeners.
+  Only the ACTIVE card (highest intersecting z-index) renders a WebGL background.
 */
 .projects-stack-outer {
   position: relative;
@@ -1153,47 +1222,45 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   overflow: hidden;
-  /*
-    sticky elements are positioned elements — they act as the containing block
-    for position: absolute children. No extra position: relative needed.
-  */
 }
 
-/* Per-card backgrounds — each surface is distinct, scoped --card-bg for the veil gradient */
-.project-card--1 { background: var(--surface-2); --card-bg: var(--surface-2); }
-.project-card--2 { background: var(--surface);   --card-bg: var(--surface);   }
-.project-card--3 { background: var(--accent-bg); --card-bg: var(--accent-bg); }
-.project-card--4 { background: var(--bg);        --card-bg: var(--bg);        }
+/*
+  Per-card base backgrounds and accent vars.
+  --p-accent-rgb  used for glass card border / glow / separator.
+  --p-bg          used for glass card background tint.
+*/
+.project-card--1 {
+  background: #0d0b0e;
+  --p-accent-rgb: 196, 162, 101;
+  --p-bg-rgb: 13, 11, 14;
+}
+.project-card--2 {
+  background: #080010;
+  --p-accent-rgb: 139, 92, 246;
+  --p-bg-rgb: 8, 0, 16;
+}
+.project-card--3 {
+  background: #04000f;
+  --p-accent-rgb: 143, 115, 255;
+  --p-bg-rgb: 4, 0, 15;
+}
+.project-card--4 {
+  background: #010c1a;
+  --p-accent-rgb: 67, 139, 255;
+  --p-bg-rgb: 1, 12, 26;
+}
 
-/* Background container — fills the right side of each card, pointer-events off */
+/* Background container — full card, pointer-events off */
 .project-card-bg {
   position: absolute;
   inset: 0;
-  opacity: 0.45;
   pointer-events: none;
   overflow: hidden;
   z-index: 0;
 }
 
 /*
-  Left-side gradient veil — bleeds the card's own bg over the canvas so text
-  stays readable. Uses the per-card --card-bg variable for a seamless match.
-*/
-.project-card-veil {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    to right,
-    var(--card-bg, var(--bg)) 32%,
-    transparent 68%
-  );
-  pointer-events: none;
-  z-index: 1;
-}
-
-/*
-  Top-edge shadow — casts a shallow dark band across the top of each card.
-  When the next card slides up over this one, this band reads as natural depth.
+  Top-edge shadow — casts a shallow dark band when the next card slides in.
 */
 .project-card-edge {
   position: absolute;
@@ -1201,19 +1268,39 @@ a { color: inherit; text-decoration: none; }
   left: 0;
   right: 0;
   height: 90px;
-  background: linear-gradient(to bottom, var(--bg), transparent);
+  background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7), transparent);
   pointer-events: none;
   z-index: 2;
 }
 
-/* Content layer — sits above bg (0), veil (1), edge (2) */
+/* Content layer — sits above bg (0) and edge (2) */
 .project-card-inner {
   position: relative;
   z-index: 3;
-  max-width: 1200px;
   width: 100%;
-  margin: 0 auto;
   padding: 0 clamp(24px, 6vw, 80px);
+  display: flex;
+  align-items: center;
+}
+
+/* ── Glassmorphic card ──────────────────────────────────
+   Background and border use per-card --p-accent-rgb / --p-bg-rgb vars.
+   Fonts: Archivo (structure). No Inter. No hardcoded hex in rules below.
+*/
+.project-glass-card {
+  max-width: 560px;
+  width: 100%;
+  background: rgba(var(--p-bg-rgb), 0.32);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.24);
+  border-radius: 16px;
+  padding: 40px 48px;
+  box-shadow:
+    0 0 0 1px rgba(var(--p-accent-rgb), 0.06),
+    0 0 56px rgba(var(--p-accent-rgb), 0.10),
+    0 24px 56px rgba(0, 0, 0, 0.50),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 .project-card-label {
@@ -1221,39 +1308,68 @@ a { color: inherit; text-decoration: none; }
   font-size: 11px;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--accent);
-  margin: 0 0 20px;
+  color: rgba(var(--p-accent-rgb), 0.85);
+  margin: 0 0 18px;
 }
 
 .project-card-title {
   font-family: var(--font-structure);
-  font-size: clamp(40px, 7vw, 96px);
-  font-weight: 700;
+  font-size: clamp(32px, 5.5vw, 72px);
+  font-weight: 800;
   letter-spacing: -0.02em;
   line-height: 1;
   color: var(--text);
-  margin: 0 0 24px;
+  margin: 0 0 18px;
   text-transform: uppercase;
 }
 
-/* Scrambled-state chars during DecryptedText animation */
+/* Scrambled chars during DecryptedText animation */
 .project-title-enc { color: var(--text-dim); }
 
 .project-card-tagline {
   font-family: var(--font-structure);
-  font-size: 15px;
-  line-height: 1.6;
-  color: var(--text-2);
-  margin: 0 0 28px;
-  max-width: 520px;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(var(--p-accent-rgb), 0.82);
+  margin: 0;
+  max-width: 44ch;
 }
 
+/* Horizontal accent separator */
+.project-glass-sep {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(var(--p-accent-rgb), 0.55) 0%,
+    rgba(var(--p-accent-rgb), 0.08) 100%
+  );
+  margin: 24px 0;
+}
+
+/* Stack chip tags */
 .project-card-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
 }
 
+.project-glass-tag {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 5px 14px;
+  border-radius: 100px;
+  background: rgba(var(--p-accent-rgb), 0.07);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.20);
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+/* Kept for backwards compat if referenced elsewhere */
 .project-card-tag {
   font-family: var(--font-mono);
   font-size: 10px;
@@ -1262,76 +1378,6 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-dim);
   border: 1px solid var(--border);
   padding: 4px 10px;
-}
-
-/* CSS background fills — compositor-animated, zero JS overhead.
-   All animations run on the GPU compositor thread. */
-.project-card-bg-fill {
-  position: absolute;
-  inset: 0;
-}
-
-/* VELVET — dark navy with slow-breathing green aurora glow */
-.project-card-bg-fill--1 {
-  background:
-    radial-gradient(ellipse 60% 80% at 72% 50%, rgba(93,166,122,0.20) 0%, transparent 65%),
-    radial-gradient(ellipse 80% 100% at 82% 50%, rgba(13,27,38,0.55) 0%, transparent 75%);
-  animation: bg-aurora 14s ease-in-out infinite;
-  will-change: transform;
-}
-@keyframes bg-aurora {
-  0%, 100% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.08) translateY(-4%); }
-}
-
-/* MYOBSCELIUM-MCP — diagonal analytical lines drifting slowly */
-.project-card-bg-fill--2 {
-  inset: -60px;
-  background: repeating-linear-gradient(
-    -58deg,
-    transparent 0px,
-    transparent 15px,
-    rgba(184,182,173,0.055) 15px,
-    rgba(184,182,173,0.055) 16px
-  );
-  animation: bg-threads 28s linear infinite;
-  will-change: transform;
-}
-@keyframes bg-threads {
-  from { transform: translate(0, 0); }
-  to { transform: translate(36px, 28px); }
-}
-
-/* MERIDIAN SAGE — layered depth with sage green tones */
-.project-card-bg-fill--3 {
-  background:
-    radial-gradient(ellipse 45% 60% at 68% 42%, rgba(46,88,66,0.55) 0%, transparent 55%),
-    radial-gradient(ellipse 70% 85% at 76% 58%, rgba(93,166,122,0.10) 0%, transparent 70%);
-  animation: bg-topo 16s ease-in-out infinite;
-  will-change: transform;
-}
-@keyframes bg-topo {
-  0%, 100% { transform: scale(1) translateY(0); }
-  33% { transform: scale(1.04) translateY(-3%); }
-  66% { transform: scale(1.07) translateY(2%); }
-}
-
-/* FACTUR2D2 — horizontal mechanical scan lines with slow drift */
-.project-card-bg-fill--4 {
-  inset: -40px;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent 0px,
-    transparent 26px,
-    rgba(110,112,104,0.07) 26px,
-    rgba(110,112,104,0.07) 27px
-  );
-  animation: bg-scanlines 12s ease-in-out infinite;
-  will-change: transform;
-}
-@keyframes bg-scanlines {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(27px); }
 }
 
 /* ─── Blog ───────────────────────────────────────────── */
@@ -1476,4 +1522,6 @@ a { color: inherit; text-decoration: none; }
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+  /* Hide WebGL canvas backgrounds — static card bg fallback shows instead */
+  .project-card-bg { display: none; }
 }
