@@ -256,6 +256,7 @@ class CanvAscii {
   renderer!: THREE.WebGLRenderer;
   filter!: AsciiFilter;
   center!: { x: number; y: number };
+  textAspect!: number;
 
   constructor(opts: CanvAsciiOptions, containerElem: HTMLElement, width: number, height: number) {
     this.textString = opts.text;
@@ -300,11 +301,10 @@ class CanvAscii {
     this.texture = new THREE.CanvasTexture(this.textCanvas.texture);
     this.texture.minFilter = THREE.NearestFilter;
 
-    const textAspect = this.textCanvas.width / this.textCanvas.height;
-    const baseH = this.planeBaseHeight;
-    const planeW = baseH * textAspect;
+    this.textAspect = this.textCanvas.width / this.textCanvas.height;
 
-    this.geometry = new THREE.PlaneGeometry(planeW, baseH, 36, 36);
+    // Initial geometry — will be resized to fill the frustum in setSize()
+    this.geometry = new THREE.PlaneGeometry(1, 1, 36, 36);
     this.material = new THREE.ShaderMaterial({
       vertexShader,
       fragmentShader,
@@ -345,6 +345,19 @@ class CanvAscii {
     this.camera.updateProjectionMatrix();
     this.filter.setSize(w, h);
     this.center = { x: w / 2, y: h / 2 };
+
+    // Resize plane so text fills ~88% of the visible frustum width edge-to-edge.
+    // frustumH = 2 * tan(FOV/2) * cameraZ  →  frustumW = frustumH * aspect
+    if (this.mesh && this.textAspect) {
+      const vFovRad = (45 * Math.PI) / 180;
+      const frustumH = 2 * Math.tan(vFovRad / 2) * this.camera.position.z;
+      const frustumW = frustumH * (w / h);
+      const planeW = frustumW * 0.88;
+      const planeH = planeW / this.textAspect;
+      const next = new THREE.PlaneGeometry(planeW, planeH, 36, 36);
+      this.mesh.geometry.dispose();
+      this.mesh.geometry = next;
+    }
   }
 
   load() { this.animate(); }
