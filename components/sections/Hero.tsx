@@ -2,11 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import dynamic from 'next/dynamic';
 import { terminalLines, type TerminalLine } from '@/lib/terminal-lines';
 import ASCIIText from '@/components/ASCIIText';
-
-const ModelViewer = dynamic(() => import('@/components/ModelViewer'), { ssr: false });
 
 const TICK_MIN = 1000;
 const TICK_MAX = 2000;
@@ -124,18 +121,19 @@ export default function Hero() {
       <HeroLog />
 
       <div className="hero-inner">
-        <div className="hero-left">
-          <div className="hero-ascii-heading" aria-label="Matheo Guevara">
-            <ASCIIText
-              text="Matheo Guevara"
-              enableWaves={false}
-              asciiFontSize={8}
-              textFontSize={200}
-              textColor="#fdf9f3"
-              planeBaseHeight={8}
-            />
-          </div>
+        {/* ASCII heading — full width, spans across hero */}
+        <div className="hero-ascii-heading" aria-label="Matheo Guevara">
+          <ASCIIText
+            text="Matheo Guevara"
+            enableWaves={false}
+            asciiFontSize={8}
+            textFontSize={200}
+            textColor="#fdf9f3"
+            planeBaseHeight={14}
+          />
+        </div>
 
+        <div className="hero-left">
           <motion.p className="hero-sub" {...fadeUp(0.9)}>
             AI agent developer. Directs and ships full products solo, using
             AI-directed pipelines end to end.
@@ -145,18 +143,6 @@ export default function Hero() {
             <a href="#work" className="hero-meta-primary">VIEW WORK</a>
             <a href="/resume.pdf" className="hero-meta-primary" target="_blank" rel="noopener noreferrer">RESUME</a>
           </motion.div>
-        </div>
-        {/* right half — 3D laptop model */}
-        <div className="hero-right">
-          <ModelViewer
-            url="/3d_assets/silver-laptop/laptop.obj"
-            mtlUrl="/3d_assets/silver-laptop/laptop.mtl"
-            width="100%"
-            height={560}
-            cameraZ={4}
-            fov={55}
-            rotateSpeed={0.6}
-          />
         </div>
       </div>
     </section>

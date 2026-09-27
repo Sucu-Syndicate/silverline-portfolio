@@ -144,17 +144,17 @@ a { color: inherit; text-decoration: none; }
   border-radius: 0;
   background: transparent;
   border: 1px solid transparent;
-  /* Expand direction (pill → bar): expo ease-out, same curve used site-wide */
+  /* Expand direction (pill → bar): slow ease, no perky spring feel */
   transition:
-    max-width      0.45s var(--ease-out-expo),
-    top            0.38s var(--ease-out-expo),
-    padding        0.38s var(--ease-out-expo),
-    border-radius  0.35s var(--ease-out-expo),
-    background     0.28s ease,
-    backdrop-filter       0.28s ease,
-    -webkit-backdrop-filter 0.28s ease,
-    border-color   0.28s ease,
-    box-shadow     0.28s ease;
+    max-width      0.7s  ease,
+    top            0.55s ease,
+    padding        0.55s ease,
+    border-radius  0.5s  ease,
+    background     0.4s  ease,
+    backdrop-filter       0.4s ease,
+    -webkit-backdrop-filter 0.4s ease,
+    border-color   0.4s  ease,
+    box-shadow     0.4s  ease;
 }
 /* Pill state — compact floating capsule */
 .nav.nav--pill {
@@ -216,16 +216,25 @@ a { color: inherit; text-decoration: none; }
 }
 
 .hero-inner {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: clamp(24px, 4vw, 80px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   padding: clamp(100px, 12vh, 160px) clamp(20px, 4vw, 56px) clamp(60px, 8vh, 120px);
   min-height: 100vh;
   min-height: 100svh;
-  align-items: center;
+  gap: 0;
+  text-align: center;
 }
 
-.hero-left { position: relative; z-index: 2; justify-self: start; }
+.hero-left {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 
 .hero-eyebrow {
   font-family: var(--font-mono);
@@ -237,22 +246,16 @@ a { color: inherit; text-decoration: none; }
   line-height: 1.5;
 }
 
-/* ASCII heading block — replaces the old h1 */
+/* ASCII heading — full width centerpiece */
 .hero-ascii-heading {
   position: relative;
   width: 100%;
-  height: clamp(140px, 18vw, 260px);
-  margin: 0 0 20px;
+  height: clamp(240px, 30vw, 480px);
+  margin: 0 0 32px;
+  overflow: visible;
+  flex-shrink: 0;
 }
 
-/* Right column: 3D model */
-.hero-right {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-}
 
 .hero-sub {
   font-size: clamp(14px, 4vw, 18px);
@@ -1085,16 +1088,13 @@ a { color: inherit; text-decoration: none; }
 
 @media (max-width: 920px) {
   .hero-inner {
-    grid-template-columns: 1fr;
-    align-content: center;
-    min-height: 100vh;
-    min-height: 100svh;
     padding: clamp(80px, 12vh, 120px) clamp(20px, 4vw, 56px);
-    gap: 0;
+  }
+  .hero-ascii-heading {
+    height: clamp(140px, 22vw, 260px);
   }
   .hero-left {
-    justify-self: auto;
-    text-align: left;
+    text-align: center;
   }
   /* Terminal lines appear instantly on mobile — no GPU layer creation per tick */
   .hero-log .line { animation: none; }
