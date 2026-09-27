@@ -2,16 +2,34 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { useRouter } from 'next/navigation';
 import { getGPUTier } from 'detect-gpu';
-import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import SquishSwitch from '@/components/ui/SquishSwitch';
+import BorderGlow from '@/components/ui/BorderGlow';
 
 // ── Backgrounds — dynamic (client-only, code-split) ──────────────────────────
-const MoltenMetal = dynamic(() => import('@/components/backgrounds/MoltenMetal'), { ssr: false });
-const Silk        = dynamic(() => import('@/components/backgrounds/Silk'),        { ssr: false });
-const Topography  = dynamic(() => import('@/components/backgrounds/Topography'),  { ssr: false });
-const ColorBends  = dynamic(() => import('@/components/backgrounds/ColorBends'),  { ssr: false });
+const MoltenMetal    = dynamic(() => import('@/components/backgrounds/MoltenMetal'), { ssr: false });
+const Silk           = dynamic(() => import('@/components/backgrounds/Silk'),        { ssr: false });
+const ColorBends     = dynamic(() => import('@/components/backgrounds/ColorBends'),  { ssr: false });
+const FlexCarousel   = dynamic(() => import('@/components/ui/FlexCarousel'),         { ssr: false });
+
+// ── Carousel images for the "see all" section background ─────────────────────
+const CAROUSEL_ITEMS = [
+  { src: '/images/carousel/c01.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c02.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c03.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c04.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c05.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c06.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c07.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c08.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c09.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c10.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c11.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c12.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c13.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c14.webp', alt: 'Project screenshot' },
+];
 
 // ── Project data ──────────────────────────────────────────────────────────────
 const projects = [
@@ -32,13 +50,6 @@ const projects = [
   {
     number:  '03',
     label:   'PROJECT 03',
-    name:    'MERIDIAN SAGE',
-    tagline: 'Domain-specific AI consultant with a 7-stage hybrid retrieval engine.',
-    tags:    ['Next.js', 'FastAPI', 'Vertex AI', 'ChromaDB'],
-  },
-  {
-    number:  '04',
-    label:   'PROJECT 04',
     name:    'FACTUR2D2',
     tagline: 'Automated tax filing bot & headless Selenium infrastructure.',
     tags:    ['Python', 'Selenium', 'Telegram API', 'Raspberry Pi'],
@@ -84,32 +95,6 @@ function CardBackground({ index, paused, quality }: { index: number; paused: boo
         />
       );
     case 2:
-      return (
-        <Topography
-          lowColor="#8f73ff"
-          midColor="#ffcafd"
-          highColor="#ffffff"
-          speed={0.3}
-          morphAmount={3.0}
-          morphSpeed={0.05}
-          bands={1.5}
-          thickness={0.01}
-          scale={1.0}
-          pixelSize={1.0}
-          glow={0.5}
-          colorMode="elevation"
-          contrast={3.0}
-          brightness={1.0}
-          fillBands={false}
-          opacity={1.0}
-          grain={false}
-          mouseInteraction={false}
-          mouseRadius={0.05}
-          mouseStrength={0}
-          paused={paused}
-        />
-      );
-    case 3:
       return (
         <ColorBends
           rotation={90}
@@ -203,13 +188,12 @@ function getCachedGPUQuality(): 'low' | 'medium' | 'high' {
 
 export default function ProjectsStack() {
   const outerRef   = useRef<HTMLDivElement>(null);
+  const router     = useRouter();
   const [activeSet, setActiveSet] = useState<ReadonlySet<number>>(() => new Set([0]));
   const prevKeyRef = useRef('0');
   const [gpuQuality,   setGpuQuality]   = useState<'low' | 'medium' | 'high'>(() =>
     typeof window !== 'undefined' ? getCachedGPUQuality() : 'medium'
   );
-  // Moving backgrounds — off by default (no WebGL until user opts in)
-  const [webglEnabled, setWebglEnabled] = useState(false);
 
   // Detect GPU tier — updates quality for current and future sessions
   useEffect(() => {
@@ -227,12 +211,12 @@ export default function ProjectsStack() {
 
     const tick = () => {
       const s = -outer.getBoundingClientRect().top / window.innerHeight;
-      const sc = Math.min(Math.max(s, 0), 4);
-      const base = Math.min(3, Math.floor(sc));
+      const sc = Math.min(Math.max(s, 0), 3);
+      const base = Math.min(2, Math.floor(sc));
       const frac = sc - base;
       const next = new Set<number>();
       if (frac < 0.95) next.add(base);
-      if (frac > 0.05 && base < 3) next.add(base + 1);
+      if (frac > 0.05 && base < 2) next.add(base + 1);
       if (next.size === 0) next.add(base); // clamped edge (s < 0 or s ≥ 4)
       const key = [...next].sort().join(',');
       if (key !== prevKeyRef.current) {
@@ -248,32 +232,7 @@ export default function ProjectsStack() {
 
   return (
     <section id="work">
-      {/* Section header — sits above the sticky scroll stack */}
-      <div className="projects-section-head">
-        <div>
-          <p className="section-label">Featured</p>
-          <h2 className="section-title">PROJECTS</h2>
-        </div>
-        <div className="projects-head-right">
-          <SquishSwitch
-            checked={webglEnabled}
-            onChange={setWebglEnabled}
-            label="moving backgrounds"
-            ariaLabel="Toggle moving backgrounds"
-            width={44}
-            height={24}
-            radius={12}
-            trackColor="#222420"
-            trackOnColor="#5DA67A"
-            thumbOnColor="#0F100E"
-          />
-          <Link href="/work" className="section-link">
-            All projects →
-          </Link>
-        </div>
-      </div>
-
-      {/* Sticky scroll stack */}
+      {/* Sticky scroll stack — no header, cards speak for themselves */}
       <div className="projects-stack-outer" ref={outerRef}>
         {projects.map((project, i) => (
           <ProjectCard
@@ -282,9 +241,63 @@ export default function ProjectsStack() {
             index={i}
             paused={!activeSet.has(i)}
             quality={gpuQuality}
-            webglEnabled={webglEnabled}
+            webglEnabled={true}
           />
         ))}
+      </div>
+
+      {/* See all projects — plain-flow rectangle, no sticky */}
+      <div className="projects-see-all">
+        {/* Background carousel — behind the card, no interaction */}
+        <div className="projects-see-all-carousel-bg" aria-hidden="true">
+          <FlexCarousel
+            items={CAROUSEL_ITEMS}
+            preset="liquid"
+            intro="rise"
+            cardHeight={0.5}
+            gap={12}
+            squeeze={0.2}
+            focusOnClick={false}
+            captions={false}
+            captureWheel={false}
+            autoplay
+          />
+        </div>
+        <BorderGlow
+          backgroundColor="#0F100E"
+          borderRadius={28}
+          glowColor="42 18 60"
+          colors={['#E8E6DD', '#B8B6AD', '#E8E6DD']}
+          glowRadius={52}
+          glowIntensity={0.9}
+          fillOpacity={0.18}
+          alwaysOn
+        >
+          <div className="projects-see-all-inner">
+            <div className="projects-see-all-text">
+              <ScrollReveal delay={0}>
+                <p className="projects-see-all-label">WORK ARCHIVE</p>
+              </ScrollReveal>
+              <ScrollReveal delay={0.08}>
+                <h2 className="projects-see-all-heading">WANT MORE?</h2>
+              </ScrollReveal>
+              <ScrollReveal delay={0.16}>
+                <p className="projects-see-all-sub">
+                  Browse the full archive — experiments, case studies, and shipped products.
+                </p>
+              </ScrollReveal>
+            </div>
+            <ScrollReveal delay={0.22}>
+              <button
+                className="projects-see-all-btn"
+                onClick={() => router.push('/work')}
+                type="button"
+              >
+                See all projects
+              </button>
+            </ScrollReveal>
+          </div>
+        </BorderGlow>
       </div>
     </section>
   );

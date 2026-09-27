@@ -1213,7 +1213,7 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── About section sizing ────────────────────────────── */
 .section--about {
-  padding-bottom: clamp(120px, 18vh, 200px);
+  padding-bottom: clamp(100px, 14vh, 160px);
 }
 
 /* ─── Physics Badges ─────────────────────────────────── */
@@ -1223,26 +1223,19 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid var(--border);
-  margin-top: 48px;
+  margin-top: 12px;
   cursor: default;
 }
 
-/* Stack block — mirrors About heading structure at subtitle scale */
 .stack-block {
   margin-top: 56px;
-  margin-bottom: 20px;
+  margin-bottom: 6px;
 }
-.stack-title {
-  font-family: var(--font-structure);
-  font-size: clamp(20px, 2.8vw, 30px);
-  font-weight: 700;
-  letter-spacing: -0.02em;
-  line-height: 1.2;
-  color: var(--text);
-  margin: 6px 0 0;
+.stack-block .about-text {
+  margin-top: 32px;
 }
 
-/* Reset button — top-right */
+/* Reset — bare icon, no chrome */
 .phys-reset {
   position: absolute;
   top: 12px;
@@ -1251,26 +1244,15 @@ a { color: inherit; text-decoration: none; }
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  height: 22px;
-  padding: 0 9px;
-  border-radius: 4px;
-  border: 1px solid var(--border-2);
-  background: var(--surface-2);
+  padding: 4px;
+  background: none;
+  border: none;
   color: var(--text-dim);
-  font-family: var(--font-mono);
-  font-size: 9px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  opacity: 0.4;
   cursor: pointer;
-  transition: color 0.15s, border-color 0.15s, background 0.15s;
+  transition: opacity 0.15s;
 }
-.phys-reset:hover {
-  color: var(--text-2);
-  border-color: var(--border-2);
-  background: var(--raised);
-}
+.phys-reset:hover { opacity: 1; }
 
 /* Initial flex layout before physics fires */
 .physics-badges-inner {
@@ -1281,21 +1263,16 @@ a { color: inherit; text-decoration: none; }
   align-content: flex-start;
 }
 
+/* Hide the pre-physics flex grid — visible only once physics has taken over */
+.physics-badges-inner:not(.physics-badges-live) {
+  visibility: hidden;
+}
+
 /* Once live, the wrapper collapses (children are position:absolute) */
 .physics-badges-live {
   display: block;
   padding: 0;
-}
-
-/* Matter.js canvas — sits behind badges */
-.physics-badges-canvas {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-}
-.physics-badges-canvas canvas {
-  display: block;
+  visibility: visible;
 }
 
 /* Individual shields.io-style badge */
@@ -1315,6 +1292,7 @@ a { color: inherit; text-decoration: none; }
   user-select: none;
   cursor: grab;
   z-index: 1;
+  will-change: transform;
   /* Subtle inner highlight mimicking shields.io gloss */
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.13), 0 2px 6px rgb(0 0 0 / 0.45);
 }
@@ -1338,24 +1316,6 @@ a { color: inherit; text-decoration: none; }
   contain: layout paint style;
 }
 
-/* ─── Projects section header ────────────────────────── */
-.projects-section-head {
-  display: flex;
-  align-items: flex-end;
-  justify-content: space-between;
-  padding: clamp(80px, 12vh, 140px) clamp(24px, 5vw, 72px) 40px;
-  max-width: calc(1400px + 2 * clamp(24px, 5vw, 72px));
-  margin: 0 auto;
-  gap: 24px;
-  flex-wrap: wrap;
-  border-top: 1px solid var(--border);
-}
-.projects-head-right {
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  flex-shrink: 0;
-}
 
 /* ─── SquishSwitch ────────────────────────────────────── */
 .squish-switch-root {
@@ -1430,14 +1390,14 @@ a { color: inherit; text-decoration: none; }
 /* ─── Projects Stack ──────────────────────────────────── */
 /*
   Sticky scroll stack — one full-viewport card per project.
-  415dvh total: 400dvh for 4 × 100dvh cards + 15dvh exit leeway before Blog.
+  315dvh total: 300dvh for 3 × 100dvh cards + 15dvh exit leeway before Blog.
   Cards sit at their natural flow position and stick to top:0 as you scroll.
   Higher z-index cards slide up and cover lower ones — pure CSS, no listeners.
   Only the ACTIVE card (highest intersecting z-index) renders a WebGL background.
 */
 .projects-stack-outer {
   position: relative;
-  height: 415dvh;
+  height: 315dvh;
 }
 
 .project-card {
@@ -1457,11 +1417,6 @@ a { color: inherit; text-decoration: none; }
   will-change: transform;
 }
 
-/* Last card gets a bottom separator */
-.project-card--4 {
-  border-bottom: 1px solid var(--border);
-}
-
 /*
   Per-card base backgrounds and accent vars.
   --p-accent-rgb  used for glass card border / glow / separator.
@@ -1477,15 +1432,12 @@ a { color: inherit; text-decoration: none; }
   --p-accent-rgb: 139, 92, 246;
   --p-bg-rgb: 8, 0, 16;
 }
+/* Last card — blue theme (ColorBends / Factur2D2) */
 .project-card--3 {
-  background: #04000f;
-  --p-accent-rgb: 143, 115, 255;
-  --p-bg-rgb: 4, 0, 15;
-}
-.project-card--4 {
   background: #010c1a;
   --p-accent-rgb: 67, 139, 255;
   --p-bg-rgb: 1, 12, 26;
+  border-bottom: 1px solid var(--border);
 }
 
 /* Background container — full card, pointer-events off */
@@ -1616,6 +1568,102 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-dim);
   border: 1px solid var(--border);
   padding: 4px 10px;
+}
+
+/* ─── Projects — see all rectangle ─────────────────────── */
+.projects-see-all {
+  padding: 80px 14px;
+  display: flex;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Background carousel layer */
+.projects-see-all-carousel-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.22;
+  pointer-events: none;
+}
+
+/* Constrained — not full width like the stack cards */
+.projects-see-all > .border-glow-card {
+  width: 100%;
+  max-width: 840px;
+  position: relative;
+  z-index: 1;
+}
+
+.projects-see-all-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 48px;
+  padding: 56px 64px;
+}
+
+.projects-see-all-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.projects-see-all-label {
+  font-family: var(--font-archivo), Archivo, sans-serif;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0 0 16px;
+}
+
+.projects-see-all-heading {
+  font-family: var(--font-archivo), Archivo, sans-serif;
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1;
+  color: var(--text);
+  margin: 0 0 20px;
+}
+
+.projects-see-all-sub {
+  font-family: var(--font-archivo), Archivo, sans-serif;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-2);
+  margin: 0;
+  max-width: 40ch;
+}
+
+.projects-see-all-btn {
+  font-family: var(--font-archivo), Archivo, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text);
+  background: transparent;
+  border: 1px solid var(--border-2);
+  border-radius: 10px;
+  padding: 14px 28px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
+.projects-see-all-btn:hover {
+  border-color: var(--text-2);
+  color: var(--text);
+}
+
+@media (max-width: 600px) {
+  .projects-see-all-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 40px 32px;
+  }
 }
 
 /* ─── Blog ───────────────────────────────────────────── */
