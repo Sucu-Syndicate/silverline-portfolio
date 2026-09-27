@@ -352,7 +352,7 @@ class CanvAscii {
       const vFovRad = (45 * Math.PI) / 180;
       const frustumH = 2 * Math.tan(vFovRad / 2) * this.camera.position.z;
       const frustumW = frustumH * (w / h);
-      const planeW = frustumW * 0.88;
+      const planeW = frustumW * 0.90;
       const planeH = planeW / this.textAspect;
       const next = new THREE.PlaneGeometry(planeW, planeH, 36, 36);
       this.mesh.geometry.dispose();
