@@ -22,10 +22,11 @@ export default function AboutSkills() {
         </p>
       </ScrollReveal>
 
-      <div className="badges-caption" aria-hidden="true">
-        <span className="badges-caption-text"><strong>Core stack</strong> — things I know well</span>
-        <span className="badges-caption-text">tech I&apos;ve used in projects</span>
-      </div>
+      <ScrollReveal delay={0.14}>
+        <p className="badges-intro">
+          The tools in my core stack and the tech I&apos;ve used across projects.
+        </p>
+      </ScrollReveal>
 
       <PhysicsBadges />
     </section>

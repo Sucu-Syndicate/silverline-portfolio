@@ -5,6 +5,7 @@ import Blog from '@/components/sections/Blog';
 import Changelog from '@/components/sections/Changelog';
 import Contact from '@/components/sections/Contact';
 import Footer from '@/components/layout/Footer';
+import FPSCounter from '@/components/ui/FPSCounter';
 
 export default function Page() {
   return (
@@ -16,6 +17,7 @@ export default function Page() {
       <Changelog />
       <Contact />
       <Footer />
+      <FPSCounter />
     </main>
   );
 }
