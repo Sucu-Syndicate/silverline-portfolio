@@ -133,6 +133,7 @@ export interface MoltenMetalProps {
   backgroundColor?: string;
   lightMode?: boolean;
   className?: string;
+  paused?: boolean;
 }
 
 export default function MoltenMetal({
@@ -157,8 +158,11 @@ export default function MoltenMetal({
   backgroundColor = '#FFFFFF',
   lightMode = false,
   className = '',
+  paused = false,
 }: MoltenMetalProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const tryStartRef = useRef<() => void>(() => {});
+  const tryStopRef  = useRef<() => void>(() => {});
 
   // Mount GL context once
   useEffect(() => {
@@ -171,6 +175,8 @@ export default function MoltenMetal({
       premultipliedAlpha: true,
       antialias: false,
       preserveDrawingBuffer: true,
+      stencil: false,
+      depth: false,
       dpr: Math.min(window.devicePixelRatio || 1, 1.5), // cap at 1.5 for perf
     });
 
@@ -267,6 +273,8 @@ export default function MoltenMetal({
 
     const tryStart = () => { if (isVisible && isPageVisible && raf === 0) raf = requestAnimationFrame(loop); };
     const tryStop  = () => { if (raf !== 0) { cancelAnimationFrame(raf); raf = 0; } };
+    tryStartRef.current = tryStart;
+    tryStopRef.current  = tryStop;
 
     // Pause when card leaves viewport
     const io = new IntersectionObserver(([entry]) => {
@@ -295,6 +303,11 @@ export default function MoltenMetal({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (paused) tryStopRef.current();
+    else        tryStartRef.current();
+  }, [paused]);
 
   // Hot-update uniforms without re-creating the context
   useEffect(() => {

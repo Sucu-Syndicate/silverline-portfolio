@@ -2,7 +2,8 @@
 'use client';
 
 import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect } from 'react';
+import { PerformanceMonitor } from '@react-three/drei';
+import { forwardRef, useRef, useMemo, useLayoutEffect, useEffect, useState } from 'react';
 import { Color, type Mesh } from 'three';
 
 const hexToNormalizedRGB = (hex: string): [number, number, number] => {
@@ -123,6 +124,7 @@ export interface SilkProps {
   noiseIntensity?: number;
   rotation?: number;
   lightMode?: boolean;
+  paused?: boolean;
 }
 
 export default function Silk({
@@ -132,8 +134,10 @@ export default function Silk({
   noiseIntensity = 1.5,
   rotation = 0,
   lightMode = false,
+  paused = false,
 }: SilkProps) {
   const meshRef = useRef<Mesh>(null);
+  const [dpr, setDpr] = useState(1);
 
   const uniforms = useMemo(() => ({
     uSpeed:          { value: speed },
@@ -157,12 +161,17 @@ export default function Silk({
 
   return (
     <Canvas
-      dpr={[1, 1.5]}
-      frameloop="always"
+      dpr={dpr}
+      frameloop={paused ? 'never' : 'always'}
       gl={{ preserveDrawingBuffer: true, antialias: false }}
       style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
     >
-      <SilkPlane ref={meshRef} uniforms={uniforms} />
+      <PerformanceMonitor
+        onDecline={() => setDpr(0.75)}
+        onIncline={() => setDpr(1)}
+      >
+        <SilkPlane ref={meshRef} uniforms={uniforms} />
+      </PerformanceMonitor>
     </Canvas>
   );
 }

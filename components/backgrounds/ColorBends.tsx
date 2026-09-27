@@ -119,6 +119,7 @@ export interface ColorBendsProps {
   iterations?: number;
   intensity?: number;
   bandWidth?: number;
+  paused?: boolean;
 }
 
 export default function ColorBends({
@@ -138,6 +139,7 @@ export default function ColorBends({
   iterations = 1,
   intensity = 1.5,
   bandWidth = 6,
+  paused = false,
 }: ColorBendsProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
@@ -150,6 +152,8 @@ export default function ColorBends({
   const pointerCurrentRef = useRef(new THREE.Vector2(0, 0));
   const isVisibleRef = useRef(true);
   const isPageVisibleRef = useRef(!document.hidden);
+  const tryStartRef = useRef<() => void>(() => {});
+  const tryStopRef  = useRef<() => void>(() => {});
 
   useEffect(() => {
     const container = containerRef.current;
@@ -193,10 +197,12 @@ export default function ColorBends({
       powerPreference: 'high-performance',
       alpha: true,
       preserveDrawingBuffer: true,
+      stencil: false,
+      depth: false,
     });
     rendererRef.current = renderer;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
+    renderer.setPixelRatio(1);
     renderer.setClearColor(0x000000, transparent ? 0 : 1);
     renderer.domElement.style.cssText = 'width:100%;height:100%;display:block;';
     container.appendChild(renderer.domElement);
@@ -214,8 +220,14 @@ export default function ColorBends({
     resizeObserverRef.current = ro;
 
     const clock = new THREE.Clock();
+    const FRAME_MS = 1000 / 30; // cap at 30fps
+    let lastFrameTs = 0;
 
-    const loop = () => {
+    const loop = (ts: number) => {
+      rafRef.current = requestAnimationFrame(loop);
+      const elapsed30 = ts - lastFrameTs;
+      if (elapsed30 < FRAME_MS) return;
+      lastFrameTs = ts - (elapsed30 % FRAME_MS);
       const dt = clock.getDelta();
       const elapsed = clock.elapsedTime;
       material.uniforms.uTime.value = elapsed;
@@ -227,7 +239,6 @@ export default function ColorBends({
       cur.lerp(tgt, Math.min(1, dt * 8));
       material.uniforms.uPointer.value.copy(cur);
       renderer.render(scene, camera);
-      rafRef.current = requestAnimationFrame(loop);
     };
 
     const tryStart = () => {
@@ -238,6 +249,8 @@ export default function ColorBends({
     const tryStop = () => {
       if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     };
+    tryStartRef.current = tryStart;
+    tryStopRef.current  = tryStop;
 
     const io = new IntersectionObserver(([entry]) => {
       isVisibleRef.current = entry.isIntersecting;
@@ -280,6 +293,11 @@ export default function ColorBends({
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    if (paused) tryStopRef.current();
+    else        tryStartRef.current();
+  }, [paused]);
 
   // Hot-update uniforms
   useEffect(() => {

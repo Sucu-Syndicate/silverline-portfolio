@@ -52,6 +52,18 @@
 
 * { box-sizing: border-box; }
 
+/* ─── Scrollbar — thin floating line, no track ──────── */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.14) transparent;
+}
+::-webkit-scrollbar { width: 3px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px;
+}
+
 html, body {
   margin: 0;
   padding: 0;
@@ -101,6 +113,33 @@ html::after {
   z-index: 998;
 }
 
+/* ─── Page frame corner fills ─────────────────────────────────────────────────
+   html::before has border-radius:28px, which curves the border ring's outer
+   edge and leaves the 4 rectangular viewport corners unpainted.
+   Fix: four 28×28px radial-gradient tiles, one per corner. Each gradient's
+   CENTER is the arc center (opposite corner of the tile from the viewport
+   corner), so "within 28px" = the quarter-circle inside the arc = transparent,
+   and "beyond 28px" = the rectangular corner triangle = #080907.
+
+   Arc center positions within each tile:
+     top-left  viewport corner → tile at 0 0     → arc center at 28px 28px
+     top-right viewport corner → tile at 100% 0  → arc center at 0    28px
+     bot-left  viewport corner → tile at 0 100%  → arc center at 28px 0
+     bot-right viewport corner → tile at 100% 100% → arc center at 0  0
+   ─────────────────────────────────────────────────────────────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at 28px 28px, transparent 28px, #080907 28px) 0    0    / 28px 28px no-repeat,
+    radial-gradient(circle at 0    28px, transparent 28px, #080907 28px) 100% 0    / 28px 28px no-repeat,
+    radial-gradient(circle at 28px 0,    transparent 28px, #080907 28px) 0    100% / 28px 28px no-repeat,
+    radial-gradient(circle at 0    0,    transparent 28px, #080907 28px) 100% 100% / 28px 28px no-repeat;
+  pointer-events: none;
+  z-index: 999;
+}
+
 a { color: inherit; text-decoration: none; }
 
 /* ─── Grain ─────────────────────────────────────────── */
@@ -144,22 +183,22 @@ a { color: inherit; text-decoration: none; }
   border-radius: 0;
   background: transparent;
   border: 1px solid transparent;
-  /* Expand direction (pill → bar): slow ease, no perky spring feel */
+  /* Expand direction (pill → bar): same easing as contract so it mirrors exactly */
   transition:
-    max-width      0.7s  ease,
-    top            0.55s ease,
-    padding        0.55s ease,
-    border-radius  0.5s  ease,
-    background     0.4s  ease,
-    backdrop-filter       0.4s ease,
-    -webkit-backdrop-filter 0.4s ease,
-    border-color   0.4s  ease,
-    box-shadow     0.4s  ease;
+    width          0.55s var(--ease-out-expo),
+    top            0.45s var(--ease-out-expo),
+    padding        0.45s var(--ease-out-expo),
+    border-radius  0.45s var(--ease-out-expo),
+    background     0.3s  ease,
+    backdrop-filter       0.3s ease,
+    -webkit-backdrop-filter 0.3s ease,
+    border-color   0.35s ease,
+    box-shadow     0.35s ease;
 }
 /* Pill state — compact floating capsule */
 .nav.nav--pill {
   top: 20px;
-  max-width: 480px;
+  width: 480px;
   padding: 10px 24px;
   border-radius: 999px;
   background: rgba(15, 16, 14, 0.88);
@@ -169,13 +208,13 @@ a { color: inherit; text-decoration: none; }
   box-shadow:
     0 4px 24px rgba(0, 0, 0, 0.55),
     inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  /* Contract direction (bar → pill): smooth */
+  /* Contract direction (bar → pill): same as expand so animation is a perfect mirror */
   transition:
-    max-width      0.55s var(--ease-out-expo),
+    width          0.55s var(--ease-out-expo),
     top            0.45s var(--ease-out-expo),
     padding        0.45s var(--ease-out-expo),
     border-radius  0.45s var(--ease-out-expo),
-    background     0.3s ease,
+    background     0.3s  ease,
     backdrop-filter       0.3s ease,
     -webkit-backdrop-filter 0.3s ease,
     border-color   0.35s ease,
@@ -199,6 +238,7 @@ a { color: inherit; text-decoration: none; }
 }
 .nav.nav--pill ul { gap: 22px; }
 .nav a:hover { color: var(--accent); }
+
 .nav-disabled {
   color: var(--text-dim);
   cursor: default;
@@ -1146,7 +1186,7 @@ a { color: inherit; text-decoration: none; }
   /* Nav */
   .nav ul { gap: 14px; }
   .nav:not(.nav--pill) { padding: 18px clamp(16px, 4vw, 56px); }
-  .nav.nav--pill { max-width: calc(100% - 32px); padding: 8px 18px; }
+  .nav.nav--pill { width: calc(100% - 32px); padding: 8px 18px; }
 }
 
 /* ─── Section divider ───────────────────────────────── */
@@ -1157,6 +1197,9 @@ a { color: inherit; text-decoration: none; }
   content-visibility: auto;
   contain-intrinsic-size: 0 500px;
 }
+
+/* Give the blog section breathing room below the last project card */
+#blog { margin-top: 40px; }
 
 /* ─── About ──────────────────────────────────────────── */
 .about-text {
@@ -1202,6 +1245,8 @@ a { color: inherit; text-decoration: none; }
   width: 100%;
   height: 100%;
   overflow: hidden;
+  will-change: transform;
+  contain: layout paint style;
 }
 
 /* ─── Projects Stack ──────────────────────────────────── */
@@ -1215,17 +1260,29 @@ a { color: inherit; text-decoration: none; }
 .projects-stack-outer {
   position: relative;
   height: 415dvh;
-  border-top: 1px solid var(--border);
 }
 
 .project-card {
   position: sticky;
   top: 0;
   height: 100dvh;
-  width: 100%;
+  /* Inset left + right by the frame border width so the card edge sits flush
+     with the frame's inner edge. border-radius then matches the outer page
+     border (28px) — same arc, visually identical rounding. */
+  margin: 0 14px;
+  width: auto;
   display: flex;
   align-items: center;
   overflow: hidden;
+  border-top: 1px solid var(--border);
+  border-radius: 28px 28px 0 0;
+  will-change: transform;
+}
+
+/* Last card rounds all corners + gets a bottom separator */
+.project-card--4 {
+  border-radius: 28px;
+  border-bottom: 1px solid var(--border);
 }
 
 /*

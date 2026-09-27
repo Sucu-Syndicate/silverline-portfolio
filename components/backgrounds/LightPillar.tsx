@@ -18,6 +18,7 @@ export interface LightPillarProps {
   pillarRotation?: number;
   quality?: 'low' | 'medium' | 'high';
   lightMode?: boolean;
+  paused?: boolean;
 }
 
 export default function LightPillar({
@@ -35,9 +36,14 @@ export default function LightPillar({
   pillarRotation = 0,
   quality = 'high',
   lightMode = false,
+  paused = false,
 }: LightPillarProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
+  // Stable refs so the paused useEffect can call tryStart/tryStop
+  // even though they're defined inside the main useEffect closure
+  const tryStartRef = useRef<() => void>(() => {});
+  const tryStopRef  = useRef<() => void>(() => {});
   const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
   const materialRef = useRef<THREE.ShaderMaterial | null>(null);
   const sceneRef = useRef<THREE.Scene | null>(null);
@@ -234,7 +240,7 @@ export default function LightPillar({
       container.addEventListener('mousemove', onMouseMove, { passive: true });
     }
 
-    const targetFPS = quality === 'low' ? 30 : 60;
+    const targetFPS = quality === 'high' ? 60 : 30;
     const frameTime = 1000 / targetFPS;
     let lastTime = performance.now();
 
@@ -261,6 +267,9 @@ export default function LightPillar({
     const tryStop = () => {
       if (rafRef.current !== null) { cancelAnimationFrame(rafRef.current); rafRef.current = null; }
     };
+    // Expose to the paused prop effect
+    tryStartRef.current = tryStart;
+    tryStopRef.current  = tryStop;
 
     // Viewport pause/resume
     const io = new IntersectionObserver(([entry]) => {
@@ -314,6 +323,12 @@ export default function LightPillar({
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [webGLSupported, quality]);
+
+  // External pause/resume — called by parent scroll tracker, bypasses IO
+  useEffect(() => {
+    if (paused) tryStopRef.current();
+    else        tryStartRef.current();
+  }, [paused]);
 
   useEffect(() => { rotationSpeedRef.current = rotationSpeed; }, [rotationSpeed]);
   useEffect(() => {
