@@ -23,9 +23,10 @@ export default function AboutSkills() {
       </ScrollReveal>
 
       <ScrollReveal delay={0.14}>
-        <p className="badges-intro">
-          The tools in my core stack and the tech I&apos;ve used across projects.
-        </p>
+        <div className="stack-block">
+          <p className="section-label">Stack</p>
+          <p className="stack-title">The tools in my core stack and tech I&apos;ve used across projects.</p>
+        </div>
       </ScrollReveal>
 
       <PhysicsBadges />
