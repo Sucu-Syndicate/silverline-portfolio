@@ -124,94 +124,125 @@ export default function PhysicsBadges() {
     const W = containerRef.current.clientWidth;
     const H = containerRef.current.clientHeight;
 
-    // ── Engine ──────────────────────────────────────────────────────────────
+    // ── Engine ───────────────────────────────────────────────────────────────
+    // positionIterations/velocityIterations: more solver passes → crisper collisions
+    // enableSleeping: bodies that settle stop being simulated → no resting jitter, less CPU
     const engine = Engine.create({
-      positionIterations: 10,   // default 6 — more accurate collision resolution
-      velocityIterations: 8,    // default 4 — crisper post-collision velocities
-      constraintIterations: 4,  // default 2
+      positionIterations:  10,
+      velocityIterations:  8,
+      constraintIterations: 4,
+      enableSleeping:      true,
     });
     engine.gravity.y = 2.2;
+    // Tighter penetration slop → collisions resolve immediately instead of
+    // allowing a frame of visible overlap before correction kicks in
+    (Matter.Resolver as any)._slop = 0.02;
 
-    // ── Renderer (transparent canvas — only needed for Mouse coord mapping) ──
+    // ── Renderer ─────────────────────────────────────────────────────────────
     const render = Render.create({
       element: canvasRef.current,
       engine,
       options: { width: W, height: H, background: 'transparent', wireframes: false },
     });
 
-    // ── Static boundaries ───────────────────────────────────────────────────
+    // ── Static boundaries ─────────────────────────────────────────────────────
     const wall = {
       isStatic: true,
       render: { fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 },
     };
-    const floor   = Bodies.rectangle(W / 2,   H + 25,   W + 100, 50,    wall);
-    const wallL   = Bodies.rectangle(-25,      H / 2,    50,      H * 3, wall);
-    const wallR   = Bodies.rectangle(W + 25,   H / 2,    50,      H * 3, wall);
-    const ceiling = Bodies.rectangle(W / 2, -30, W + 100, 50, wall);
+    const floor   = Bodies.rectangle(W / 2,    H + 25,  W + 100, 50,     wall);
+    const wallL   = Bodies.rectangle(-25,       H / 2,   50,      H * 3,  wall);
+    const wallR   = Bodies.rectangle(W + 25,    H / 2,   50,      H * 3,  wall);
+    const ceiling = Bodies.rectangle(W / 2,    -30,      W + 100, 50,     wall);
+    World.add(engine.world, [floor, wallL, wallR]);
 
-    // ── Build badge bodies from measured DOM elements ────────────────────────
+    // ── Measure ALL badges while they are still in-flow ───────────────────────
+    // Must happen before any el.style.position = 'absolute' call
     const allEls    = [...badgesRef.current.querySelectorAll<HTMLElement>('[data-badge]')];
     const knownEls  = allEls.filter(el => el.dataset.badge === 'known');
     const workedEls = allEls.filter(el => el.dataset.badge === 'worked');
 
-    function makePairs(els: HTMLElement[], xMin: number, xMax: number) {
-      const cols = Math.max(1, Math.round((xMax - xMin) / 130));
-      return els.map((el, i) => {
-        const bw = el.offsetWidth;
-        const bh = el.offsetHeight;
-        const col = i % cols;
-        const row = Math.floor(i / cols);
-        const x   = xMin + (col + 0.5) * ((xMax - xMin) / cols) + (Math.random() - 0.5) * 14;
-        const y   = -bh / 2 - row * (bh + 8) - Math.random() * 16;
+    type Sized = { el: HTMLElement; bw: number; bh: number };
+    const knownSized:  Sized[] = knownEls .map(el => ({ el, bw: el.offsetWidth, bh: el.offsetHeight }));
+    const workedSized: Sized[] = workedEls.map(el => ({ el, bw: el.offsetWidth, bh: el.offsetHeight }));
 
-        const body = Bodies.rectangle(x, y, bw, bh, {
-          restitution:   0.08,
-          frictionAir:   0.012,
-          friction:      0.6,
-          frictionStatic: 0.8,  // prevents resting bodies from sliding
-          chamfer:       { radius: 4 },  // rounds corners → kills edge-on-edge micro-collisions
-          density:       0.002,
-          render: { fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 },
-        });
+    // Pull all badges out of flow now — safe because we already have the sizes
+    allEls.forEach(el => {
+      el.style.position = 'absolute';
+      el.style.margin   = '0';
+      el.style.left     = '-9999px';  // park off-screen until physics picks them up
+      el.style.top      = '-9999px';
+    });
+    setLive(true);
+
+    // ── Body options ──────────────────────────────────────────────────────────
+    const BODY_OPTS: Matter.IBodyDefinition = {
+      restitution:    0.08,
+      frictionAir:    0.012,
+      friction:       0.6,
+      frictionStatic: 0.8,   // stops resting bodies drifting sideways
+      chamfer:        { radius: 4 } as any,  // rounds corners → no edge-on-edge micro-slides
+      density:        0.002,
+      sleepThreshold: 30,    // body sleeps quickly once it settles (default 60)
+      render: { fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 },
+    };
+
+    // ── Spawn helper — both waves land in the full-width center zone ──────────
+    // xPad keeps badges away from the side walls so they don't stick to them
+    const X_MIN = W * 0.06;
+    const X_MAX = W * 0.94;
+
+    function spawnWave(sized: Sized[], yTopOffset: number) {
+      const cols = Math.max(1, Math.round((X_MAX - X_MIN) / 140));
+      return sized.map(({ el, bw, bh }, i) => {
+        const col  = i % cols;
+        const row  = Math.floor(i / cols);
+        const x    = X_MIN + (col + 0.5) * ((X_MAX - X_MIN) / cols) + (Math.random() - 0.5) * 16;
+        const y    = yTopOffset - bh / 2 - row * (bh + 8) - Math.random() * 14;
+        const body = Bodies.rectangle(x, y, bw, bh, BODY_OPTS);
         Matter.Body.setVelocity(body,        { x: (Math.random() - 0.5) * 1.5, y: 1.5 });
         Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
-
-        el.style.position = 'absolute';
-        el.style.margin   = '0';
-
         return { el, body };
       });
     }
 
-    const pairs = [
-      ...makePairs(knownEls,  20,       W * 0.46),
-      ...makePairs(workedEls, W * 0.54, W - 20),
-    ];
+    // Wave 1 — KNOWN ("stack") drops immediately from just above the box
+    const knownPairs = spawnWave(knownSized, -10);
+    World.add(engine.world, knownPairs.map(p => p.body));
 
-    // ── Mouse interaction ───────────────────────────────────────────────────
+    // Wave 2 — WORKED drops 1.5 s later, spawning higher so it rains down onto
+    // the already-settled KNOWN pile
+    let workedPairs: { el: HTMLElement; body: Matter.Body }[] = [];
+    const workedTimer = setTimeout(() => {
+      workedPairs = spawnWave(workedSized, -180);
+      World.add(engine.world, workedPairs.map(p => p.body));
+    }, 1500);
+
+    // Ceiling added after both waves have had time to settle
+    const ceilingTimer = setTimeout(() => {
+      World.add(engine.world, ceiling);
+    }, 3200);
+
+    // ── Mouse interaction ─────────────────────────────────────────────────────
     const mouse = Mouse.create(containerRef.current);
     const mc    = MouseConstraint.create(engine, {
       mouse,
       constraint: { stiffness: 0.2, render: { visible: false } },
     });
     (render as any).mouse = mouse;
-
-    World.add(engine.world, [floor, wallL, wallR, mc, ...pairs.map(p => p.body)]);
-
-    // Add ceiling after 1.4s — badges have entered the box by then
-    const ceilingTimer = setTimeout(() => {
-      World.add(engine.world, ceiling);
-    }, 1400);
+    World.add(engine.world, mc);
 
     const runner = Runner.create();
     Runner.run(runner, engine);
     Render.run(render);
 
-    setLive(true);
-
+    // ── RAF loop ──────────────────────────────────────────────────────────────
+    // workedPairs is a let captured by reference — the loop sees the live array
+    // the moment the 1.5 s timer fires and populates it
     let raf: number;
     const loop = () => {
-      pairs.forEach(({ el, body }) => {
+      [...knownPairs, ...workedPairs].forEach(({ el, body }) => {
+        // Keep bodies that are still above the box from flying upward
         if (body.position.y < 0 && body.velocity.y < 0) {
           Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 });
         }
@@ -224,6 +255,7 @@ export default function PhysicsBadges() {
     loop();
 
     return () => {
+      clearTimeout(workedTimer);
       clearTimeout(ceilingTimer);
       cancelAnimationFrame(raf);
       Render.stop(render);
@@ -231,6 +263,14 @@ export default function PhysicsBadges() {
       render.canvas?.remove();
       World.clear(engine.world, false);
       Engine.clear(engine);
+      // Restore inline styles so badges re-enter flow for remeasurement on reset
+      allEls.forEach(el => {
+        el.style.position  = '';
+        el.style.margin    = '';
+        el.style.left      = '';
+        el.style.top       = '';
+        el.style.transform = '';
+      });
     };
   }, [started, resetKey]);
 
