@@ -176,7 +176,8 @@ export default function PhysicsBadges() {
     setLive(true);
 
     // ── Body options ──────────────────────────────────────────────────────────
-    const BODY_OPTS: Matter.IBodyDefinition = {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const BODY_OPTS = {
       restitution:    0.08,
       frictionAir:    0.012,
       friction:       0.6,
@@ -292,10 +293,6 @@ export default function PhysicsBadges() {
 
   return (
     <div ref={containerRef} className="physics-badges-box">
-
-      {/* Corner labels */}
-      <span className="phys-label phys-label--left">stack</span>
-      <span className="phys-label phys-label--right">worked with</span>
 
       {/* Reset button — top-right */}
       <button

@@ -3,7 +3,9 @@
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { getGPUTier } from 'detect-gpu';
+import Link from 'next/link';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import SquishSwitch from '@/components/ui/SquishSwitch';
 
 // ── Backgrounds — dynamic (client-only, code-split) ──────────────────────────
 const MoltenMetal = dynamic(() => import('@/components/backgrounds/MoltenMetal'), { ssr: false });
@@ -43,7 +45,7 @@ const projects = [
   },
 ] as const;
 
-// ── Background renderer — one-per-card ────────────────────────────────────────
+// ── Background renderer — only mounted when webgl is enabled ─────────────────
 function CardBackground({ index, paused, quality }: { index: number; paused: boolean; quality: 'low' | 'medium' | 'high' }) {
   switch (index) {
     case 0:
@@ -138,17 +140,18 @@ interface ProjectCardProps {
   index: number;
   paused: boolean;
   quality: 'low' | 'medium' | 'high';
+  webglEnabled: boolean;
 }
 
-function ProjectCard({ project, index, paused, quality }: ProjectCardProps) {
+function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectCardProps) {
   return (
     <div
       className={`project-card project-card--${index + 1}`}
       style={{ zIndex: index + 1 }}
     >
-      {/* WebGL background — always mounted, paused when not active */}
+      {/* WebGL background — only mounted when the user enables moving backgrounds */}
       <div className="project-card-bg" aria-hidden="true">
-        <CardBackground index={index} paused={paused} quality={quality} />
+        {webglEnabled && <CardBackground index={index} paused={paused} quality={quality} />}
       </div>
 
       {/* Top edge fade — casts a shadow band when the next card slides in */}
@@ -199,12 +202,14 @@ function getCachedGPUQuality(): 'low' | 'medium' | 'high' {
 }
 
 export default function ProjectsStack() {
-  const outerRef = useRef<HTMLDivElement>(null);
+  const outerRef   = useRef<HTMLDivElement>(null);
   const [activeSet, setActiveSet] = useState<ReadonlySet<number>>(() => new Set([0]));
   const prevKeyRef = useRef('0');
-  const [gpuQuality, setGpuQuality] = useState<'low' | 'medium' | 'high'>(() =>
+  const [gpuQuality,   setGpuQuality]   = useState<'low' | 'medium' | 'high'>(() =>
     typeof window !== 'undefined' ? getCachedGPUQuality() : 'medium'
   );
+  // Moving backgrounds — off by default (no WebGL until user opts in)
+  const [webglEnabled, setWebglEnabled] = useState(false);
 
   // Detect GPU tier — updates quality for current and future sessions
   useEffect(() => {
@@ -242,16 +247,45 @@ export default function ProjectsStack() {
   }, []);
 
   return (
-    <div className="projects-stack-outer" id="work" ref={outerRef}>
-      {projects.map((project, i) => (
-        <ProjectCard
-          key={project.number}
-          project={project}
-          index={i}
-          paused={!activeSet.has(i)}
-          quality={gpuQuality}
-        />
-      ))}
-    </div>
+    <section id="work">
+      {/* Section header — sits above the sticky scroll stack */}
+      <div className="projects-section-head">
+        <div>
+          <p className="section-label">Featured</p>
+          <h2 className="section-title">PROJECTS</h2>
+        </div>
+        <div className="projects-head-right">
+          <SquishSwitch
+            checked={webglEnabled}
+            onChange={setWebglEnabled}
+            label="moving backgrounds"
+            ariaLabel="Toggle moving backgrounds"
+            width={44}
+            height={24}
+            radius={12}
+            trackColor="#222420"
+            trackOnColor="#5DA67A"
+            thumbOnColor="#0F100E"
+          />
+          <Link href="/work" className="section-link">
+            All projects →
+          </Link>
+        </div>
+      </div>
+
+      {/* Sticky scroll stack */}
+      <div className="projects-stack-outer" ref={outerRef}>
+        {projects.map((project, i) => (
+          <ProjectCard
+            key={project.number}
+            project={project}
+            index={i}
+            paused={!activeSet.has(i)}
+            quality={gpuQuality}
+            webglEnabled={webglEnabled}
+          />
+        ))}
+      </div>
+    </section>
   );
 }

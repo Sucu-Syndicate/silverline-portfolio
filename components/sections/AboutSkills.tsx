@@ -1,11 +1,9 @@
 import ScrollReveal from '@/components/ui/ScrollReveal';
-
-const demonstrated = ['Python', 'Power Automate', 'HTML / CSS'];
-const building = ['React', 'Next.js'];
+import PhysicsBadges from '@/components/ui/PhysicsBadges';
 
 export default function AboutSkills() {
   return (
-    <section className="section" id="about">
+    <section className="section section--about" id="about">
       <ScrollReveal>
         <div className="section-head">
           <div>
@@ -24,27 +22,12 @@ export default function AboutSkills() {
         </p>
       </ScrollReveal>
 
-      <ScrollReveal delay={0.16}>
-        <div className="skills-block">
-          <p className="skills-sublabel">Demonstrated</p>
-          <div className="skills-pills">
-            {demonstrated.map((s) => (
-              <span key={s} className="skill-pill">{s}</span>
-            ))}
-          </div>
-        </div>
-      </ScrollReveal>
+      <div className="badges-caption" aria-hidden="true">
+        <span className="badges-caption-text"><strong>Core stack</strong> — things I know well</span>
+        <span className="badges-caption-text">tech I&apos;ve used in projects</span>
+      </div>
 
-      <ScrollReveal delay={0.22}>
-        <div className="skills-block">
-          <p className="skills-sublabel">Currently Building</p>
-          <div className="skills-pills">
-            {building.map((s) => (
-              <span key={s} className="skill-pill skill-pill--wip">{s}</span>
-            ))}
-          </div>
-        </div>
-      </ScrollReveal>
+      <PhysicsBadges />
     </section>
   );
 }
