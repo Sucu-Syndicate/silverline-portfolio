@@ -125,7 +125,11 @@ export default function PhysicsBadges() {
     const H = containerRef.current.clientHeight;
 
     // ── Engine ──────────────────────────────────────────────────────────────
-    const engine = Engine.create();
+    const engine = Engine.create({
+      positionIterations: 10,   // default 6 — more accurate collision resolution
+      velocityIterations: 8,    // default 4 — crisper post-collision velocities
+      constraintIterations: 4,  // default 2
+    });
     engine.gravity.y = 2.2;
 
     // ── Renderer (transparent canvas — only needed for Mouse coord mapping) ──
@@ -151,23 +155,26 @@ export default function PhysicsBadges() {
     const workedEls = allEls.filter(el => el.dataset.badge === 'worked');
 
     function makePairs(els: HTMLElement[], xMin: number, xMax: number) {
-      const cols = Math.max(1, Math.round((xMax - xMin) / 110));
+      const cols = Math.max(1, Math.round((xMax - xMin) / 130));
       return els.map((el, i) => {
         const bw = el.offsetWidth;
         const bh = el.offsetHeight;
         const col = i % cols;
         const row = Math.floor(i / cols);
-        const x   = xMin + (col + 0.5) * ((xMax - xMin) / cols) + (Math.random() - 0.5) * 18;
-        const y   = -bh / 2 - row * (bh + 10) - Math.random() * 20;
+        const x   = xMin + (col + 0.5) * ((xMax - xMin) / cols) + (Math.random() - 0.5) * 14;
+        const y   = -bh / 2 - row * (bh + 8) - Math.random() * 16;
 
         const body = Bodies.rectangle(x, y, bw, bh, {
-          restitution:  0.1,
-          frictionAir:  0.012,
-          friction:     0.7,
+          restitution:   0.08,
+          frictionAir:   0.012,
+          friction:      0.6,
+          frictionStatic: 0.8,  // prevents resting bodies from sliding
+          chamfer:       { radius: 4 },  // rounds corners → kills edge-on-edge micro-collisions
+          density:       0.002,
           render: { fillStyle: 'transparent', strokeStyle: 'transparent', lineWidth: 0 },
         });
-        Matter.Body.setVelocity(body,        { x: (Math.random() - 0.5) * 2, y: 1.5 });
-        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.03);
+        Matter.Body.setVelocity(body,        { x: (Math.random() - 0.5) * 1.5, y: 1.5 });
+        Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
 
         el.style.position = 'absolute';
         el.style.margin   = '0';
