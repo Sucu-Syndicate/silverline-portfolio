@@ -2,7 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { terminalLines, type TerminalLine } from '@/lib/terminal-lines';
+import ASCIIText from '@/components/ASCIIText';
+
+const ModelViewer = dynamic(() => import('@/components/ModelViewer'), { ssr: false });
 
 const TICK_MIN = 1000;
 const TICK_MAX = 2000;
@@ -99,27 +103,6 @@ function HeroLog() {
   );
 }
 
-const NAME = 'MATHEO GUEVARA';
-
-const nameContainer = {
-  hidden: {},
-  show: {
-    transition: {
-      staggerChildren: 0.038,
-      delayChildren: 0.25,
-    },
-  },
-};
-
-const charVariant = {
-  hidden: { opacity: 0, y: 10 },
-  show: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.35, ease: [0.16, 1, 0.3, 1] },
-  },
-};
-
 const fadeUp = (delay: number) => ({
   initial: { opacity: 0, y: 14 },
   animate: { opacity: 1, y: 0 },
@@ -142,22 +125,19 @@ export default function Hero() {
 
       <div className="hero-inner">
         <div className="hero-left">
-          <motion.h1
-            variants={nameContainer}
-            initial="hidden"
-            animate="show"
-            aria-label={NAME}
+          <motion.div
+            className="hero-ascii-heading"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            aria-label="Matheo Guevara"
           >
-            {NAME.split('').map((char, i) => (
-              <motion.span
-                key={i}
-                variants={charVariant}
-                style={{ display: char === ' ' ? 'inline' : 'inline-block' }}
-              >
-                {char === ' ' ? '\u00A0' : char}
-              </motion.span>
-            ))}
-          </motion.h1>
+            <ASCIIText
+              text="Matheo Guevara"
+              enableWaves={false}
+              asciiFontSize={8}
+            />
+          </motion.div>
 
           <motion.p className="hero-sub" {...fadeUp(0.9)}>
             AI agent developer. Directs and ships full products solo, using
@@ -169,8 +149,10 @@ export default function Hero() {
             <a href="/resume.pdf" className="hero-meta-primary" target="_blank" rel="noopener noreferrer">RESUME</a>
           </motion.div>
         </div>
-        {/* right half — terminal fills behind via absolute positioning */}
-        <div />
+        {/* right half — 3D laptop model */}
+        <div className="hero-right">
+          <ModelViewer url="/3d_assets/thin_laptop.obj" width="100%" height={420} />
+        </div>
       </div>
     </section>
   );

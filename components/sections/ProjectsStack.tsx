@@ -125,10 +125,11 @@ interface ProjectCardProps {
   project: (typeof projects)[number];
   index: number;
   isActive: boolean;
+  isMounted: boolean;
   onIntersect: (index: number, intersecting: boolean) => void;
 }
 
-function ProjectCard({ project, index, isActive, onIntersect }: ProjectCardProps) {
+function ProjectCard({ project, index, isActive, isMounted, onIntersect }: ProjectCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
   // Tell parent when this card enters/leaves viewport
@@ -150,7 +151,7 @@ function ProjectCard({ project, index, isActive, onIntersect }: ProjectCardProps
     >
       {/* WebGL background — only mounted when this is the active card */}
       <div className="project-card-bg" aria-hidden="true">
-        {isActive && <CardBackground index={index} />}
+        {isMounted && <CardBackground index={index} />}
       </div>
 
       {/* Top edge fade — casts a shadow band when the next card slides in */}
@@ -199,10 +200,13 @@ function ProjectCard({ project, index, isActive, onIntersect }: ProjectCardProps
 
 // ── Container ─────────────────────────────────────────────────────────────────
 export default function ProjectsStack() {
-  // Track which cards are currently intersecting with the viewport
-  // Active = the highest-indexed intersecting card (the one on top)
-  const intersectingRef = useRef(new Set<number>());
+  // Active = highest-indexed intersecting card (the one visually on top)
+  // Mounted = active + previous card kept alive during scroll transitions
+  const intersectingRef  = useRef(new Set<number>());
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [mountedSet, setMountedSet]   = useState<ReadonlySet<number>>(new Set());
+  const clearTimerRef    = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const prevActiveRef    = useRef(-1);
 
   const handleIntersect = useCallback((index: number, intersecting: boolean) => {
     if (intersecting) {
@@ -210,10 +214,34 @@ export default function ProjectsStack() {
     } else {
       intersectingRef.current.delete(index);
     }
-    const active = intersectingRef.current.size > 0
+    const next = intersectingRef.current.size > 0
       ? Math.max(...Array.from(intersectingRef.current))
       : -1;
-    setActiveIndex(active);
+
+    if (next !== prevActiveRef.current) {
+      const prev = prevActiveRef.current;
+      prevActiveRef.current = next;
+
+      setActiveIndex(next);
+
+      // Keep both prev and next backgrounds mounted during transition
+      setMountedSet((cur) => {
+        const s = new Set(cur);
+        if (next >= 0) s.add(next);
+        if (prev >= 0) s.add(prev);
+        return s;
+      });
+
+      // After transition settles, unmount the previous background
+      if (clearTimerRef.current) clearTimeout(clearTimerRef.current);
+      clearTimerRef.current = setTimeout(() => {
+        setMountedSet((cur) => {
+          const s = new Set(cur);
+          if (prev >= 0 && s.has(prev) && prev !== prevActiveRef.current) s.delete(prev);
+          return s;
+        });
+      }, 700);
+    }
   }, []);
 
   return (
@@ -224,6 +252,7 @@ export default function ProjectsStack() {
           project={project}
           index={i}
           isActive={activeIndex === i}
+          isMounted={mountedSet.has(i)}
           onIntersect={handleIntersect}
         />
       ))}
