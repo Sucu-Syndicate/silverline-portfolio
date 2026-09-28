@@ -281,7 +281,7 @@ export default function ProjectsStack() {
                 <p className="projects-see-all-label">WORK ARCHIVE</p>
               </ScrollReveal>
               <ScrollReveal delay={0.08}>
-                <h2 className="projects-see-all-heading">Beyond the highlights</h2>
+                <h2 className="projects-see-all-heading">BEYOND THE HIGHLIGHTS</h2>
               </ScrollReveal>
               <ScrollReveal delay={0.16}>
                 <p className="projects-see-all-sub">
