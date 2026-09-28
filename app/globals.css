@@ -1572,19 +1572,23 @@ a { color: inherit; text-decoration: none; }
 
 /* ─── Projects — see all rectangle ─────────────────────── */
 .projects-see-all {
-  padding: 80px 14px;
+  padding: 120px 14px;
   display: flex;
   justify-content: center;
   position: relative;
   overflow: hidden;
 }
 
-/* Background carousel layer */
+/* Background carousel layer — extends 240px past each side edge so the
+   lens-morph aberration at the card boundaries is hidden by overflow:hidden */
 .projects-see-all-carousel-bg {
   position: absolute;
-  inset: 0;
+  top: 0;
+  bottom: 0;
+  left: -240px;
+  right: -240px;
   z-index: 0;
-  opacity: 0.22;
+  opacity: 0.38;
   pointer-events: none;
 }
 
