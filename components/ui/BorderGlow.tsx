@@ -148,49 +148,8 @@ export default function BorderGlow({
     card.style.setProperty('--cursor-angle', `${angle.toFixed(3)}deg`);
   }, [getEdgeProximity, getCursorAngle]);
 
-  // alwaysOn mode: track angle from anywhere on the page, never touch --edge-proximity
-  // (CSS class holds it at 100 permanently)
-  useEffect(() => {
-    if (!alwaysOn) return;
-    const card = cardRef.current;
-    if (!card) return;
-
-    // Cache the card rect so we never call getBoundingClientRect() inside the
-    // pointermove handler — that call forces a synchronous layout flush on every
-    // raw mouse event (200+ Hz on gaming mice), which is the primary frame-drop culprit.
-    let rect = card.getBoundingClientRect();
-    const refreshRect = () => { rect = card.getBoundingClientRect(); };
-    window.addEventListener('resize', refreshRect, { passive: true });
-    window.addEventListener('scroll', refreshRect, { passive: true });
-
-    // rAF gate — coalesce style writes to one per frame (~60 Hz) instead of one
-    // per raw input event. The conic-gradient mask repaints are expensive; firing
-    // them at pointer-poll rate is what causes the frame drops.
-    let rafId = 0;
-    let pendingDeg = 0;
-
-    const onWindowPointerMove = (e: PointerEvent) => {
-      const cx = rect.left + rect.width / 2;
-      const cy = rect.top + rect.height / 2;
-      const radians = Math.atan2(e.clientY - cy, e.clientX - cx);
-      pendingDeg = radians * (180 / Math.PI) + 90;
-      if (pendingDeg < 0) pendingDeg += 360;
-      if (!rafId) {
-        rafId = requestAnimationFrame(() => {
-          card.style.setProperty('--cursor-angle', `${pendingDeg.toFixed(3)}deg`);
-          rafId = 0;
-        });
-      }
-    };
-
-    window.addEventListener('pointermove', onWindowPointerMove);
-    return () => {
-      window.removeEventListener('pointermove', onWindowPointerMove);
-      window.removeEventListener('resize', refreshRect);
-      window.removeEventListener('scroll', refreshRect);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [alwaysOn]);
+  // alwaysOn rotation is handled entirely by CSS animation (@keyframes
+  // border-glow-rotate in BorderGlow.css) — no JS needed, zero main-thread cost.
 
   useEffect(() => {
     if (!animated || !cardRef.current) return;
