@@ -15,20 +15,20 @@ const FlexCarousel   = dynamic(() => import('@/components/ui/FlexCarousel'),    
 
 // ── Carousel images for the "see all" section background ─────────────────────
 const CAROUSEL_ITEMS = [
-  { src: '/images/carousel/c01.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c02.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c03.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c04.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c05.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c06.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c07.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c08.webp', alt: 'Project screenshot' },
   { src: '/images/carousel/c09.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c10.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c11.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c12.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c13.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c03.webp', alt: 'Project screenshot' },
   { src: '/images/carousel/c14.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c05.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c01.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c11.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c06.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c04.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c10.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c13.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c02.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c07.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c12.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c08.webp', alt: 'Project screenshot' },
 ];
 
 // ── Project data ──────────────────────────────────────────────────────────────

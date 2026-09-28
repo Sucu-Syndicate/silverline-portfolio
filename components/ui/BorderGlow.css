@@ -7,9 +7,6 @@
   initial-value: 45deg;
 }
 
-@keyframes border-glow-rotate {
-  to { --cursor-angle: 405deg; } /* 45 + 360 — starts and ends at same angle for seamless loop */
-}
 
 .border-glow-card {
   --edge-proximity: 0;
@@ -67,17 +64,9 @@
   transition: opacity 0.75s ease-in-out;
 }
 
-/* Always-on: pin edge-proximity to 100 so gradients/glow stay fully visible,
-   and auto-rotate the glow via CSS animation (zero JS, zero main-thread cost) */
+/* Always-on: pin edge-proximity to 100 so gradients/glow stay fully visible */
 .border-glow-card--always-on {
   --edge-proximity: 100;
-  animation: border-glow-rotate 9s linear infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .border-glow-card--always-on {
-    animation: none;
-  }
 }
 
 /* colored mesh-gradient border */
