@@ -253,7 +253,7 @@ export default function ProjectsStack() {
           <FlexCarousel
             items={CAROUSEL_ITEMS}
             preset="liquid"
-            intro="rise"
+            intro="deal"
             cardHeight={0.5}
             gap={12}
             bend={0.38}
