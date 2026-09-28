@@ -256,6 +256,7 @@ export default function ProjectsStack() {
             intro="rise"
             cardHeight={0.5}
             gap={12}
+            bend={0.41}
             reach={0.40}
             squeeze={0.2}
             focusOnClick={false}
