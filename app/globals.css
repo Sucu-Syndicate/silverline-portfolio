@@ -1588,7 +1588,7 @@ a { color: inherit; text-decoration: none; }
   left: -240px;
   right: -240px;
   z-index: 0;
-  opacity: 0.60;
+  opacity: 0.45;
   pointer-events: none;
 }
 
