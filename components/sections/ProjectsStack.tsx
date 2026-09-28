@@ -279,11 +279,11 @@ export default function ProjectsStack() {
                 <p className="projects-see-all-label">WORK ARCHIVE</p>
               </ScrollReveal>
               <ScrollReveal delay={0.08}>
-                <h2 className="projects-see-all-heading">WANT MORE?</h2>
+                <h2 className="projects-see-all-heading">Beyond the highlights</h2>
               </ScrollReveal>
               <ScrollReveal delay={0.16}>
                 <p className="projects-see-all-sub">
-                  Browse the full archive — experiments, case studies, and shipped products.
+                  Explore more of my projects, experiments, and technical work, with the ideas, decisions, and lessons behind each one.
                 </p>
               </ScrollReveal>
             </div>
