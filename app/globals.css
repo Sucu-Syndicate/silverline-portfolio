@@ -321,14 +321,21 @@ a { color: inherit; text-decoration: none; }
   flex-wrap: nowrap;
 }
 
-/* CTA hue-rotate — same technique as ASCIIText's continuous hue spin.
-   Gradient border-image gives each edge a different starting hue so
-   different areas of the button show different colors simultaneously,
-   then filter:hue-rotate sweeps the whole thing through the spectrum. */
+/* CTA hue-rotate — commented out, keeping for reference
 @keyframes cta-hue {
   from { filter: hue-rotate(0deg); }
   to   { filter: hue-rotate(360deg); }
 }
+.hero-meta-primary:hover — animated version {
+  border-image: linear-gradient(90deg, var(--ascii-pink), var(--ascii-orange), var(--ascii-yellow)) 1;
+  color: var(--ascii-pink);
+  transition: none;
+  animation: cta-hue 3s linear infinite;
+}
+.hero-meta .hero-meta-primary:last-child:hover {
+  animation-delay: -1s;
+}
+*/
 
 /* Primary CTA — Blog link */
 .hero-meta-primary {
@@ -342,16 +349,8 @@ a { color: inherit; text-decoration: none; }
   transition: color 0.2s ease, border-color 0.2s ease;
 }
 .hero-meta-primary:hover {
-  /* gradient border — left/right edges have different base hues simultaneously */
-  border-image: linear-gradient(90deg, var(--ascii-pink), var(--ascii-orange), var(--ascii-yellow)) 1;
-  color: var(--ascii-pink);
-  /* transition off so hue-rotate animation owns the color from frame 0 */
-  transition: none;
-  animation: cta-hue 3s linear infinite;
-}
-/* Second button starts 1s into the cycle — different hue from the first */
-.hero-meta .hero-meta-primary:last-child:hover {
-  animation-delay: -1s;
+  color: var(--accent);
+  border-color: var(--accent);
 }
 
 /* WIP links — Work + About (greyed out, not interactive) */
@@ -1837,12 +1836,4 @@ a { color: inherit; text-decoration: none; }
   }
   /* Hide WebGL canvas backgrounds — static card bg fallback shows instead */
   .project-card-bg { display: none; }
-  /* CTA: static accent, no hue-rotate */
-  .hero-meta-primary:hover {
-    border-image: none;
-    border-color: var(--accent);
-    color: var(--accent);
-    animation: none !important;
-    transition: none;
-  }
 }
