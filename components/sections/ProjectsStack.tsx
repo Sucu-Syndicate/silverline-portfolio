@@ -288,8 +288,8 @@ export default function ProjectsStack() {
               </ScrollReveal>
             </div>
             <ScrollReveal delay={0.22}>
-              <a href="/work" className="hero-meta-primary">
-                SEE ALL PROJECTS
+              <a href="/work" className="projects-see-all-btn">
+                See all projects
               </a>
             </ScrollReveal>
           </div>
