@@ -1679,7 +1679,8 @@ a { color: inherit; text-decoration: none; }
   transition: border-color 0.2s ease, color 0.2s ease;
 }
 
-.projects-see-all-btn:hover {
+.projects-see-all-btn:hover,
+#work .projects-see-all-btn:hover {
   border-color: var(--accent);
   color: var(--accent);
 }
