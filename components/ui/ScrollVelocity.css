@@ -1,0 +1,26 @@
+.sv-parallax {
+  position: relative;
+  overflow: hidden;
+}
+
+.sv-scroller {
+  display: flex;
+  white-space: nowrap;
+  font-family: var(--font-structure), Archivo, sans-serif;
+  font-size: clamp(2.4rem, 6vw, 5.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  user-select: none;
+}
+
+.sv-scroller span {
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sv-parallax { overflow: visible; }
+  .sv-scroller { transform: none !important; }
+}
