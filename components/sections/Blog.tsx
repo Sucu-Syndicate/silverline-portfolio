@@ -28,7 +28,7 @@ export default function Blog() {
           <p className="blog-wip-note">Writing in progress — posts coming soon.</p>
         </ScrollReveal>
         <ScrollVelocity
-          texts={['WRITING IN PROGRESS —', 'COMING SOON —']}
+          texts={['WRITING IN PROGRESS //', 'COMING SOON //']}
           velocity={60}
           numCopies={8}
         />
