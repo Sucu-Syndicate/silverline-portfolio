@@ -1680,8 +1680,8 @@ a { color: inherit; text-decoration: none; }
 }
 
 .projects-see-all-btn:hover {
-  border-color: var(--text-2);
-  color: var(--text);
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
 @media (max-width: 600px) {
