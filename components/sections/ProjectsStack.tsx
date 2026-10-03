@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
-import { useRouter } from 'next/navigation';
 import { getGPUTier } from 'detect-gpu';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import BorderGlow from '@/components/ui/BorderGlow';
@@ -188,7 +187,6 @@ function getCachedGPUQuality(): 'low' | 'medium' | 'high' {
 
 export default function ProjectsStack() {
   const outerRef   = useRef<HTMLDivElement>(null);
-  const router     = useRouter();
   const [activeSet, setActiveSet] = useState<ReadonlySet<number>>(() => new Set([0]));
   const prevKeyRef = useRef('0');
   const [gpuQuality,   setGpuQuality]   = useState<'low' | 'medium' | 'high'>(() =>
@@ -290,13 +288,9 @@ export default function ProjectsStack() {
               </ScrollReveal>
             </div>
             <ScrollReveal delay={0.22}>
-              <button
-                className="projects-see-all-btn"
-                onClick={() => router.push('/work')}
-                type="button"
-              >
-                See all projects
-              </button>
+              <a href="/work" className="hero-meta-primary">
+                SEE ALL PROJECTS
+              </a>
             </ScrollReveal>
           </div>
         </BorderGlow>
