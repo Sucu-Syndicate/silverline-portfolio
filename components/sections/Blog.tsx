@@ -17,7 +17,6 @@ export default function Blog() {
       <ScrollReveal>
         <div className="section-head">
           <div>
-            <p className="section-label">Blog</p>
             <h2 className="section-title">BLOG</h2>
           </div>
         </div>

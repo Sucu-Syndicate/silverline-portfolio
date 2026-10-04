@@ -93,7 +93,6 @@ export default function Work() {
     <section className="section" id="work">
       <div className="section-head">
         <div>
-          <p className="section-label">Work</p>
           <h2 className="section-title">SELECTED WORK</h2>
         </div>
       </div>

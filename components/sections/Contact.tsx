@@ -15,9 +15,6 @@ export default function Contact() {
 
   return (
     <section className="section contact-cta" id="contact">
-      <ScrollReveal>
-        <p className="section-label">Connect</p>
-      </ScrollReveal>
       <ScrollReveal delay={0.06}>
         <h2 className="section-title">LET&apos;S CONNECT</h2>
       </ScrollReveal>

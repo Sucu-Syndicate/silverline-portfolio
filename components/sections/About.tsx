@@ -5,7 +5,6 @@ export default function About() {
     <section className="section" id="about">
       <div className="section-head">
         <div>
-          <p className="section-label">About</p>
           <h2 className="section-title">ABOUT</h2>
         </div>
       </div>

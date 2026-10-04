@@ -6,7 +6,6 @@ export default function Skills() {
     <section className="section" id="skills">
       <div className="section-head">
         <div>
-          <p className="section-label">Skills</p>
           <h2 className="section-title">SKILLS</h2>
         </div>
       </div>

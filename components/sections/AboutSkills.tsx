@@ -7,7 +7,6 @@ export default function AboutSkills() {
       <ScrollReveal>
         <div className="section-head">
           <div>
-            <p className="section-label">About</p>
             <h2 className="section-title">ABOUT</h2>
           </div>
         </div>
@@ -24,8 +23,8 @@ export default function AboutSkills() {
 
       <ScrollReveal delay={0.14}>
         <div className="stack-block">
-          <p className="section-label">Stack</p>
-          <p className="stack-title">The tools in my core stack and tech I&apos;ve used across projects.</p>
+          <h2 className="section-title">STACK</h2>
+          <p className="about-text">The tools in my core stack and tech I&apos;ve used across projects.</p>
         </div>
       </ScrollReveal>
 

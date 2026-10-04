@@ -11,7 +11,6 @@ export default function Changelog() {
       <ScrollReveal>
         <div className="section-head">
           <div>
-            <p className="section-label">Changelog</p>
             <h2 className="section-title">CHANGELOG</h2>
           </div>
         </div>
