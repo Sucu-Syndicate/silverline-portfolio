@@ -229,7 +229,7 @@ export default function ProjectsStack() {
   }, []);
 
   return (
-    <section id="work">
+    <section id="projects">
       {/* Sticky scroll stack — no header, cards speak for themselves */}
       <div className="projects-stack-outer" ref={outerRef}>
         {projects.map((project, i) => (
@@ -276,7 +276,7 @@ export default function ProjectsStack() {
           <div className="projects-see-all-inner">
             <div className="projects-see-all-text">
               <ScrollReveal delay={0}>
-                <p className="projects-see-all-label">WORK ARCHIVE</p>
+                <p className="projects-see-all-label">PROJECT ARCHIVE</p>
               </ScrollReveal>
               <ScrollReveal delay={0.08}>
                 <h2 className="projects-see-all-heading">BEYOND THE HIGHLIGHTS</h2>
