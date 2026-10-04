@@ -46,7 +46,7 @@ export default function Contact() {
       </ScrollReveal>
       <ScrollReveal delay={0.08}>
         <p className="contact-cta-tagline">
-          Always open to new projects, creative ideas, and opportunities — reach out.
+          Always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Just reach out.
         </p>
       </ScrollReveal>
       <ScrollReveal delay={0.16}>
