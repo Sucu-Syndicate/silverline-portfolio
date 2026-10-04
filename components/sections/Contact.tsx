@@ -58,13 +58,13 @@ export default function Contact() {
           >
             {/* Idle: mail icon + CONTACT — absolute overlay */}
             <span className="contact-email-btn__idle">
-              <span>CONTACT</span>
               <MailIcon />
+              <span>CONTACT</span>
             </span>
             {/* Reveal: email + copy/check — in-flow, sets button width */}
             <span className="contact-email-btn__reveal" aria-hidden="true">
-              <span className="contact-email-btn__addr">teh.dsc@gmail.com</span>
               {copied ? <CheckIcon /> : <CopyIcon />}
+              <span className="contact-email-btn__addr">teh.dsc@gmail.com</span>
             </span>
           </button>
           <a href="#projects" className="hero-meta-primary">SEE PROJECTS</a>
