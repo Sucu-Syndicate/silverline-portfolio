@@ -58,8 +58,8 @@ export default function Contact() {
           >
             {/* Idle: mail icon + CONTACT — absolute overlay */}
             <span className="contact-email-btn__idle">
-              <MailIcon />
               <span>CONTACT</span>
+              <MailIcon />
             </span>
             {/* Reveal: email + copy/check — in-flow, sets button width */}
             <span className="contact-email-btn__reveal" aria-hidden="true">
