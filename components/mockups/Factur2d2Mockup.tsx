@@ -91,9 +91,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
   const [outerPhase, setOuterPhase]   = useState<OuterPhase>('telegram-start');
   const [step, setStep]               = useState(0);
   const [scenarioIdx, setScenarioIdx] = useState(0);
-  const timerRef          = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const stepsContainerRef = useRef<HTMLDivElement | null>(null);
-  const [stepsLayout, setStepsLayout] = useState({ containerH: 0, stepH: 30 });
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const scenario = SCENARIOS[scenarioIdx];
   const isSplit  = outerPhase === 'split';
@@ -134,22 +132,10 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [outerPhase, step, paused, reduce, scenario.startMs]);
 
-  // Measure container + step height when split opens (so we can drive scroll via transform)
-  useEffect(() => {
-    if (!isSplit || !stepsContainerRef.current) return;
-    const container = stepsContainerRef.current;
-    const firstStep = container.querySelector<HTMLElement>('.factur-code-step');
-    setStepsLayout({
-      containerH: container.clientHeight,
-      stepH: firstStep ? firstStep.offsetHeight : 30,
-    });
-  }, [isSplit]);
-
-  // y offset that keeps the active step centred — driven by Framer Motion for smooth EXPO easing
-  const GAP = 1;
-  const codeYOffset = stepsLayout.containerH > 0
-    ? Math.min(0, -(step * (stepsLayout.stepH + GAP)) + (stepsLayout.containerH / 2 - stepsLayout.stepH / 2))
-    : 0;
+  // CSS: padding 9px top + 9px bottom + 8.5px×1.45 line-height ≈ 30px per step + 1px gap = 31px slot
+  // Using a fixed constant avoids measurement timing bugs (containerH=0 on first render → bad offsets)
+  const STEP_SLOT = 31;
+  const codeYOffset = step > 0 ? -(step * STEP_SLOT) + 4 : 0;
 
   // Static fallback
   if (reduce) {
@@ -315,8 +301,9 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
               <div className="factur-code-header">
                 <span className="factur-code-filename">arca-crypto-pi.py</span>
               </div>
-              <div ref={stepsContainerRef} className="factur-code-steps">
+              <div className="factur-code-steps">
                 <motion.div
+                  initial={{ y: 0 }}
                   animate={{ y: codeYOffset }}
                   transition={{ duration: 0.5, ease: EXPO }}
                   style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}

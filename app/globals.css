@@ -2656,8 +2656,9 @@ a { color: inherit; text-decoration: none; }
   font-size: 8.5px;
   line-height: 1.45;
   color: rgba(var(--p-text-rgb), 0.3);
-  white-space: pre-wrap;
-  word-break: break-all;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .factur-code-step--active .factur-code-pre {
