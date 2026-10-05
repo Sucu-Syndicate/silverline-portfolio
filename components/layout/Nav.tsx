@@ -31,7 +31,7 @@ export default function Nav() {
         <ul>
           {links.map((l) => (
             <li key={l.href}>
-              <a href={l.href}>{l.label}</a>
+              <Link href={l.href}>{l.label}</Link>
             </li>
           ))}
         </ul>
