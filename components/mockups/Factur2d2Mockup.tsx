@@ -8,17 +8,18 @@ interface Scenario {
   amount:   string;
   type:     'Factura B' | 'Factura C';
   cae:      string;
-  showMenu: boolean;  // whether to show bot command menu before /createfactura
-  startMs:  number;   // duration of telegram-start phase
+  desc:     string;     // service description shown in success message
+  showMenu: boolean;
+  startMs:  number;
 }
 
 const SCENARIOS: Scenario[] = [
-  { amount: '$85.000',  type: 'Factura B', cae: '74008765432198', showMenu: false, startMs: 2400 },
-  { amount: '$120.000', type: 'Factura B', cae: '74009123456781', showMenu: true,  startMs: 3400 },
-  { amount: '$52.500',  type: 'Factura C', cae: '74007654321987', showMenu: false, startMs: 2400 },
+  { amount: '$85.000',  type: 'Factura B', cae: '74008765432198', desc: 'Servicios de desarrollo',  showMenu: false, startMs: 2400 },
+  { amount: '$120.000', type: 'Factura B', cae: '74009123456781', desc: 'Consultoría técnica',       showMenu: true,  startMs: 3400 },
+  { amount: '$52.500',  type: 'Factura C', cae: '74007654321987', desc: 'Soporte y mantenimiento',   showMenu: false, startMs: 2400 },
 ];
 
-// ── Code steps (arca-crypto-pi.py function names, trimmed — no credentials) ────
+// ── Code steps (arca-crypto-pi.py function names — no credentials) ─────────────
 const CODE_STEPS: string[] = [
   'def create_factura(upd, ctx):',
   'selenium_main(amounts, cb)',
@@ -36,27 +37,26 @@ const CODE_STEPS: string[] = [
 const TG_STEP_MSGS: string[] = [
   '🤖 Starting automation...',
   '🔧 Selenium driver initialized',
-  '🌐 Navigating to ARCA login...',
+  '🌐 Login page loaded successfully',
   '🔢 Credentials entered',
   '🔑 Login submitted',
-  '✅ Logged in, opening form',
+  '✅ Login completed successfully',
   '',   // filled dynamically with scenario.amount
   '📝 Description filled in',
-  '🖱️ Submitting invoice...',
-  '',   // filled dynamically with scenario.cae
+  '🖱️ Submitting...',
+  '✅🎉 Factura generated successfully!',
 ];
 
 function getTgMsg(step: number, scenario: Scenario): string {
   if (step === 6) return `💵 Amount: ${scenario.amount} entered`;
-  if (step === 9) return `✅ CAE: ${scenario.cae}`;
   return TG_STEP_MSGS[step] ?? '';
 }
 
-// ── Bot command menu content ───────────────────────────────────────────────────
+// ── Bot commands (only these exist) ───────────────────────────────────────────
 const BOT_MENU = [
-  { cmd: '/createfactura', desc: 'Issue a new invoice' },
-  { cmd: '/editamounts',   desc: 'Manage saved amounts' },
-  { cmd: '/status',        desc: 'Last invoice status'  },
+  { cmd: '/menu',   desc: 'Show this menu'       },
+  { cmd: '/create', desc: 'Issue new invoice'    },
+  { cmd: '/setcat', desc: 'Set invoice category' },
 ];
 
 // ── Easing ────────────────────────────────────────────────────────────────────
@@ -88,10 +88,12 @@ function TgHeader() {
 export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }) {
   const reduce = useReducedMotion();
 
-  const [outerPhase, setOuterPhase] = useState<OuterPhase>('telegram-start');
-  const [step, setStep]             = useState(0);
+  const [outerPhase, setOuterPhase]   = useState<OuterPhase>('telegram-start');
+  const [step, setStep]               = useState(0);
   const [scenarioIdx, setScenarioIdx] = useState(0);
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef          = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const activeStepRef     = useRef<HTMLDivElement | null>(null);
+  const stepsContainerRef = useRef<HTMLDivElement | null>(null);
 
   const scenario = SCENARIOS[scenarioIdx];
   const isSplit  = outerPhase === 'split';
@@ -101,6 +103,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
     ? Array.from({ length: step + 1 }, (_, i) => getTgMsg(i, scenario)).filter(Boolean)
     : [];
 
+  // Phase advancement
   useEffect(() => {
     if (reduce || paused) return;
 
@@ -131,15 +134,24 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [outerPhase, step, paused, reduce, scenario.startMs]);
 
+  // Auto-scroll code panel to keep active step in view
+  useEffect(() => {
+    if (!isSplit || !activeStepRef.current || !stepsContainerRef.current) return;
+    const container = stepsContainerRef.current;
+    const el        = activeStepRef.current;
+    const targetTop = el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
+    container.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+  }, [step, isSplit]);
+
   // Static fallback
   if (reduce) {
     return (
       <div className="factur-mockup factur-mockup--static">
         <TgHeader />
         <div className="factur-static-body">
-          <div className="factur-bubble factur-bubble--user">/createfactura</div>
+          <div className="factur-bubble factur-bubble--user">/create</div>
           <div className="factur-bubble factur-bubble--bot">
-            ✅ Factura B created — CAE: 74008765432198 · Amount: $85.000
+            ✅ Factura B created — CAE: 74008765432198 · $85.000
           </div>
         </div>
       </div>
@@ -151,7 +163,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
       <TgHeader />
       <div className="factur-body">
 
-        {/* Telegram pane — animates its width when split */}
+        {/* Telegram pane */}
         <motion.div
           className="factur-tg-pane"
           animate={{ width: isSplit ? '50%' : '100%' }}
@@ -170,7 +182,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.35, ease: EXPO }}
               >
-                {/* Variant A: menu shown first */}
+                {/* Variant: show menu first */}
                 {scenario.showMenu && (
                   <motion.div
                     className="factur-bubble factur-bubble--bot"
@@ -188,17 +200,17 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                   </motion.div>
                 )}
 
-                {/* User sends /createfactura */}
+                {/* User sends /create */}
                 <motion.div
                   className="factur-bubble factur-bubble--user"
                   initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.28, ease: EXPO, delay: scenario.showMenu ? 0.9 : 0.2 }}
                 >
-                  /createfactura
+                  /create
                 </motion.div>
 
-                {/* Bot reply: keyboard with amounts */}
+                {/* Bot: keyboard with amounts */}
                 <motion.div
                   className="factur-bubble factur-bubble--bot"
                   initial={{ opacity: 0, y: 5 }}
@@ -251,7 +263,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
               </motion.div>
             )}
 
-            {/* Phase: telegram-done / pause — success card */}
+            {/* Phase: telegram-done / pause — real bot success message format */}
             {(outerPhase === 'telegram-done' || outerPhase === 'pause') && (
               <motion.div
                 key="tg-done"
@@ -262,20 +274,17 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                 transition={{ duration: 0.4, ease: EXPO }}
               >
                 <div className="factur-bubble factur-bubble--bot">
-                  <div className="factur-done-card">
-                    <div className="factur-done-title">✅ {scenario.type} created</div>
-                    <div className="factur-done-row">
-                      <span className="factur-done-label">CAE</span>
-                      <span className="factur-done-value">{scenario.cae}</span>
+                  <div className="factur-done-header">🧾 Factura Creation Completed:</div>
+                  <div className="factur-done-stats">
+                    <div>✅ <strong>1</strong> transaction(s) successfull</div>
+                    <div className="factur-done-time">
+                      🕐 Created at: <strong>05/10/2026 14:23:47</strong>
                     </div>
-                    <div className="factur-done-row">
-                      <span className="factur-done-label">Amount</span>
-                      <span className="factur-done-value">{scenario.amount}</span>
-                    </div>
-                    <div className="factur-done-row">
-                      <span className="factur-done-label">Venc. CAE</span>
-                      <span className="factur-done-value">15/10/2026</span>
-                    </div>
+                  </div>
+                  <div className="factur-done-item">
+                    ‣ 🧾 Factura{' '}
+                    <strong>{scenario.amount}</strong>{' '}
+                    / <strong>{scenario.desc}</strong> successful
                   </div>
                 </div>
               </motion.div>
@@ -298,10 +307,11 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
               <div className="factur-code-header">
                 <span className="factur-code-filename">arca-crypto-pi.py</span>
               </div>
-              <div className="factur-code-steps">
+              <div ref={stepsContainerRef} className="factur-code-steps">
                 {CODE_STEPS.map((code, i) => (
                   <div
                     key={i}
+                    ref={i === step ? activeStepRef : undefined}
                     className={`factur-code-step${i === step ? ' factur-code-step--active' : ''}`}
                   >
                     <code className="factur-code-pre">{code}</code>

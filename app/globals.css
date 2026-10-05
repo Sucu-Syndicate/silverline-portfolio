@@ -2633,16 +2633,19 @@ a { color: inherit; text-decoration: none; }
 
 .factur-code-steps {
   flex: 1;
-  overflow: hidden;
+  overflow-y: auto;
+  scrollbar-width: none;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   padding: 6px 0;
   gap: 1px;
 }
 
+.factur-code-steps::-webkit-scrollbar { display: none; }
+
 .factur-code-step {
-  padding: 3px 10px 3px 8px;
+  padding: 9px 10px 9px 8px;
+  flex-shrink: 0;
   border-left: 2px solid transparent;
   transition: background 0.18s ease, border-color 0.18s ease;
 }
@@ -2697,6 +2700,38 @@ a { color: inherit; text-decoration: none; }
   font-size: 9.5px;
   color: var(--text-2);
   line-height: 1.3;
+}
+
+/* Telegram done / success message */
+.factur-done-header {
+  font-family: var(--font-structure);
+  font-size: 11px;
+  font-weight: 600;
+  color: rgba(var(--p-text-rgb), 0.9);
+  margin-bottom: 6px;
+}
+
+.factur-done-stats {
+  font-family: var(--font-structure);
+  font-size: 10.5px;
+  color: rgba(var(--p-text-rgb), 0.8);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-bottom: 6px;
+}
+
+.factur-done-time {
+  font-size: 10px;
+  color: var(--text-2);
+}
+
+.factur-done-item {
+  font-family: var(--font-structure);
+  font-size: 10.5px;
+  color: rgba(var(--p-text-rgb), 0.8);
+  border-top: 1px solid rgba(var(--p-accent-rgb), 0.12);
+  padding-top: 6px;
 }
 
 /* ─── Reduced motion ─────────────────────────────────── */
