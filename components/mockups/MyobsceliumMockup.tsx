@@ -158,7 +158,7 @@ const QA: QAPair[] = [
     resultCount: 6,
     resultLabel: 'notes',
     response:    '6 notes in Silverline — ground truth, task board, queue, archive, and both design system docs.',
-    graphNodes:  ['GT — Portfolio', 'TASKS-SL', 'TASKS-QUEUE', 'TASKS-ARCHIVE', 'DS — Visual', 'DS — Behavior'],
+    graphNodes:  ['GT-Portfolio', 'TASKS-SL', 'TASKS-QUEUE', 'TASKS-ARCH', 'DS-Visual', 'DS-Behavior'],
     code:        CODE_LIST_FOLDER,
   },
   {
@@ -229,9 +229,10 @@ function computePositions(count: number): [number, number][] {
   // 4+: index 0 = center, rest = ring
   const positions: [number, number][] = [[160, 100]];
   const n = count - 1;
-  const r = count <= 5 ? 68 : count <= 7 ? 65 : 60;
+  const r = count <= 5 ? 68 : count === 6 ? 70 : count <= 7 ? 65 : 60;
+  const startAngle = n === 4 ? -Math.PI / 4 : -Math.PI / 2;
   for (let i = 0; i < n; i++) {
-    const angle = (2 * Math.PI * i / n) - Math.PI / 2;
+    const angle = (2 * Math.PI * i / n) + startAngle;
     positions.push([
       Math.round(160 + r * Math.cos(angle)),
       Math.round(100 + r * Math.sin(angle)),
@@ -252,35 +253,55 @@ function edgeLength(a: [number, number], b: [number, number]) {
   return Math.hypot(b[0] - a[0], b[1] - a[1]);
 }
 
+// ── Precomputed graph data (evaluated once at module load, not on each render) ─
+interface GraphData {
+  positions: [number, number][];
+  edges: [number, number][];
+  edgeLengths: number[];
+  displayLabels: string[];
+  rxValues: number[];
+  msEach: number;
+}
+
+const GRAPH_DATA: GraphData[] = QA.map(qa => {
+  const positions    = computePositions(qa.graphNodes.length);
+  const edges        = computeEdges(qa.graphNodes.length);
+  const edgeLengths  = edges.map(([ai, bi]) => edgeLength(positions[ai], positions[bi]));
+  const displayLabels = qa.graphNodes.map(n => n.length > 15 ? n.slice(0, 14) + '…' : n);
+  const rxValues     = displayLabels.map(d => Math.max(28, Math.min(52, Math.ceil(d.length * 3.4))));
+  const total        = qa.graphNodes.length + edges.length;
+  const msEach       = total > 0 ? Math.max(80, Math.min(260, Math.floor(2200 / total))) : 200;
+  return { positions, edges, edgeLengths, displayLabels, rxValues, msEach };
+});
+
 // ── SVG graph ─────────────────────────────────────────────────────────────────
-function NoteGraph({ nodes, active }: { nodes: string[]; active: boolean }) {
+function NoteGraph({ qaIdx, active, paused }: { qaIdx: number; active: boolean; paused: boolean }) {
   const [drawnNodes, setDrawnNodes] = useState(0);
   const [drawnEdges, setDrawnEdges] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const positions = computePositions(nodes.length);
-  const edges     = computeEdges(nodes.length);
-  const total     = nodes.length + edges.length;
-  const msEach    = total > 0 ? Math.max(80, Math.min(260, Math.floor(2200 / total))) : 200;
+  const { positions, edges, edgeLengths, displayLabels, rxValues, msEach } = GRAPH_DATA[qaIdx];
+  const nodeCount = displayLabels.length;
 
   useEffect(() => {
     if (!active) { setDrawnNodes(0); setDrawnEdges(0); return; }
+    if (paused) return; // freeze without resetting
     let n = 0, e = 0;
     const step = () => {
-      if (n < nodes.length) { n++; setDrawnNodes(n); }
+      if (n < nodeCount) { n++; setDrawnNodes(n); }
       else if (e < edges.length) { e++; setDrawnEdges(e); }
-      const done = n >= nodes.length && e >= edges.length;
+      const done = n >= nodeCount && e >= edges.length;
       if (!done) timerRef.current = setTimeout(step, msEach);
     };
     timerRef.current = setTimeout(step, 120);
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [active, nodes.length, edges.length, msEach]);
+  }, [active, paused, qaIdx, nodeCount, edges.length, msEach]);
 
   return (
     <svg viewBox="0 0 320 200" className="myob-graph-svg" aria-hidden="true">
       {edges.slice(0, drawnEdges).map(([ai, bi], idx) => {
         const a = positions[ai], b = positions[bi];
-        const len = edgeLength(a, b);
+        const len = edgeLengths[idx];
         return (
           <motion.line
             key={idx}
@@ -293,16 +314,15 @@ function NoteGraph({ nodes, active }: { nodes: string[]; active: boolean }) {
           />
         );
       })}
-      {nodes.slice(0, drawnNodes).map((label, idx) => {
+      {displayLabels.slice(0, drawnNodes).map((display, idx) => {
         const [cx, cy] = positions[idx];
-        const display = label.length > 15 ? label.slice(0, 14) + '…' : label;
-        const rx = Math.max(28, Math.min(52, Math.ceil(display.length * 3.4)));
+        const rx = rxValues[idx];
         return (
           <motion.g
             key={idx}
             className="myob-graph-node-group"
-            initial={{ opacity: 0, scale: 0.7 }}
-            animate={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             transition={{ duration: 0.22, ease: EXPO }}
           >
             <ellipse cx={cx} cy={cy} rx={rx} ry={13} className="myob-graph-node" />
@@ -317,7 +337,7 @@ function NoteGraph({ nodes, active }: { nodes: string[]; active: boolean }) {
 }
 
 // ── Main component ────────────────────────────────────────────────────────────
-export default function MyobsceliumMockup() {
+export default function MyobsceliumMockup({ paused = false }: { paused?: boolean }) {
   const reduce  = useReducedMotion();
   const [phase, setPhase] = useState<Phase>('user-msg');
   const [qaIdx, setQaIdx] = useState(0);
@@ -326,7 +346,7 @@ export default function MyobsceliumMockup() {
   const qa = QA[qaIdx];
 
   useEffect(() => {
-    if (reduce) return;
+    if (reduce || paused) return;
     const advance = () => {
       setPhase(prev => {
         const nextIdx = (PHASE_ORDER.indexOf(prev) + 1) % PHASE_ORDER.length;
@@ -337,7 +357,7 @@ export default function MyobsceliumMockup() {
     };
     phaseRef.current = setTimeout(advance, DURATIONS[phase]);
     return () => { if (phaseRef.current) clearTimeout(phaseRef.current); };
-  }, [phase, reduce]);
+  }, [phase, reduce, paused]);
 
   const inChat         = phase === 'user-msg' || phase === 'thinking' || phase === 'response' || phase === 'pause';
   const inBehindScenes = phase === 'tool-reveal' || phase === 'graph';
@@ -498,7 +518,7 @@ export default function MyobsceliumMockup() {
                         Vault graph · {qa.resultCount} {qa.resultLabel}
                       </span>
                     </div>
-                    <NoteGraph nodes={qa.graphNodes} active={phase === 'graph'} />
+                    <NoteGraph qaIdx={qaIdx} active={phase === 'graph'} paused={paused} />
                   </motion.div>
                 )}
 

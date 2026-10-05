@@ -215,7 +215,7 @@ function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectC
         )}
         {index === 1 && (
           <div className="project-card-mockup">
-            <MyobsceliumMockup />
+            <MyobsceliumMockup paused={paused} />
           </div>
         )}
 

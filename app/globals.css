@@ -1829,12 +1829,13 @@ a { color: inherit; text-decoration: none; }
   flex-direction: column;
   border-radius: 12px;
   border: 1px solid rgba(var(--p-accent-rgb), 0.22);
-  background: rgba(var(--p-bg-rgb), 0.55);
-  backdrop-filter: blur(12px);
+  background: rgba(var(--p-bg-rgb), 0.65);
   overflow: hidden;
   box-shadow:
     0 0 0 1px rgba(var(--p-accent-rgb), 0.08),
     0 16px 48px rgba(0, 0, 0, 0.5);
+  will-change: transform;
+  contain: layout style paint;
 }
 
 .myob-chat-header {
