@@ -1939,7 +1939,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: color-mix(in srgb, var(--text-2) 65%, transparent);
 }
 
 .myob-tool-call-name {
@@ -1962,7 +1962,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-2);
+  color: color-mix(in srgb, var(--text-2) 65%, transparent);
 }
 
 .myob-tool-args-val {
@@ -2045,7 +2045,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-2);
+  color: color-mix(in srgb, var(--text-2) 65%, transparent);
 }
 
 .myob-graph-svg {
