@@ -92,8 +92,8 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
   const [step, setStep]               = useState(0);
   const [scenarioIdx, setScenarioIdx] = useState(0);
   const timerRef          = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const activeStepRef     = useRef<HTMLDivElement | null>(null);
   const stepsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [stepsLayout, setStepsLayout] = useState({ containerH: 0, stepH: 30 });
 
   const scenario = SCENARIOS[scenarioIdx];
   const isSplit  = outerPhase === 'split';
@@ -134,14 +134,22 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
   }, [outerPhase, step, paused, reduce, scenario.startMs]);
 
-  // Auto-scroll code panel to keep active step in view
+  // Measure container + step height when split opens (so we can drive scroll via transform)
   useEffect(() => {
-    if (!isSplit || !activeStepRef.current || !stepsContainerRef.current) return;
+    if (!isSplit || !stepsContainerRef.current) return;
     const container = stepsContainerRef.current;
-    const el        = activeStepRef.current;
-    const targetTop = el.offsetTop - container.clientHeight / 2 + el.clientHeight / 2;
-    container.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
-  }, [step, isSplit]);
+    const firstStep = container.querySelector<HTMLElement>('.factur-code-step');
+    setStepsLayout({
+      containerH: container.clientHeight,
+      stepH: firstStep ? firstStep.offsetHeight : 30,
+    });
+  }, [isSplit]);
+
+  // y offset that keeps the active step centred — driven by Framer Motion for smooth EXPO easing
+  const GAP = 1;
+  const codeYOffset = stepsLayout.containerH > 0
+    ? Math.min(0, -(step * (stepsLayout.stepH + GAP)) + (stepsLayout.containerH / 2 - stepsLayout.stepH / 2))
+    : 0;
 
   // Static fallback
   if (reduce) {
@@ -217,7 +225,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.28, ease: EXPO, delay: scenario.showMenu ? 1.5 : 0.65 }}
                 >
-                  🧾 <strong>{scenario.type}</strong> — Select amount:
+                  🧾 <strong>{scenario.type}</strong> · Select amount:
                   <div className="factur-inline-kbd">
                     {SCENARIOS.map((s, i) => (
                       <motion.span
@@ -308,15 +316,20 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                 <span className="factur-code-filename">arca-crypto-pi.py</span>
               </div>
               <div ref={stepsContainerRef} className="factur-code-steps">
-                {CODE_STEPS.map((code, i) => (
-                  <div
-                    key={i}
-                    ref={i === step ? activeStepRef : undefined}
-                    className={`factur-code-step${i === step ? ' factur-code-step--active' : ''}`}
-                  >
-                    <code className="factur-code-pre">{code}</code>
-                  </div>
-                ))}
+                <motion.div
+                  animate={{ y: codeYOffset }}
+                  transition={{ duration: 0.5, ease: EXPO }}
+                  style={{ display: 'flex', flexDirection: 'column', gap: '1px' }}
+                >
+                  {CODE_STEPS.map((code, i) => (
+                    <div
+                      key={i}
+                      className={`factur-code-step${i === step ? ' factur-code-step--active' : ''}`}
+                    >
+                      <code className="factur-code-pre">{code}</code>
+                    </div>
+                  ))}
+                </motion.div>
               </div>
             </motion.div>
           )}

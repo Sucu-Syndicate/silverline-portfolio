@@ -2633,15 +2633,11 @@ a { color: inherit; text-decoration: none; }
 
 .factur-code-steps {
   flex: 1;
-  overflow-y: auto;
-  scrollbar-width: none;
+  overflow: hidden;
   display: flex;
   flex-direction: column;
   padding: 6px 0;
-  gap: 1px;
 }
-
-.factur-code-steps::-webkit-scrollbar { display: none; }
 
 .factur-code-step {
   padding: 9px 10px 9px 8px;
