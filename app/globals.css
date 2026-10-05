@@ -1939,14 +1939,14 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-2);
 }
 
 .myob-tool-call-name {
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
-  color: rgba(var(--p-accent-rgb), 0.9);
+  color: rgba(var(--p-text-rgb), 1);
   letter-spacing: 0.02em;
 }
 
@@ -1962,7 +1962,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   text-transform: uppercase;
   letter-spacing: 0.08em;
-  color: var(--text-dim);
+  color: var(--text-2);
 }
 
 .myob-tool-args-val {
@@ -2015,14 +2015,16 @@ a { color: inherit; text-decoration: none; }
 }
 
 .myob-result-icon {
-  font-size: 11px;
-  color: rgba(var(--p-text-rgb), 0.95);
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(var(--p-text-rgb), 1);
 }
 
 .myob-result-text {
   font-family: var(--font-mono);
-  font-size: 10px;
-  color: rgba(var(--p-text-rgb), 0.9);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(var(--p-text-rgb), 1);
 }
 
 /* Graph panel */
@@ -2043,7 +2045,7 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--text-dim);
+  color: var(--text-2);
 }
 
 .myob-graph-svg {
@@ -2059,7 +2061,7 @@ a { color: inherit; text-decoration: none; }
 }
 
 .myob-graph-edge {
-  stroke: rgba(var(--p-accent-rgb), 0.4);
+  stroke: rgba(var(--p-accent-rgb), 0.7);
   stroke-width: 1;
   fill: none;
 }

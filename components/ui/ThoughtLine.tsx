@@ -6,10 +6,19 @@ import './ThoughtLine.css';
 
 // ── Inline SVG icons (no hugeicons dependency) ────────────────────────────────
 function SparkleIcon() {
+  // Explicit lines — circle r=3 at (12,12), rays start at r=4 (gap=1), end at r=7 (length=3)
+  // Diagonal offsets: r=4 → 2.83, r=7 → 4.95
   return (
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 3v1m0 16v1M4.22 4.22l.7.7m12.16 12.16.7.7M3 12h1m16 0h1M4.22 19.78l.7-.7M18.36 5.64l.7-.7" />
       <circle cx="12" cy="12" r="3" />
+      <line x1="12"   y1="8"    x2="12"   y2="5"    />
+      <line x1="12"   y1="16"   x2="12"   y2="19"   />
+      <line x1="8"    y1="12"   x2="5"    y2="12"   />
+      <line x1="16"   y1="12"   x2="19"   y2="12"   />
+      <line x1="9.17" y1="9.17" x2="7.05" y2="7.05" />
+      <line x1="14.83" y1="9.17" x2="16.95" y2="7.05" />
+      <line x1="14.83" y1="14.83" x2="16.95" y2="16.95" />
+      <line x1="9.17" y1="14.83" x2="7.05" y2="16.95" />
     </svg>
   );
 }
