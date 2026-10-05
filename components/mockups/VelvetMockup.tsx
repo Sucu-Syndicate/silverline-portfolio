@@ -61,7 +61,7 @@ export default function VelvetMockup() {
 
       {/* Screenshot area */}
       <div className="velvet-mockup-screen">
-        <AnimatePresence mode="wait">
+        <AnimatePresence>
           <motion.img
             key={slide.src}
             src={slide.src}
