@@ -12,6 +12,10 @@ const MoltenMetal    = dynamic(() => import('@/components/backgrounds/MoltenMeta
 const Silk           = dynamic(() => import('@/components/backgrounds/Silk'),        { ssr: false });
 const ColorBends     = dynamic(() => import('@/components/backgrounds/ColorBends'),  { ssr: false });
 
+// ── Mockups — dynamic (client-only, code-split) ───────────────────────────────
+const VelvetMockup      = dynamic(() => import('@/components/mockups/VelvetMockup'),      { ssr: false });
+const MyobsceliumMockup = dynamic(() => import('@/components/mockups/MyobsceliumMockup'), { ssr: false });
+
 // ── Tech icon lookup (simple-icons CDN) ──────────────────────────────────────
 const TECH_ICONS: Record<string, string> = {
   'Next.js':               'https://cdn.simpleicons.org/nextdotjs/B8B6AD',
@@ -202,6 +206,19 @@ function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectC
           </ScrollReveal>
 
         </div>
+
+        {/* Right-side mockup — desktop only, hidden below 1200px via CSS */}
+        {index === 0 && (
+          <div className="project-card-mockup">
+            <VelvetMockup />
+          </div>
+        )}
+        {index === 1 && (
+          <div className="project-card-mockup">
+            <MyobsceliumMockup />
+          </div>
+        )}
+
       </div>
     </div>
   );

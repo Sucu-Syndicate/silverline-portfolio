@@ -1561,6 +1561,7 @@ a { color: inherit; text-decoration: none; }
   padding: 0 clamp(24px, 6vw, 80px);
   display: flex;
   align-items: center;
+  gap: 32px;
 }
 
 /* ── Glassmorphic card ──────────────────────────────────
@@ -1570,6 +1571,7 @@ a { color: inherit; text-decoration: none; }
 .project-glass-card {
   max-width: 780px;
   width: 100%;
+  flex-shrink: 0;
   background: rgba(var(--p-bg-rgb), 0.32);
   backdrop-filter: blur(14px) saturate(120%);
   -webkit-backdrop-filter: blur(14px) saturate(120%);
@@ -1703,6 +1705,398 @@ a { color: inherit; text-decoration: none; }
   color: var(--text-dim);
   border: 1px solid var(--border);
   padding: 4px 10px;
+}
+
+/* ─── Project card mockup column ───────────────────────── */
+.project-card-mockup {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@media (max-width: 1200px) {
+  .project-card-mockup { display: none; }
+}
+
+/* ─── Velvet mockup ─────────────────────────────────────── */
+.velvet-mockup {
+  width: 100%;
+  max-width: 420px;
+  transform: perspective(900px) rotateY(-6deg);
+  transform-origin: center center;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(var(--p-accent-rgb), 0.18),
+    0 20px 60px rgba(0, 0, 0, 0.6),
+    0 4px 16px rgba(0, 0, 0, 0.4);
+}
+
+.velvet-mockup-chrome {
+  height: 38px;
+  background: rgba(var(--p-bg-rgb), 0.95);
+  border-bottom: 1px solid rgba(var(--p-accent-rgb), 0.15);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 12px;
+}
+
+.velvet-mockup-dots {
+  display: flex;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+.velvet-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+}
+
+.velvet-dot--red    { background: #ff5f57; }
+.velvet-dot--yellow { background: #febc2e; }
+.velvet-dot--green  { background: #28c840; }
+
+.velvet-mockup-url {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 5px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  height: 22px;
+  padding: 0 8px;
+  overflow: hidden;
+}
+
+.velvet-mockup-url-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-2);
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.velvet-mockup-screen {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--surface-2);
+}
+
+.velvet-mockup-img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+.velvet-mockup-indicators {
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 5px;
+  z-index: 2;
+}
+
+.velvet-mockup-dot-indicator {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: rgba(var(--p-accent-rgb), 0.35);
+  transition: background 0.3s ease;
+}
+
+.velvet-mockup-dot-indicator[data-active] {
+  background: rgba(var(--p-accent-rgb), 0.9);
+}
+
+/* ─── Myobscelium mockup ─────────────────────────────────── */
+.myob-mockup {
+  width: 100%;
+  max-width: 380px;
+  height: 340px;
+  display: flex;
+  flex-direction: column;
+  border-radius: 12px;
+  border: 1px solid rgba(var(--p-accent-rgb), 0.22);
+  background: rgba(var(--p-bg-rgb), 0.55);
+  backdrop-filter: blur(12px);
+  overflow: hidden;
+  box-shadow:
+    0 0 0 1px rgba(var(--p-accent-rgb), 0.08),
+    0 16px 48px rgba(0, 0, 0, 0.5);
+}
+
+.myob-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(var(--p-accent-rgb), 0.14);
+  background: rgba(var(--p-bg-rgb), 0.7);
+  flex-shrink: 0;
+}
+
+.myob-chat-model {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+}
+
+.myob-chat-badge {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(var(--p-accent-rgb), 0.8);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.3);
+  border-radius: 4px;
+  padding: 2px 7px;
+}
+
+.myob-body-wrap {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.myob-chat-body {
+  position: absolute;
+  inset: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow: hidden;
+}
+
+.myob-bubble {
+  max-width: 90%;
+  padding: 8px 12px;
+  border-radius: 10px;
+  font-family: var(--font-structure);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.myob-bubble--user {
+  align-self: flex-end;
+  background: rgba(var(--p-accent-rgb), 0.18);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.28);
+  color: rgba(var(--p-text-rgb), 0.95);
+}
+
+.myob-bubble--ai {
+  align-self: flex-start;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text);
+}
+
+.myob-thinking-row {
+  align-self: flex-start;
+  padding: 2px 0;
+}
+
+/* Behind-scenes panel */
+.myob-behind {
+  position: absolute;
+  inset: 0;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.myob-tool-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.myob-tool-call-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.myob-tool-call-label {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.myob-tool-call-name {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(var(--p-accent-rgb), 0.9);
+  letter-spacing: 0.02em;
+}
+
+.myob-tool-args {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  flex-wrap: wrap;
+}
+
+.myob-tool-args-key {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+}
+
+.myob-tool-args-val {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-2);
+  line-height: 1.4;
+  word-break: break-all;
+}
+
+.myob-code-block {
+  flex: 1;
+  min-height: 0;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.myob-code-filename {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  padding: 5px 10px;
+  border-bottom: 1px solid rgba(var(--p-accent-rgb), 0.1);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.myob-code-pre {
+  flex: 1;
+  min-height: 0;
+  margin: 0;
+  padding: 8px 10px;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  line-height: 1.55;
+  color: var(--text-2);
+  white-space: pre;
+}
+
+.myob-result-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 0 0;
+}
+
+.myob-result-icon {
+  font-size: 11px;
+  color: rgba(var(--p-accent-rgb), 0.9);
+}
+
+.myob-result-text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(var(--p-accent-rgb), 0.8);
+}
+
+/* Graph panel */
+.myob-graph-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+}
+
+.myob-graph-header {
+  display: flex;
+  align-items: center;
+}
+
+.myob-graph-label-text {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.myob-graph-svg {
+  flex: 1;
+  width: 100%;
+  overflow: visible;
+}
+
+.myob-graph-node {
+  fill: rgba(var(--p-bg-rgb), 0.8);
+  stroke: rgba(var(--p-accent-rgb), 0.55);
+  stroke-width: 1;
+}
+
+.myob-graph-edge {
+  stroke: rgba(var(--p-accent-rgb), 0.4);
+  stroke-width: 1;
+  fill: none;
+}
+
+.myob-graph-label {
+  font-family: var(--font-mono);
+  font-size: 7px;
+  fill: var(--text-2);
+  pointer-events: none;
+}
+
+.myob-graph-node-group {
+  transform-origin: center;
+}
+
+/* Static fallback */
+.myob-mockup--static .myob-chat-body {
+  position: relative;
+  inset: unset;
+  padding: 14px;
+  overflow: auto;
+}
+
+.myob-tool-badge {
+  align-self: flex-start;
+  background: rgba(var(--p-accent-rgb), 0.08);
+  border: 1px solid rgba(var(--p-accent-rgb), 0.2);
+  border-radius: 4px;
+  padding: 3px 8px;
+}
+
+.myob-tool-name {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: rgba(var(--p-accent-rgb), 0.8);
 }
 
 /* ─── Projects — see all rectangle ─────────────────────── */
