@@ -14,9 +14,9 @@ interface Scenario {
 }
 
 const SCENARIOS: Scenario[] = [
-  { amount: '$85.000',  type: 'Factura B', cae: '74008765432198', desc: 'Servicios de desarrollo',  showMenu: false, startMs: 2400 },
-  { amount: '$120.000', type: 'Factura B', cae: '74009123456781', desc: 'Consultoría técnica',       showMenu: true,  startMs: 3400 },
-  { amount: '$52.500',  type: 'Factura C', cae: '74007654321987', desc: 'Soporte y mantenimiento',   showMenu: false, startMs: 2400 },
+  { amount: '$85.000',  type: 'Factura B', cae: '74008765432198', desc: 'Development services',  showMenu: false, startMs: 2400 },
+  { amount: '$120.000', type: 'Factura B', cae: '74009123456781', desc: 'Technical consulting',    showMenu: true,  startMs: 3400 },
+  { amount: '$52.500',  type: 'Factura C', cae: '74007654321987', desc: 'Support & maintenance',  showMenu: false, startMs: 2400 },
 ];
 
 // ── Code steps (arca-crypto-pi.py function names — no credentials) ─────────────
