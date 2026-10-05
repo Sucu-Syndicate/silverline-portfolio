@@ -7,7 +7,7 @@ const links = [
   { label: 'About',   href: '#about'   },
   { label: 'Projects', href: '/projects' },
   { label: 'Posts',   href: '/posts'   },
-  { label: 'Contact', href: '#contact' },
+  { label: 'Contact', href: '/#contact' },
 ];
 
 export default function Nav() {
