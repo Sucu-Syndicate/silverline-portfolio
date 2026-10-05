@@ -77,6 +77,10 @@ Either:
 - Continue this task from: [specific point]
 - Task complete — pull [PTASK-XXX] from QUEUE
 
+### ## Related
+Scan `Task Outputs` first, then sibling Portfolio folders, for genuinely related notes — same task ID, predecessor/successor sessions, same topic. Add 1–3 wikilinks. Never link randomly just to fill the section. Format:
+- [[note title]]
+
 ---
 
 ## Rules
@@ -86,3 +90,4 @@ Either:
 - If something was tried and failed, document it — saves the next session from repeating the mistake.
 - Run before closing, even if the task isn't done.
 - If a design system rule was violated — even accidentally — flag it clearly in Decisions Made Independently so the planner can catch it.
+- Always add a `## Related` section — minimum 1 link, maximum 3. Scan Task Outputs first, then sibling folders. Link only notes that share the same task, topic, or session chain (e.g. predecessor session, same PTASK, design system notes touched).

@@ -23,7 +23,17 @@
       "Bash(echo \"22\")",
       "Bash(npm install:*)",
       "Bash(npm run:*)",
-      "Bash(ls \"C:\\\\Users\\\\mathe\\\\Documents\\\\_projects\\\\silverline_portfolio\"/TASKS*.md)"
+      "Bash(ls \"C:\\\\Users\\\\mathe\\\\Documents\\\\_projects\\\\silverline_portfolio\"/TASKS*.md)",
+      "Bash(npx tsc:*)",
+      "Bash(mkdir -p \"C:/Users/mathe/Documents/_projects/silverline_portfolio/public/mockups/velvet\")",
+      "Bash(cp \"C:/Users/mathe/Documents/_projects/velvet-project/screenshots/qa/2026-09-26T02-06-08_dashboard_1440w.png\" \"C:/Users/mathe/Documents/_projects/silverline_portfolio/public/mockups/velvet/dashboard.png\")",
+      "Bash(cp \"C:/Users/mathe/Documents/_projects/velvet-project/screenshots/qa/2026-09-26T15-39-07_iniciar-sesion_1440w.png\" \"C:/Users/mathe/Documents/_projects/silverline_portfolio/public/mockups/velvet/login.png\")",
+      "Bash(cp \"C:/Users/mathe/Documents/_projects/velvet-project/screenshots/qa/2026-09-25T22-41-16_cursos--test-c--modulo-1--leccion-1_claude_auth_1440w.png\" \"C:/Users/mathe/Documents/_projects/silverline_portfolio/public/mockups/velvet/lesson.png\")",
+      "Bash(cp \"C:/Users/mathe/Documents/_projects/velvet-project/screenshots/qa/2026-09-22T17-44-15_quiz_1440w.png\" \"C:/Users/mathe/Documents/_projects/silverline_portfolio/public/mockups/velvet/quiz.png\")",
+      "Bash(npx shadcn@latest add \"https://reactbits.dev/r/thought-line-JS-CSS.json\" --yes)",
+      "Bash(npx shadcn@4.20.0 add \"https://reactbits.dev/r/thought-line-JS-CSS.json\" --yes)",
+      "Bash(mkdir -p \"C:/Users/mathe/Documents/_projects/silverline_portfolio/components/ui\")",
+      "Bash(mkdir -p \"C:/Users/mathe/Documents/_projects/silverline_portfolio/components/mockups\")"
     ]
   }
 }
