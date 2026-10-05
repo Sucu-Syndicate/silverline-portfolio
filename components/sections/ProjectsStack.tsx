@@ -25,6 +25,7 @@ const TECH_ICONS: Record<string, string> = {
   'Clerk':                 'https://cdn.simpleicons.org/clerk/B8B6AD',
   'Stripe':                'https://cdn.simpleicons.org/stripe/B8B6AD',
   'Python':                'https://cdn.simpleicons.org/python/B8B6AD',
+  'Model Context Protocol':'https://cdn.simpleicons.org/modelcontextprotocol/B8B6AD',
   'Anthropic':             'https://cdn.simpleicons.org/anthropic/B8B6AD',
   'Obsidian':              'https://cdn.simpleicons.org/obsidian/B8B6AD',
   'Selenium':              'https://cdn.simpleicons.org/selenium/B8B6AD',
