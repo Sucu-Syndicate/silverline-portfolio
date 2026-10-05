@@ -51,7 +51,7 @@
   font-size: 15px;
   font-weight: 500;
   line-height: 1.35;
-  animation: flex-carousel-title 520ms cubic-bezier(0.22, 1, 0.36, 1);
+  animation: flex-carousel-title 520ms var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .flex-carousel__subtitle {
@@ -87,7 +87,7 @@
 .flex-carousel__reel {
   display: flex;
   flex-direction: column;
-  transition: transform 600ms cubic-bezier(0.22, 1, 0.36, 1);
+  transition: transform 600ms var(--ease-out-expo, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .flex-carousel__reel span {

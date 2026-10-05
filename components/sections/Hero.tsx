@@ -140,7 +140,7 @@ export default function Hero() {
           </motion.p>
 
           <motion.div className="hero-meta" {...fadeUp(1.1)}>
-            <a href="#projects" className="hero-meta-primary">VIEW PROJECTS</a>
+            <a href="/projects" className="hero-meta-primary">VIEW PROJECTS</a>
             <a href="/resume.pdf" className="hero-meta-primary" target="_blank" rel="noopener noreferrer">RESUME</a>
           </motion.div>
         </div>

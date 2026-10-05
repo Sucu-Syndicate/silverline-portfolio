@@ -39,6 +39,22 @@
   /* ── Motion ────────────────────────────────────────────────────────────── */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
 
+  /* ── Type scale ─────────────────────────────────────────────────────────
+     Ground-truth sizes. 20+ arbitrary px values across the site should map
+     to one of these steps. Fluid display sizes remain inline with clamp().   */
+  --text-2xs: 10px;   /* micro caps — use sparingly (note card tags only) */
+  --text-xs:  11px;   /* labels, eyebrows, meta caps, footer bottom */
+  --text-sm:  13px;   /* nav, UI copy, secondary body */
+  --text-base:15px;   /* primary body, terminal, badges */
+  --text-md:  18px;   /* section subs, blog body prose */
+
+  /* ── Radius scale ────────────────────────────────────────────────────────
+     All border-radius values in the site should map to one of these steps.  */
+  --radius-sm:   4px;    /* small cards, modals, changelog */
+  --radius-md:   18px;   /* buttons (SpecularButton) */
+  --radius-lg:   28px;   /* large cards, page frame */
+  --radius-full: 999px;  /* pills, nav pill */
+
   /* ── Grain texture ─────────────────────────────────────────────────────── */
   --grain-url: url("data:image/svg+xml;base64,PHN2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHdpZHRoPScyMDAnIGhlaWdodD0nMjAwJz48ZmlsdGVyIGlkPSdub2lzZSc+PGZlVHVyYnVsZW5jZSB0eXBlPSdmcmFjdGFsTm9pc2UnIGJhc2VGcmVxdWVuY3k9JzAuNjUnIG51bU9jdGF2ZXM9JzMnIHN0aXRjaFRpbGVzPSdzdGl0Y2gnLz48ZmVDb2xvck1hdHJpeCB0eXBlPSdzYXR1cmF0ZScgdmFsdWVzPScwJy8+PC9maWx0ZXI+PHJlY3Qgd2lkdGg9JzIwMCcgaGVpZ2h0PScyMDAnIGZpbHRlcj0ndXJsKCUyM25vaXNlKScgb3BhY2l0eT0nMScvPjwvc3ZnPg==");
 }
@@ -308,7 +324,7 @@ a { color: inherit; text-decoration: none; }
   font-size: clamp(14px, 4vw, 18px);
   font-weight: 400;
   line-height: 1.5;
-  color: rgba(245, 240, 232, 0.78);
+  color: color-mix(in srgb, var(--text) 78%, transparent);
   max-width: 44ch;
   margin: 0 0 28px;
 }
@@ -854,18 +870,26 @@ a { color: inherit; text-decoration: none; }
   .proj-shell { background: var(--border); }
 }
 
-/* ─── Blog WIP state ─────────────────────────────────── */
-.blog-wip {
-  overflow: hidden;
+/* ─── Posts section CTA ──────────────────────────────── */
+.posts-cta {
+  margin-top: 52px;
 }
 
+/* ─── Blog / Posts WIP state ─────────────────────────── */
 .blog-wip-note {
   font-family: var(--font-mono);
   font-size: 12px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--text-dim);
-  margin: 0 0 40px;
+  margin: 0 0 10px;
+}
+.blog-wip-sub {
+  font-family: var(--font-structure);
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-dim);
+  margin: 0;
 }
 
 /* ─── Blog listing ───────────────────────────────────── */
@@ -1234,13 +1258,35 @@ a { color: inherit; text-decoration: none; }
 .section { border-top: 1px solid var(--border); }
 
 /* Defer below-fold sections — browser skips layout/paint until near viewport */
-#blog, #contact {
+#posts, #contact {
   content-visibility: auto;
   contain-intrinsic-size: 0 500px;
 }
 
-/* Give the blog section breathing room below the last project card */
-#blog { margin-top: 40px; }
+/* Posts section — inset separator floats in the gap above content */
+#posts {
+  border-top: none;
+  position: relative;
+  margin-top: 72px;
+}
+#posts::before {
+  content: '';
+  position: absolute;
+  top: clamp(22px, 3.4vh, 36px);
+  left: clamp(24px, 5vw, 72px);
+  right: clamp(24px, 5vw, 72px);
+  height: 1px;
+  background: var(--border);
+}
+#posts::after {
+  content: '';
+  position: absolute;
+  bottom: clamp(2px, 0.5vh, 6px);
+  left: clamp(24px, 5vw, 72px);
+  right: clamp(24px, 5vw, 72px);
+  height: 1px;
+  background: var(--border);
+}
 
 /* ─── About ──────────────────────────────────────────── */
 .about-text {
@@ -1260,7 +1306,7 @@ a { color: inherit; text-decoration: none; }
 /* ─── Physics Badges ─────────────────────────────────── */
 .physics-badges-box {
   position: relative;
-  height: 440px;
+  height: 355px;
   overflow: hidden;
   border-radius: 16px;
   border: 1px solid var(--border);
@@ -1467,17 +1513,20 @@ a { color: inherit; text-decoration: none; }
   background: #0d0b0e;
   --p-accent-rgb: 196, 162, 101;
   --p-bg-rgb: 13, 11, 14;
+  --p-text-rgb: 239, 221, 189;
 }
 .project-card--2 {
   background: #080010;
   --p-accent-rgb: 139, 92, 246;
   --p-bg-rgb: 8, 0, 16;
+  --p-text-rgb: 196, 181, 253;
 }
 /* Last card — blue theme (ColorBends / Factur2D2) */
 .project-card--3 {
   background: #010c1a;
   --p-accent-rgb: 67, 139, 255;
   --p-bg-rgb: 1, 12, 26;
+  --p-text-rgb: 147, 197, 253;
   border-bottom: 1px solid var(--border);
 }
 
@@ -1519,14 +1568,14 @@ a { color: inherit; text-decoration: none; }
    Fonts: Archivo (structure). No Inter. No hardcoded hex in rules below.
 */
 .project-glass-card {
-  max-width: 560px;
+  max-width: 780px;
   width: 100%;
   background: rgba(var(--p-bg-rgb), 0.32);
   backdrop-filter: blur(14px) saturate(120%);
   -webkit-backdrop-filter: blur(14px) saturate(120%);
   border: 1px solid rgba(var(--p-accent-rgb), 0.24);
   border-radius: 16px;
-  padding: 40px 48px;
+  padding: 48px 52px;
   box-shadow:
     0 0 0 1px rgba(var(--p-accent-rgb), 0.06),
     0 0 56px rgba(var(--p-accent-rgb), 0.10),
@@ -1534,6 +1583,19 @@ a { color: inherit; text-decoration: none; }
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
+/* Gradient label row */
+.project-glass-label-row {
+  margin: 0 0 20px;
+}
+
+.project-glass-label {
+  font-family: var(--font-mono) !important;
+  font-size: 13px !important;
+  letter-spacing: 0.10em !important;
+  text-transform: uppercase;
+}
+
+/* Legacy — keep for backwards compat */
 .project-card-label {
   font-family: var(--font-mono);
   font-size: 11px;
@@ -1559,11 +1621,10 @@ a { color: inherit; text-decoration: none; }
 
 .project-card-tagline {
   font-family: var(--font-structure);
-  font-size: 14px;
-  line-height: 1.65;
-  color: rgba(var(--p-accent-rgb), 0.82);
+  font-size: 20px;
+  line-height: 1.6;
+  color: rgba(var(--p-text-rgb), 0.9);
   margin: 0;
-  max-width: 44ch;
 }
 
 /* Horizontal accent separator */
@@ -1588,6 +1649,7 @@ a { color: inherit; text-decoration: none; }
 .project-glass-tag {
   display: inline-flex;
   align-items: center;
+  gap: 6px;
   font-family: var(--font-mono);
   font-size: 11px;
   font-weight: 500;
@@ -1598,6 +1660,38 @@ a { color: inherit; text-decoration: none; }
   border: 1px solid rgba(var(--p-accent-rgb), 0.20);
   color: var(--text-2);
   white-space: nowrap;
+}
+
+.project-glass-tag-icon {
+  width: 14px;
+  height: 14px;
+  object-fit: contain;
+  flex-shrink: 0;
+  opacity: 0.75;
+}
+
+/* "See in detail" inline CTA */
+.project-glass-cta {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  color: rgba(var(--p-text-rgb), 0.75);
+  border: 1px solid rgba(var(--p-text-rgb), 0.25);
+  border-radius: 4px;
+  padding: 8px 18px;
+  margin-top: 20px;
+  transition: color 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+  width: fit-content;
+}
+
+.project-glass-cta:hover {
+  color: rgba(var(--p-text-rgb), 1);
+  border-color: rgba(var(--p-text-rgb), 0.55);
+  background: rgba(var(--p-text-rgb), 0.06);
 }
 
 /* Kept for backwards compat if referenced elsewhere */
@@ -1646,7 +1740,7 @@ a { color: inherit; text-decoration: none; }
   align-items: center;
   justify-content: space-between;
   gap: 48px;
-  padding: 56px 64px;
+  padding: 72px 64px;
 }
 
 .projects-see-all-text {
@@ -1665,7 +1759,7 @@ a { color: inherit; text-decoration: none; }
 
 .projects-see-all-heading {
   font-family: var(--font-archivo), Archivo, sans-serif;
-  font-size: clamp(2.4rem, 5vw, 3.6rem);
+  font-size: 40.416px;
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
@@ -1675,7 +1769,7 @@ a { color: inherit; text-decoration: none; }
 
 .projects-see-all-sub {
   font-family: var(--font-archivo), Archivo, sans-serif;
-  font-size: 15px;
+  font-size: 20px;
   line-height: 1.7;
   color: var(--text-2);
   margin: 0;
@@ -1683,7 +1777,9 @@ a { color: inherit; text-decoration: none; }
 }
 
 .projects-see-all-btn {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   font-family: var(--font-mono);
   font-size: 13px;
   letter-spacing: 0.08em;
@@ -1692,7 +1788,8 @@ a { color: inherit; text-decoration: none; }
   text-decoration: none;
   background: transparent;
   border: 1px solid var(--text-2);
-  padding: 16px 36px;
+  height: 40px;
+  padding: 0 28px;
   cursor: pointer;
   white-space: nowrap;
   transition: color 0.2s ease, border-color 0.2s ease;
@@ -1782,10 +1879,8 @@ a { color: inherit; text-decoration: none; }
 }
 .contact-cta-actions {
   display: flex;
+  flex-direction: column;
   gap: 12px;
-  align-items: center;
-  flex-wrap: wrap;
-  margin-top: 32px;
 }
 
 /* Email copy button — 3 states: idle / hover / copied */
@@ -1794,14 +1889,13 @@ a { color: inherit; text-decoration: none; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-structure);
-  font-size: 12px;
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-size: 13px;
   letter-spacing: 0.08em;
   color: var(--text-2);
   border: 1px solid var(--text-2);
   height: 40px;
-  padding: 0 18px;
+  padding: 0 28px;
   background: transparent;
   cursor: pointer;
   transition: color 0.2s ease, border-color 0.2s ease;

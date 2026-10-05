@@ -94,7 +94,6 @@ const WORKED: BadgeDef[] = [
 export default function PhysicsBadges() {
   const containerRef = useRef<HTMLDivElement>(null);
   const badgesRef    = useRef<HTMLDivElement>(null);
-  const canvasRef    = useRef<HTMLDivElement>(null);
   const [started,  setStarted]  = useState(false);
   const [live,     setLive]     = useState(false);
   const [resetKey, setResetKey] = useState(0);
@@ -117,9 +116,9 @@ export default function PhysicsBadges() {
   }, []);
 
   useEffect(() => {
-    if (!started || !containerRef.current || !badgesRef.current || !canvasRef.current) return;
+    if (!started || !containerRef.current || !badgesRef.current) return;
 
-    const { Engine, Render, World, Bodies, Runner, Mouse, MouseConstraint } = Matter;
+    const { Engine, World, Bodies, Runner, Mouse, MouseConstraint } = Matter;
 
     const W = containerRef.current.clientWidth;
     const H = containerRef.current.clientHeight;
@@ -137,13 +136,6 @@ export default function PhysicsBadges() {
     // Tighter penetration slop → collisions resolve immediately instead of
     // allowing a frame of visible overlap before correction kicks in
     (Matter.Resolver as any)._slop = 0.02;
-
-    // ── Renderer ─────────────────────────────────────────────────────────────
-    const render = Render.create({
-      element: canvasRef.current,
-      engine,
-      options: { width: W, height: H, background: 'transparent', wireframes: false },
-    });
 
     // ── Static boundaries ─────────────────────────────────────────────────────
     const wall = {
@@ -166,12 +158,16 @@ export default function PhysicsBadges() {
     const knownSized:  Sized[] = knownEls .map(el => ({ el, bw: el.offsetWidth, bh: el.offsetHeight }));
     const workedSized: Sized[] = workedEls.map(el => ({ el, bw: el.offsetWidth, bh: el.offsetHeight }));
 
-    // Pull all badges out of flow now — safe because we already have the sizes
+    // Pull all badges out of flow now — safe because we already have the sizes.
+    // left/top are fixed at 0; all motion goes through transform (compositor-only,
+    // no layout reflow per frame).
     allEls.forEach(el => {
       el.style.position = 'absolute';
       el.style.margin   = '0';
-      el.style.left     = '-9999px';  // park off-screen until physics picks them up
-      el.style.top      = '-9999px';
+      el.style.left     = '0';
+      el.style.top      = '0';
+      // Start off-screen via transform until physics picks them up
+      el.style.transform = 'translate(-9999px, -9999px)';
     });
     setLive(true);
 
@@ -193,29 +189,36 @@ export default function PhysicsBadges() {
     const X_MIN = W * 0.06;
     const X_MAX = W * 0.94;
 
-    function spawnWave(sized: Sized[], yTopOffset: number) {
+    // Pairs carry bw/bh so the DOM loop can compute translate without reading layout
+    type Pair = { el: HTMLElement; body: Matter.Body; bw: number; bh: number };
+
+    function spawnWave(sized: Sized[], yTopOffset: number, randomX = false, randomGroupOffset = false): Pair[] {
       const cols = Math.max(1, Math.round((X_MAX - X_MIN) / 140));
+      // One shared offset for the whole group — shifts the entire wave left/right as a unit
+      const groupShift = randomGroupOffset ? (Math.random() - 0.5) * (X_MAX - X_MIN) * 0.28 : 0;
       return sized.map(({ el, bw, bh }, i) => {
         const col  = i % cols;
         const row  = Math.floor(i / cols);
-        const x    = X_MIN + (col + 0.5) * ((X_MAX - X_MIN) / cols) + (Math.random() - 0.5) * 16;
+        const x    = randomX
+          ? X_MIN + Math.random() * (X_MAX - X_MIN)
+          : X_MIN + (col + 0.5) * ((X_MAX - X_MIN) / cols) + (Math.random() - 0.5) * 16 + groupShift;
         const y    = yTopOffset - bh / 2 - row * (bh + 8) - Math.random() * 14;
         const body = Bodies.rectangle(x, y, bw, bh, BODY_OPTS);
         Matter.Body.setVelocity(body,        { x: (Math.random() - 0.5) * 1.5, y: 1.5 });
         Matter.Body.setAngularVelocity(body, (Math.random() - 0.5) * 0.02);
-        return { el, body };
+        return { el, body, bw, bh };
       });
     }
 
     // Wave 1 — KNOWN ("stack") drops immediately from just above the box
-    const knownPairs = spawnWave(knownSized, -10);
+    const knownPairs = spawnWave(knownSized, -10, false, true);
     World.add(engine.world, knownPairs.map(p => p.body));
 
     // Wave 2 — WORKED drops 1.5 s later, spawning higher so it rains down onto
     // the already-settled KNOWN pile
-    let workedPairs: { el: HTMLElement; body: Matter.Body }[] = [];
+    let workedPairs: Pair[] = [];
     const workedTimer = setTimeout(() => {
-      workedPairs = spawnWave(workedSized, -180);
+      workedPairs = spawnWave(workedSized, -180, true);
       World.add(engine.world, workedPairs.map(p => p.body));
     }, 1500);
 
@@ -230,26 +233,40 @@ export default function PhysicsBadges() {
       mouse,
       constraint: { stiffness: 0.2, render: { visible: false } },
     });
-    (render as any).mouse = mouse;
     World.add(engine.world, mc);
 
+    // Runner only — no Render. Matter's canvas pipeline is not needed since
+    // we drive DOM elements directly; running Render would waste a full 2D
+    // draw pass every frame for a completely transparent canvas.
     const runner = Runner.create();
     Runner.run(runner, engine);
-    Render.run(render);
 
     // ── RAF loop ──────────────────────────────────────────────────────────────
+    // Uses transform-only (no left/top writes after init) → compositor path,
+    // no layout reflow. Sleeping bodies are finalized once then skipped.
     // workedPairs is a let captured by reference — the loop sees the live array
-    // the moment the 1.5 s timer fires and populates it
+    // the moment the 1.5 s timer fires and populates it.
+    const finalizedBodies = new Set<number>();
     let raf: number;
     const loop = () => {
-      [...knownPairs, ...workedPairs].forEach(({ el, body }) => {
+      [...knownPairs, ...workedPairs].forEach(({ el, body, bw, bh }) => {
         // Keep bodies that are still above the box from flying upward
         if (body.position.y < 0 && body.velocity.y < 0) {
           Matter.Body.setVelocity(body, { x: body.velocity.x, y: 0 });
         }
-        el.style.left      = `${body.position.x}px`;
-        el.style.top       = `${body.position.y}px`;
-        el.style.transform = `translate(-50%, -50%) rotate(${body.angle}rad)`;
+
+        if (body.isSleeping) {
+          // Write final resting position once, then skip every subsequent frame
+          if (!finalizedBodies.has(body.id)) {
+            el.style.transform = `translate(${body.position.x - bw / 2}px, ${body.position.y - bh / 2}px) rotate(${body.angle}rad)`;
+            finalizedBodies.add(body.id);
+          }
+          return;
+        }
+
+        // Body is awake — update position; clear finalized so re-sleep triggers a write
+        finalizedBodies.delete(body.id);
+        el.style.transform = `translate(${body.position.x - bw / 2}px, ${body.position.y - bh / 2}px) rotate(${body.angle}rad)`;
       });
       raf = requestAnimationFrame(loop);
     };
@@ -259,9 +276,7 @@ export default function PhysicsBadges() {
       clearTimeout(workedTimer);
       clearTimeout(ceilingTimer);
       cancelAnimationFrame(raf);
-      Render.stop(render);
       Runner.stop(runner);
-      render.canvas?.remove();
       World.clear(engine.world, false);
       Engine.clear(engine);
       // Restore inline styles so badges re-enter flow for remeasurement on reset
@@ -294,16 +309,15 @@ export default function PhysicsBadges() {
   return (
     <div ref={containerRef} className="physics-badges-box">
 
-      {/* Reset button — top-right */}
+      {/* Reset — icon only, no chrome */}
       <button
         className="phys-reset"
         onClick={handleReset}
         aria-label="Reset badges"
       >
-        <svg viewBox="0 0 24 24" fill="currentColor" width="11" height="11" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="14" height="14" aria-hidden="true">
           <path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46A7.93 7.93 0 0 0 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74A7.93 7.93 0 0 0 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" />
         </svg>
-        reset
       </button>
 
       {/* Badge elements */}
@@ -311,9 +325,6 @@ export default function PhysicsBadges() {
         {KNOWN.map((b)  => renderBadge(b, 'known'))}
         {WORKED.map((b) => renderBadge(b, 'worked'))}
       </div>
-
-      {/* Matter.js canvas — behind badges */}
-      <div ref={canvasRef} className="physics-badges-canvas" />
     </div>
   );
 }

@@ -33,6 +33,7 @@ yarn-error.log*
 # env files — .env.example is committed (placeholder values only)
 .env
 .env.local
+.env.production
 .env.*.local
 
 # vercel

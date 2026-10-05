@@ -93,8 +93,8 @@ const BEND_PRESETS: Record<string, BendPreset> = {
 };
 
 const FIT_ASPECT: Record<string, number> = { portrait: 0.75, square: 1, landscape: 4 / 3 };
-const TAPS = 12;
-const PIXEL_BUDGET = 4.5e6;
+const TAPS = 6;
+const PIXEL_BUDGET = 2.5e6;
 const INTRO_DURATION: Record<string, number> = { rise: 2.1, bloom: 1.6, spin: 2.2, deal: 1.5, fade: 0.35 };
 
 // ── Math helpers ──────────────────────────────────────────────────────────────
@@ -1071,16 +1071,20 @@ const FlexCarousel = ({
 
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(container);
+    let itemsLoaded = false;
     const intersectionObserver = new IntersectionObserver(([entry]) => {
       visible = entry.isIntersecting;
+      if (visible && !itemsLoaded) {
+        itemsLoaded = true;
+        setItems(itemsRef.current);
+      }
       start();
-    });
+    }, { rootMargin: '200px' });
     intersectionObserver.observe(container);
 
     engineRef.current = { wake: () => { dirty = true; start(); }, setItems };
 
     resize();
-    setItems(itemsRef.current);
 
     return () => {
       alive = false; visible = false; engineRef.current = null;

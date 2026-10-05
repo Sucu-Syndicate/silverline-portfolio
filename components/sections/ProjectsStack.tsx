@@ -2,60 +2,63 @@
 
 import { useState, useEffect, useRef } from 'react';
 import dynamic from 'next/dynamic';
+import { motion } from 'motion/react';
 import { getGPUTier } from 'detect-gpu';
+import GradientText from '@/components/ui/GradientText';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import BorderGlow from '@/components/ui/BorderGlow';
 
 // ── Backgrounds — dynamic (client-only, code-split) ──────────────────────────
 const MoltenMetal    = dynamic(() => import('@/components/backgrounds/MoltenMetal'), { ssr: false });
 const Silk           = dynamic(() => import('@/components/backgrounds/Silk'),        { ssr: false });
 const ColorBends     = dynamic(() => import('@/components/backgrounds/ColorBends'),  { ssr: false });
-const FlexCarousel   = dynamic(() => import('@/components/ui/FlexCarousel'),         { ssr: false });
 
-// ── Carousel images for the "see all" section background ─────────────────────
-const CAROUSEL_ITEMS = [
-  { src: '/images/carousel/c09.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c03.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c14.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c05.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c01.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c11.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c06.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c04.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c10.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c13.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c02.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c07.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c12.webp', alt: 'Project screenshot' },
-  { src: '/images/carousel/c08.webp', alt: 'Project screenshot' },
-];
+// ── Tech icon lookup (simple-icons CDN) ──────────────────────────────────────
+const TECH_ICONS: Record<string, string> = {
+  'Next.js':               'https://cdn.simpleicons.org/nextdotjs/B8B6AD',
+  'TypeScript':            'https://cdn.simpleicons.org/typescript/B8B6AD',
+  'Supabase':              'https://cdn.simpleicons.org/supabase/B8B6AD',
+  'Clerk':                 'https://cdn.simpleicons.org/clerk/B8B6AD',
+  'Stripe':                'https://cdn.simpleicons.org/stripe/B8B6AD',
+  'Python':                'https://cdn.simpleicons.org/python/B8B6AD',
+  'Anthropic':             'https://cdn.simpleicons.org/anthropic/B8B6AD',
+  'Obsidian':              'https://cdn.simpleicons.org/obsidian/B8B6AD',
+  'Selenium':              'https://cdn.simpleicons.org/selenium/B8B6AD',
+  'Telegram API':          'https://cdn.simpleicons.org/telegram/B8B6AD',
+  'Raspberry Pi':          'https://cdn.simpleicons.org/raspberrypi/B8B6AD',
+};
 
 // ── Project data ──────────────────────────────────────────────────────────────
 const projects = [
   {
-    number:  '01',
-    label:   'PROJECT 01',
-    name:    'VELVET',
-    tagline: 'AI-native financial platform — built solo from architecture to deployment.',
-    tags:    ['Next.js', 'TypeScript', 'Supabase', 'Clerk', 'Stripe'],
+    number:       '01',
+    label:        'FEATURED PROJECT 1',
+    name:         'VELVET',
+    tagline:      'A Spanish-language, mobile-first video course platform with streaming, quizzes, certificates, checkout and admin, taken from a vague brief to a working MVP in 22 days. Built by directing a multi-agent AI workflow with spec-first rules and verification gates, so no task ships on an agent\'s self-report.',
+    tags:         ['Next.js', 'TypeScript', 'Supabase', 'Clerk', 'Stripe'] as const,
+    slug:         'velvet',
+    accentColors: ['#C4A265', '#EFDdbd', '#C4A265', '#A07840'],
   },
   {
-    number:  '02',
-    label:   'PROJECT 02',
-    name:    'MYOBSCELIUM MCP',
-    tagline: 'Open-source knowledge retrieval server & development OS for Claude Desktop.',
-    tags:    ['Python', 'Model Context Protocol', 'Anthropic', 'Obsidian'],
+    number:       '02',
+    label:        'FEATURED PROJECT 2',
+    name:         'MYOBSCELIUM MCP',
+    tagline:      'An open-source Python MCP server that turns an Obsidian vault into persistent, searchable memory for Claude Desktop and Claude Code, so a new chat never starts from zero. Its 19 tools and three-tier retrieval keep token cost low, and the design was shaped by failures found in real use.',
+    tags:         ['Python', 'Model Context Protocol', 'Anthropic', 'Obsidian'] as const,
+    slug:         'myobscelium-mcp',
+    accentColors: ['#8B5CF6', '#C084FC', '#8B5CF6', '#6D28D9'],
   },
   {
-    number:  '03',
-    label:   'PROJECT 03',
-    name:    'FACTUR2D2',
-    tagline: 'Automated tax filing bot & headless Selenium infrastructure.',
-    tags:    ['Python', 'Selenium', 'Telegram API', 'Raspberry Pi'],
+    number:       '03',
+    label:        'FEATURED PROJECT 3',
+    name:         'FACTUR2D2',
+    tagline:      'A Telegram bot that turns filing Argentine tax invoices on the AFIP/ARCA portal into a few taps, with over 200 real invoices filed since September 2025. When AFIP\'s official API proved a dead end, it was built on hand-written Selenium that drives the public portal from a Raspberry Pi, with a test-mode gate on the one irreversible send.',
+    tags:         ['Python', 'Selenium', 'Telegram API', 'Raspberry Pi'] as const,
+    slug:         'factur2d2',
+    accentColors: ['#438BFF', '#60A5FA', '#438BFF', '#1D4ED8'],
   },
 ] as const;
 
-// ── Background renderer — only mounted when webgl is enabled ─────────────────
+// ── Background renderer ───────────────────────────────────────────────────────
 function CardBackground({ index, paused, quality }: { index: number; paused: boolean; quality: 'low' | 'medium' | 'high' }) {
   switch (index) {
     case 0:
@@ -133,20 +136,33 @@ function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectC
       className={`project-card project-card--${index + 1}`}
       style={{ zIndex: index + 1 }}
     >
-      {/* WebGL background — only mounted when the user enables moving backgrounds */}
+      {/* WebGL background */}
       <div className="project-card-bg" aria-hidden="true">
         {webglEnabled && <CardBackground index={index} paused={paused} quality={quality} />}
       </div>
 
-      {/* Top edge fade — casts a shadow band when the next card slides in */}
+      {/* Top edge fade */}
       <div className="project-card-edge" aria-hidden="true" />
 
       {/* Glass card content */}
       <div className="project-card-inner">
         <div className="project-glass-card">
-          <ScrollReveal delay={0}>
-            <p className="project-card-label">{project.label}</p>
-          </ScrollReveal>
+
+          {/* Animated gradient label */}
+          <motion.div
+            className="project-glass-label-row"
+            initial={{ opacity: 0, y: -8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.05 }}
+          >
+            <GradientText
+              colors={[...project.accentColors]}
+              animationSpeed={7}
+              className="project-glass-label"
+            >
+              {project.label}
+            </GradientText>
+          </motion.div>
 
           <h2 className="project-card-title">{project.name}</h2>
 
@@ -154,29 +170,44 @@ function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectC
             <p className="project-card-tagline">{project.tagline}</p>
           </ScrollReveal>
 
-          <ScrollReveal delay={0.16}>
+          <ScrollReveal delay={0.14}>
+            <a href={`/project/${project.slug}`} className="project-glass-cta">
+              See in detail
+            </a>
+          </ScrollReveal>
+
+          <ScrollReveal delay={0.2}>
             <div className="project-glass-sep" aria-hidden="true" />
           </ScrollReveal>
 
-          <ScrollReveal delay={0.22}>
+          <ScrollReveal delay={0.26}>
             <div className="project-card-tags">
-              {project.tags.map((tag) => (
-                <span key={tag} className="project-glass-tag">{tag}</span>
-              ))}
+              {project.tags.map((tag) => {
+                const iconUrl = TECH_ICONS[tag as string];
+                return (
+                  <span key={tag} className="project-glass-tag">
+                    {iconUrl && (
+                      <img
+                        src={iconUrl}
+                        alt=""
+                        aria-hidden="true"
+                        className="project-glass-tag-icon"
+                      />
+                    )}
+                    {tag}
+                  </span>
+                );
+              })}
             </div>
           </ScrollReveal>
+
         </div>
       </div>
     </div>
   );
 }
 
-// ── Container ─────────────────────────────────────────────────────────────────
-/*
-  All 4 backgrounds always mounted so WebGL init cost is paid once on page load.
-  Scroll tracker computes which card is active and pauses the other 3 RAF loops.
-  Up to 2 cards run during card transitions (0.05–0.95 of a card height).
-*/
+// ── GPU tier cache ────────────────────────────────────────────────────────────
 function getCachedGPUQuality(): 'low' | 'medium' | 'high' {
   try {
     const v = localStorage.getItem('sl-gpu-quality');
@@ -185,15 +216,15 @@ function getCachedGPUQuality(): 'low' | 'medium' | 'high' {
   return 'medium';
 }
 
+// ── Container ─────────────────────────────────────────────────────────────────
 export default function ProjectsStack() {
   const outerRef   = useRef<HTMLDivElement>(null);
   const [activeSet, setActiveSet] = useState<ReadonlySet<number>>(() => new Set([0]));
   const prevKeyRef = useRef('0');
-  const [gpuQuality,   setGpuQuality]   = useState<'low' | 'medium' | 'high'>(() =>
+  const [gpuQuality, setGpuQuality] = useState<'low' | 'medium' | 'high'>(() =>
     typeof window !== 'undefined' ? getCachedGPUQuality() : 'medium'
   );
 
-  // Detect GPU tier — updates quality for current and future sessions
   useEffect(() => {
     getGPUTier().then(({ tier }) => {
       const q: 'low' | 'medium' | 'high' = tier <= 1 ? 'low' : tier === 2 ? 'medium' : 'high';
@@ -215,7 +246,7 @@ export default function ProjectsStack() {
       const next = new Set<number>();
       if (frac < 0.95) next.add(base);
       if (frac > 0.05 && base < 2) next.add(base + 1);
-      if (next.size === 0) next.add(base); // clamped edge (s < 0 or s ≥ 4)
+      if (next.size === 0) next.add(base);
       const key = [...next].sort().join(',');
       if (key !== prevKeyRef.current) {
         prevKeyRef.current = key;
@@ -230,7 +261,6 @@ export default function ProjectsStack() {
 
   return (
     <section id="projects">
-      {/* Sticky scroll stack — no header, cards speak for themselves */}
       <div className="projects-stack-outer" ref={outerRef}>
         {projects.map((project, i) => (
           <ProjectCard
@@ -242,58 +272,6 @@ export default function ProjectsStack() {
             webglEnabled={true}
           />
         ))}
-      </div>
-
-      {/* See all projects — plain-flow rectangle, no sticky */}
-      <div className="projects-see-all">
-        {/* Background carousel — behind the card, no interaction */}
-        <div className="projects-see-all-carousel-bg" aria-hidden="true">
-          <FlexCarousel
-            items={CAROUSEL_ITEMS}
-            preset="liquid"
-            intro="deal"
-            cardHeight={0.5}
-            gap={12}
-            bend={0.38}
-            reach={0.40}
-            squeeze={0.2}
-            focusOnClick={false}
-            captions={false}
-            captureWheel={false}
-            autoplay
-          />
-        </div>
-        <BorderGlow
-          backgroundColor="#0F100E"
-          borderRadius={28}
-          glowColor="42 18 60"
-          colors={['#E8E6DD', '#B8B6AD', '#E8E6DD']}
-          glowRadius={52}
-          glowIntensity={0.9}
-          fillOpacity={0.18}
-          alwaysOn
-        >
-          <div className="projects-see-all-inner">
-            <div className="projects-see-all-text">
-              <ScrollReveal delay={0}>
-                <p className="projects-see-all-label">PROJECT ARCHIVE</p>
-              </ScrollReveal>
-              <ScrollReveal delay={0.08}>
-                <h2 className="projects-see-all-heading">BEYOND THE HIGHLIGHTS</h2>
-              </ScrollReveal>
-              <ScrollReveal delay={0.16}>
-                <p className="projects-see-all-sub">
-                  Explore more of my projects, experiments, and technical work, with the ideas, decisions, and lessons behind each one.
-                </p>
-              </ScrollReveal>
-            </div>
-            <ScrollReveal delay={0.22}>
-              <a href="/work" className="projects-see-all-btn">
-                See all projects
-              </a>
-            </ScrollReveal>
-          </div>
-        </BorderGlow>
       </div>
     </section>
   );

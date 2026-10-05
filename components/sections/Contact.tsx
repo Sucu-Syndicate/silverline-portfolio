@@ -1,7 +1,20 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import ScrollReveal from '@/components/ui/ScrollReveal';
+import BorderGlow from '@/components/ui/BorderGlow';
+
+const FlexCarousel = dynamic(() => import('@/components/ui/FlexCarousel'), { ssr: false });
+
+const CAROUSEL_ITEMS = [
+  { src: '/images/carousel/c09.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c03.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c14.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c05.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c01.webp', alt: 'Project screenshot' },
+  { src: '/images/carousel/c11.webp', alt: 'Project screenshot' },
+];
 
 function MailIcon() {
   return (
@@ -40,36 +53,70 @@ export default function Contact() {
   }
 
   return (
-    <section className="section contact-cta" id="contact">
-      <ScrollReveal>
-        <h2 className="section-title">LET&apos;S CONNECT</h2>
-      </ScrollReveal>
-      <ScrollReveal delay={0.08}>
-        <p className="contact-cta-tagline">
-          Always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Just reach out.
-        </p>
-      </ScrollReveal>
-      <ScrollReveal delay={0.16}>
-        <div className="contact-cta-actions">
-          <button
-            className={`contact-email-btn${copied ? ' contact-email-btn--copied' : ''}`}
-            onClick={copyEmail}
-            aria-label="Copy email address teh.dsc@gmail.com"
-          >
-            {/* Idle: mail icon + CONTACT — absolute overlay */}
-            <span className="contact-email-btn__idle">
-              <MailIcon />
-              <span>CONTACT</span>
-            </span>
-            {/* Reveal: email + copy/check — in-flow, sets button width */}
-            <span className="contact-email-btn__reveal" aria-hidden="true">
-              {copied ? <CheckIcon /> : <CopyIcon />}
-              <span className="contact-email-btn__addr">teh.dsc@gmail.com</span>
-            </span>
-          </button>
-          <a href="#projects" className="hero-meta-primary">SEE PROJECTS</a>
+    <section id="contact">
+      <div className="projects-see-all">
+        {/* Background carousel */}
+        <div className="projects-see-all-carousel-bg" aria-hidden="true">
+          <FlexCarousel
+            items={CAROUSEL_ITEMS}
+            preset="liquid"
+            intro="deal"
+            cardHeight={0.5}
+            gap={12}
+            bend={0.38}
+            reach={0.40}
+            squeeze={0.2}
+            focusOnClick={false}
+            captions={false}
+            captureWheel={false}
+            autoplay
+          />
         </div>
-      </ScrollReveal>
+        <BorderGlow
+          backgroundColor="#0F100E"
+          borderRadius={28}
+          glowColor="42 18 60"
+          colors={['#E8E6DD', '#B8B6AD', '#E8E6DD']}
+          glowRadius={52}
+          glowIntensity={0.9}
+          fillOpacity={0.18}
+          alwaysOn
+        >
+          <div className="projects-see-all-inner">
+            <div className="projects-see-all-text">
+              <ScrollReveal delay={0.08}>
+                <h2 className="projects-see-all-heading">LET&apos;S CONNECT</h2>
+              </ScrollReveal>
+              <ScrollReveal delay={0.16}>
+                <p className="projects-see-all-sub">
+                  Always open to discussing new projects, creative ideas, or opportunities to be part of your vision. Just reach out.
+                </p>
+              </ScrollReveal>
+            </div>
+            <ScrollReveal delay={0.22}>
+              <div className="contact-cta-actions">
+                <button
+                  className={`contact-email-btn${copied ? ' contact-email-btn--copied' : ''}`}
+                  onClick={copyEmail}
+                  aria-label="Copy email address teh.dsc@gmail.com"
+                >
+                  <span className="contact-email-btn__idle">
+                    <MailIcon />
+                    <span>CONTACT</span>
+                  </span>
+                  <span className="contact-email-btn__reveal" aria-hidden="true">
+                    {copied ? <CheckIcon /> : <CopyIcon />}
+                    <span className="contact-email-btn__addr">teh.dsc@gmail.com</span>
+                  </span>
+                </button>
+                <a href="/projects" className="projects-see-all-btn">
+                  See all projects
+                </a>
+              </div>
+            </ScrollReveal>
+          </div>
+        </BorderGlow>
+      </div>
     </section>
   );
 }

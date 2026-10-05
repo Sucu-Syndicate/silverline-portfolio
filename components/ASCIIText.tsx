@@ -151,9 +151,11 @@ class AsciiFilter {
   get dy() { return this.mouse.y - this.center.y; }
 
   hue() {
-    const deg = (Math.atan2(this.dy, this.dx) * 180) / Math.PI;
-    this.deg += (deg - this.deg) * 0.075;
-    this.domElement.style.filter = `hue-rotate(${this.deg.toFixed(1)}deg)`;
+    const mouseDeg = (Math.atan2(this.dy, this.dx) * 180) / Math.PI;
+    this.deg += (mouseDeg - this.deg) * 0.075;
+    // Continuous time-based cycling layered on top of mouse angle
+    const timeDeg = (Date.now() * 0.04) % 360;
+    this.domElement.style.filter = `hue-rotate(${(this.deg + timeDeg).toFixed(1)}deg)`;
   }
 
   asciify(ctx: CanvasRenderingContext2D, w: number, h: number) {
@@ -172,7 +174,7 @@ class AsciiFilter {
       }
       str += '\n';
     }
-    this.pre.innerHTML = str;
+    this.pre.textContent = str;
   }
 
   dispose() {
@@ -205,9 +207,11 @@ class CanvasTxt {
   resize() {
     this.context.font = this.font;
     const metrics = this.context.measureText(this.txt);
-    const textWidth = Math.ceil(metrics.width) + 20;
+    // Use actual visual bounds (not advance width) so trailing glyph space
+    // doesn't create asymmetric right padding on the canvas.
+    const visualW = Math.ceil(metrics.actualBoundingBoxLeft + metrics.actualBoundingBoxRight);
     const textHeight = Math.ceil(metrics.actualBoundingBoxAscent + metrics.actualBoundingBoxDescent) + 20;
-    this.canvas.width = textWidth;
+    this.canvas.width = visualW + 20;
     this.canvas.height = textHeight;
   }
 
@@ -216,8 +220,10 @@ class CanvasTxt {
     this.context.fillStyle = this.color;
     this.context.font = this.font;
     const metrics = this.context.measureText(this.txt);
+    // Offset by actualBoundingBoxLeft so any left-overhang glyphs start at x=10
+    const xPos = Math.ceil(metrics.actualBoundingBoxLeft) + 10;
     const yPos = 10 + metrics.actualBoundingBoxAscent;
-    this.context.fillText(this.txt, 10, yPos);
+    this.context.fillText(this.txt, xPos, yPos);
   }
 
   get width() { return this.canvas.width; }
@@ -257,6 +263,10 @@ class CanvAscii {
   filter!: AsciiFilter;
   center!: { x: number; y: number };
   textAspect!: number;
+  isMouseInside: boolean = false;
+  _running: boolean = false;
+  _io: IntersectionObserver | null = null;
+  _onVis!: () => void;
 
   constructor(opts: CanvAsciiOptions, containerElem: HTMLElement, width: number, height: number) {
     this.textString = opts.text;
@@ -274,7 +284,9 @@ class CanvAscii {
     this.scene = new THREE.Scene();
     this.mouse = { x: this.width / 2, y: this.height / 2 };
 
-    this.onMouseMove = this.onMouseMove.bind(this);
+    this.onMouseMove  = this.onMouseMove.bind(this);
+    this.onMouseEnter = this.onMouseEnter.bind(this);
+    this.onMouseLeave = this.onMouseLeave.bind(this);
   }
 
   async init() {
@@ -296,9 +308,10 @@ class CanvAscii {
       color: this.textColor,
     });
     this.textCanvas.resize();
-    this.textCanvas.render();
+    this.textCanvas.render(); // draw once — text is static, no re-render needed per frame
 
     this.texture = new THREE.CanvasTexture(this.textCanvas.texture);
+    this.texture.needsUpdate = true; // upload once — content never changes during animation
     this.texture.minFilter = THREE.NearestFilter;
 
     this.textAspect = this.textCanvas.width / this.textCanvas.height;
@@ -334,8 +347,13 @@ class CanvAscii {
 
     this.container.appendChild(this.filter.domElement);
     this.setSize(this.width, this.height);
-    this.container.addEventListener('mousemove', this.onMouseMove);
-    this.container.addEventListener('touchmove', this.onMouseMove as EventListener);
+    this.container.addEventListener('mousemove',   this.onMouseMove);
+    this.container.addEventListener('touchmove',   this.onMouseMove as EventListener);
+    this.container.addEventListener('mouseenter',  this.onMouseEnter);
+    this.container.addEventListener('mouseleave',  this.onMouseLeave);
+    this.container.addEventListener('touchstart',  this.onMouseEnter);
+    this.container.addEventListener('touchend',    this.onMouseLeave);
+    this.container.addEventListener('touchcancel', this.onMouseLeave);
   }
 
   setSize(w: number, h: number) {
@@ -352,15 +370,33 @@ class CanvAscii {
       const vFovRad = (45 * Math.PI) / 180;
       const frustumH = 2 * Math.tan(vFovRad / 2) * this.camera.position.z;
       const frustumW = frustumH * (w / h);
-      const planeW = frustumW * 0.90;
+      const planeW = frustumW * 0.97;
       const planeH = planeW / this.textAspect;
       const next = new THREE.PlaneGeometry(planeW, planeH, 36, 36);
       this.mesh.geometry.dispose();
       this.mesh.geometry = next;
+      // Nudge right to compensate for perceived left-bias after bleed
+      this.mesh.position.x = frustumW * 0.02;
     }
   }
 
-  load() { this.animate(); }
+  load() {
+    // Pause when scrolled out of view (matches MoltenMetal / Silk pattern)
+    this._io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) this.animate();
+      else this.stop();
+    }, { threshold: 0 });
+    this._io.observe(this.container);
+
+    // Pause when browser tab is hidden
+    this._onVis = () => {
+      if (document.hidden) this.stop();
+      else this.animate();
+    };
+    document.addEventListener('visibilitychange', this._onVis);
+
+    this.animate();
+  }
 
   onMouseMove(evt: MouseEvent | TouchEvent) {
     const e = (evt as TouchEvent).touches ? (evt as TouchEvent).touches[0] : (evt as MouseEvent);
@@ -368,28 +404,44 @@ class CanvAscii {
     this.mouse = { x: e.clientX - bounds.left, y: e.clientY - bounds.top };
   }
 
+  onMouseEnter() { this.isMouseInside = true; }
+  onMouseLeave() { this.isMouseInside = false; }
+
   animate() {
+    if (this._running) return; // already running — guard against double-start
+    this._running = true;
     const animateFrame = () => {
+      if (!this._running) return;
       this.animationFrameId = requestAnimationFrame(animateFrame);
       this.render();
     };
-    animateFrame();
+    this.animationFrameId = requestAnimationFrame(animateFrame);
+  }
+
+  stop() {
+    this._running = false;
+    cancelAnimationFrame(this.animationFrameId);
   }
 
   render() {
     const time = Date.now() * 0.001;
-    this.textCanvas.render();
-    this.texture.needsUpdate = true;
+    // textCanvas and texture are static — drawn once in setMesh(), never re-uploaded
     (this.mesh.material as THREE.ShaderMaterial).uniforms.uTime.value = Math.sin(time);
     this.updateRotation();
     this.filter.render(this.scene, this.camera);
   }
 
   updateRotation() {
-    const x = Math.map(this.mouse.y, 0, this.height, 0.5, -0.5);
-    const y = Math.map(this.mouse.x, 0, this.width, -0.5, 0.5);
-    this.mesh.rotation.x += (x - this.mesh.rotation.x) * 0.05;
-    this.mesh.rotation.y += (y - this.mesh.rotation.y) * 0.05;
+    if (this.isMouseInside) {
+      const x = Math.map(this.mouse.y, 0, this.height, 0.5, -0.5);
+      const y = Math.map(this.mouse.x, 0, this.width, -0.5, 0.5);
+      this.mesh.rotation.x += (x - this.mesh.rotation.x) * 0.05;
+      this.mesh.rotation.y += (y - this.mesh.rotation.y) * 0.05;
+    } else {
+      // Slowly return to front-on (0, 0) when mouse is outside
+      this.mesh.rotation.x += (0 - this.mesh.rotation.x) * 0.02;
+      this.mesh.rotation.y += (0 - this.mesh.rotation.y) * 0.02;
+    }
   }
 
   clear() {
@@ -398,7 +450,7 @@ class CanvAscii {
       if (mesh.isMesh && mesh.material) {
         const mat = mesh.material as THREE.Material & Record<string, any>;
         Object.keys(mat).forEach((key) => {
-          if (mat[key]?.dispose) mat[key].dispose();
+          if (typeof mat[key]?.dispose === 'function') mat[key].dispose();
         });
         mat.dispose();
         mesh.geometry.dispose();
@@ -408,13 +460,20 @@ class CanvAscii {
   }
 
   dispose() {
-    cancelAnimationFrame(this.animationFrameId);
+    this.stop();
+    if (this._io)    { this._io.disconnect(); this._io = null; }
+    if (this._onVis) { document.removeEventListener('visibilitychange', this._onVis); }
     if (this.filter) {
       this.filter.dispose();
       if (this.filter.domElement.parentNode) this.container.removeChild(this.filter.domElement);
     }
-    this.container.removeEventListener('mousemove', this.onMouseMove);
-    this.container.removeEventListener('touchmove', this.onMouseMove as EventListener);
+    this.container.removeEventListener('mousemove',   this.onMouseMove);
+    this.container.removeEventListener('touchmove',   this.onMouseMove as EventListener);
+    this.container.removeEventListener('mouseenter',  this.onMouseEnter);
+    this.container.removeEventListener('mouseleave',  this.onMouseLeave);
+    this.container.removeEventListener('touchstart',  this.onMouseEnter);
+    this.container.removeEventListener('touchend',    this.onMouseLeave);
+    this.container.removeEventListener('touchcancel', this.onMouseLeave);
     this.clear();
     if (this.renderer) {
       this.renderer.dispose();

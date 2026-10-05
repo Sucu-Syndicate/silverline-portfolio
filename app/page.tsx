@@ -15,7 +15,7 @@ export default function Page() {
       <Blog />
       <Contact />
       <Footer />
-      <FPSCounter />
+      {process.env.NODE_ENV === 'development' && <FPSCounter />}
     </main>
   );
 }
