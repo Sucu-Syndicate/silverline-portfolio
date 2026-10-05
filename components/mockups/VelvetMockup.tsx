@@ -4,11 +4,12 @@ import { useEffect, useReducer, useRef } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
 const SLIDES = [
-  { src: '/mockups/velvet/dashboard.png',  alt: 'Velvet dashboard' },
-  { src: '/mockups/velvet/lesson.png',     alt: 'Velvet lesson view' },
-  { src: '/mockups/velvet/quiz.png',       alt: 'Velvet quiz' },
-  { src: '/mockups/velvet/onboarding.png', alt: 'Velvet onboarding' },
-  { src: '/mockups/velvet/login.png',      alt: 'Velvet login' },
+  { src: '/mockups/velvet/dashboard.png',      alt: 'Velvet dashboard' },
+  { src: '/mockups/velvet/catalog.png',        alt: 'Velvet course catalog' },
+  { src: '/mockups/velvet/course-details.png', alt: 'Velvet course details' },
+  { src: '/mockups/velvet/quiz.png',           alt: 'Velvet quiz' },
+  { src: '/mockups/velvet/login.png',          alt: 'Velvet login' },
+  { src: '/mockups/velvet/footer.png',         alt: 'Velvet home' },
 ];
 
 const SLIDE_DURATION = 3000;
@@ -17,10 +18,11 @@ const FADE_DURATION  = 0.6;
 // URL labels per slide
 const URLS = [
   'velvet.app/dashboard',
-  'velvet.app/cursos/peluqueria/leccion-1',
+  'velvet.app/cursos',
+  'velvet.app/cursos/peluqueria-basica',
   'velvet.app/quiz',
-  'velvet.app/onboarding',
   'velvet.app/iniciar-sesion',
+  'velvet.app/',
 ];
 
 export default function VelvetMockup() {
