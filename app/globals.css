@@ -1724,8 +1724,6 @@ a { color: inherit; text-decoration: none; }
 .velvet-mockup {
   width: 100%;
   max-width: 420px;
-  transform: perspective(900px) rotateY(-6deg);
-  transform-origin: center center;
   border-radius: 10px;
   overflow: hidden;
   box-shadow:
@@ -1861,8 +1859,8 @@ a { color: inherit; text-decoration: none; }
   font-size: 9px;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: rgba(var(--p-accent-rgb), 0.8);
-  border: 1px solid rgba(var(--p-accent-rgb), 0.3);
+  color: rgba(var(--p-text-rgb), 0.95);
+  border: 1px solid rgba(var(--p-text-rgb), 0.4);
   border-radius: 4px;
   padding: 2px 7px;
 }
@@ -2018,13 +2016,13 @@ a { color: inherit; text-decoration: none; }
 
 .myob-result-icon {
   font-size: 11px;
-  color: rgba(var(--p-accent-rgb), 0.9);
+  color: rgba(var(--p-text-rgb), 0.95);
 }
 
 .myob-result-text {
   font-family: var(--font-mono);
   font-size: 10px;
-  color: rgba(var(--p-accent-rgb), 0.8);
+  color: rgba(var(--p-text-rgb), 0.9);
 }
 
 /* Graph panel */

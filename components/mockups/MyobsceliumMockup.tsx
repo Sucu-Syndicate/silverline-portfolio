@@ -227,7 +227,7 @@ export default function MyobsceliumMockup() {
     return (
       <div className="myob-mockup myob-mockup--static">
         <div className="myob-chat-header">
-          <span className="myob-chat-model">claude-sonnet-4-6</span>
+          <span className="myob-chat-model">claude-sonnet-5</span>
           <span className="myob-chat-badge">MCP</span>
         </div>
         <div className="myob-chat-body">
@@ -245,7 +245,7 @@ export default function MyobsceliumMockup() {
     <div className="myob-mockup">
       {/* Header */}
       <div className="myob-chat-header">
-        <span className="myob-chat-model">claude-sonnet-4-6</span>
+        <span className="myob-chat-model">claude-sonnet-5</span>
         <span className="myob-chat-badge">MCP · Obsidian</span>
       </div>
 
@@ -295,8 +295,8 @@ export default function MyobsceliumMockup() {
                       showTimer={false}
                       shimmer={true}
                       fontSize={13}
-                      color="rgba(139,92,246,0.9)"
-                      glyphColor="rgba(139,92,246,0.9)"
+                      color="rgba(196, 181, 253, 0.95)"
+                      glyphColor="rgba(196, 181, 253, 0.95)"
                     />
                   </motion.div>
                 )}
