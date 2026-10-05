@@ -15,6 +15,7 @@ const ColorBends     = dynamic(() => import('@/components/backgrounds/ColorBends
 // ── Mockups — dynamic (client-only, code-split) ───────────────────────────────
 const VelvetMockup      = dynamic(() => import('@/components/mockups/VelvetMockup'),      { ssr: false });
 const MyobsceliumMockup = dynamic(() => import('@/components/mockups/MyobsceliumMockup'), { ssr: false });
+const Factur2d2Mockup   = dynamic(() => import('@/components/mockups/Factur2d2Mockup'),   { ssr: false });
 
 // ── Tech icon lookup (simple-icons CDN) ──────────────────────────────────────
 const TECH_ICONS: Record<string, string> = {
@@ -216,6 +217,11 @@ function ProjectCard({ project, index, paused, quality, webglEnabled }: ProjectC
         {index === 1 && (
           <div className="project-card-mockup">
             <MyobsceliumMockup paused={paused} />
+          </div>
+        )}
+        {index === 2 && (
+          <div className="project-card-mockup">
+            <Factur2d2Mockup paused={paused} />
           </div>
         )}
 
