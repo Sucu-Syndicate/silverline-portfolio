@@ -2657,13 +2657,46 @@ a { color: inherit; text-decoration: none; }
   font-size: 8.5px;
   line-height: 1.45;
   color: rgba(var(--p-text-rgb), 0.3);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  word-break: break-all;
 }
 
 .factur-code-step--active .factur-code-pre {
-  color: rgba(var(--p-text-rgb), 0.9);
+  color: rgba(var(--p-text-rgb), 0.92);
+}
+
+/* Bot command menu */
+.factur-menu-title {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  padding-bottom: 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(var(--p-accent-rgb), 0.14);
+}
+
+.factur-menu-row {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  padding: 3px 0;
+}
+
+.factur-menu-cmd {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  color: rgba(var(--p-accent-rgb), 0.95);
+  flex-shrink: 0;
+}
+
+.factur-menu-desc {
+  font-family: var(--font-structure);
+  font-size: 9.5px;
+  color: var(--text-2);
+  line-height: 1.3;
 }
 
 /* ─── Reduced motion ─────────────────────────────────── */

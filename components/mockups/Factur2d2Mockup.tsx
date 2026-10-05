@@ -3,27 +3,33 @@
 import { useEffect, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'motion/react';
 
-// ── Invoice loop data ──────────────────────────────────────────────────────────
-interface Invoice { amount: string; cae: string; }
+// ── Scenario data (no PII — no real CUITs, no real credentials) ───────────────
+interface Scenario {
+  amount:   string;
+  type:     'Factura B' | 'Factura C';
+  cae:      string;
+  showMenu: boolean;  // whether to show bot command menu before /createfactura
+  startMs:  number;   // duration of telegram-start phase
+}
 
-const INVOICES: Invoice[] = [
-  { amount: '$85.000',  cae: '74008765432198' },
-  { amount: '$120.000', cae: '74009123456781' },
-  { amount: '$52.500',  cae: '74007654321987' },
+const SCENARIOS: Scenario[] = [
+  { amount: '$85.000',  type: 'Factura B', cae: '74008765432198', showMenu: false, startMs: 2400 },
+  { amount: '$120.000', type: 'Factura B', cae: '74009123456781', showMenu: true,  startMs: 3400 },
+  { amount: '$52.500',  type: 'Factura C', cae: '74007654321987', showMenu: false, startMs: 2400 },
 ];
 
-// ── Code steps (real arca-crypto-pi.py excerpts, trimmed for display) ─────────
+// ── Code steps (arca-crypto-pi.py function names, trimmed — no credentials) ────
 const CODE_STEPS: string[] = [
-  '@authorized_only async def create_factura(...)',
-  'await arca_cypto_selenium_main(amounts, cb)',
-  'stealth(driver, languages=["es"], platform="Win32")',
-  'cuit_input.send_keys(\'20275666344\')',
-  'driver.find_element(By.ID, "F1:btnSiguiente").click()',
-  'WebDriverWait(10).until(EC.visibility_of_element(...))',
+  'def create_factura(upd, ctx):',
+  'selenium_main(amounts, cb)',
+  'stealth(driver, lang="es")',
+  'cuit_input.send_keys(CUIT)',
+  'btnSiguiente.click()',
+  'WebDriverWait → price field',
   'price.send_keys(money_amt)',
   'desc.send_keys(rand_desc)',
   'confirm_button.click()',
-  'driver.switch_to.alert.accept()',
+  'alert.accept()  # CAE ✓',
 ];
 
 // ── Step → telegram message ────────────────────────────────────────────────────
@@ -31,20 +37,27 @@ const TG_STEP_MSGS: string[] = [
   '🤖 Starting automation...',
   '🔧 Selenium driver initialized',
   '🌐 Navigating to ARCA login...',
-  '🔢 CUIT entered into login page',
-  '🔑 Credentials submitted',
-  '✅ Logged in, opening invoice form',
-  '',   // filled dynamically with invoice.amount
+  '🔢 Credentials entered',
+  '🔑 Login submitted',
+  '✅ Logged in, opening form',
+  '',   // filled dynamically with scenario.amount
   '📝 Description filled in',
   '🖱️ Submitting invoice...',
-  '',   // filled dynamically with invoice.cae
+  '',   // filled dynamically with scenario.cae
 ];
 
-function getTgMsg(step: number, invoice: Invoice): string {
-  if (step === 6) return `💵 Amount: ${invoice.amount} entered`;
-  if (step === 9) return `✅ CAE: ${invoice.cae}`;
+function getTgMsg(step: number, scenario: Scenario): string {
+  if (step === 6) return `💵 Amount: ${scenario.amount} entered`;
+  if (step === 9) return `✅ CAE: ${scenario.cae}`;
   return TG_STEP_MSGS[step] ?? '';
 }
+
+// ── Bot command menu content ───────────────────────────────────────────────────
+const BOT_MENU = [
+  { cmd: '/createfactura', desc: 'Issue a new invoice' },
+  { cmd: '/editamounts',   desc: 'Manage saved amounts' },
+  { cmd: '/status',        desc: 'Last invoice status'  },
+];
 
 // ── Easing ────────────────────────────────────────────────────────────────────
 const EXPO: [number, number, number, number] = [0.16, 1, 0.3, 1];
@@ -77,15 +90,15 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
 
   const [outerPhase, setOuterPhase] = useState<OuterPhase>('telegram-start');
   const [step, setStep]             = useState(0);
-  const [invoiceIdx, setInvoiceIdx] = useState(0);
+  const [scenarioIdx, setScenarioIdx] = useState(0);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const invoice = INVOICES[invoiceIdx];
-  const isSplit = outerPhase === 'split';
+  const scenario = SCENARIOS[scenarioIdx];
+  const isSplit  = outerPhase === 'split';
 
   // Derived: visible telegram status messages (grows as step advances during split)
   const visibleTgMsgs: string[] = isSplit
-    ? Array.from({ length: step + 1 }, (_, i) => getTgMsg(i, invoice)).filter(Boolean)
+    ? Array.from({ length: step + 1 }, (_, i) => getTgMsg(i, scenario)).filter(Boolean)
     : [];
 
   useEffect(() => {
@@ -95,7 +108,7 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
       timerRef.current = setTimeout(() => {
         setStep(0);
         setOuterPhase('split');
-      }, 2200);
+      }, scenario.startMs);
     } else if (outerPhase === 'split') {
       timerRef.current = setTimeout(() => {
         if (step < CODE_STEPS.length - 1) {
@@ -109,14 +122,14 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
     } else {
       // pause
       timerRef.current = setTimeout(() => {
-        setInvoiceIdx(i => (i + 1) % INVOICES.length);
+        setScenarioIdx(i => (i + 1) % SCENARIOS.length);
         setStep(0);
         setOuterPhase('telegram-start');
       }, 700);
     }
 
     return () => { if (timerRef.current) clearTimeout(timerRef.current); };
-  }, [outerPhase, step, paused, reduce]);
+  }, [outerPhase, step, paused, reduce, scenario.startMs]);
 
   // Static fallback
   if (reduce) {
@@ -141,13 +154,13 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
         {/* Telegram pane — animates its width when split */}
         <motion.div
           className="factur-tg-pane"
-          animate={{ width: isSplit ? '55%' : '100%' }}
+          animate={{ width: isSplit ? '50%' : '100%' }}
           transition={{ duration: 0.5, ease: EXPO }}
         >
           <div className="factur-tg-wrap">
           <AnimatePresence mode="wait">
 
-            {/* Phase: telegram-start — /createfactura exchange + inline keyboard */}
+            {/* Phase: telegram-start */}
             {outerPhase === 'telegram-start' && (
               <motion.div
                 key="tg-start"
@@ -157,33 +170,56 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
                 exit={{ opacity: 0, x: -8 }}
                 transition={{ duration: 0.35, ease: EXPO }}
               >
+                {/* Variant A: menu shown first */}
+                {scenario.showMenu && (
+                  <motion.div
+                    className="factur-bubble factur-bubble--bot"
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.28, ease: EXPO, delay: 0.1 }}
+                  >
+                    <div className="factur-menu-title">Available commands</div>
+                    {BOT_MENU.map(item => (
+                      <div key={item.cmd} className="factur-menu-row">
+                        <span className="factur-menu-cmd">{item.cmd}</span>
+                        <span className="factur-menu-desc">{item.desc}</span>
+                      </div>
+                    ))}
+                  </motion.div>
+                )}
+
+                {/* User sends /createfactura */}
                 <motion.div
                   className="factur-bubble factur-bubble--user"
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: EXPO }}
+                  transition={{ duration: 0.28, ease: EXPO, delay: scenario.showMenu ? 0.9 : 0.2 }}
                 >
                   /createfactura
                 </motion.div>
+
+                {/* Bot reply: keyboard with amounts */}
                 <motion.div
                   className="factur-bubble factur-bubble--bot"
-                  initial={{ opacity: 0, y: 6 }}
+                  initial={{ opacity: 0, y: 5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.3, ease: EXPO, delay: 0.35 }}
+                  transition={{ duration: 0.28, ease: EXPO, delay: scenario.showMenu ? 1.5 : 0.65 }}
                 >
-                  🧾 <strong>Create Factura</strong>
-                  <br />
-                  Select an amount:
+                  🧾 <strong>{scenario.type}</strong> — Select amount:
                   <div className="factur-inline-kbd">
-                    {INVOICES.map((inv, i) => (
+                    {SCENARIOS.map((s, i) => (
                       <motion.span
-                        key={inv.amount}
-                        className={`factur-inline-btn${i === invoiceIdx ? ' factur-inline-btn--selected' : ''}`}
+                        key={s.amount}
+                        className={`factur-inline-btn${i === scenarioIdx ? ' factur-inline-btn--selected' : ''}`}
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.22, ease: EXPO, delay: 0.55 + i * 0.08 }}
+                        transition={{
+                          duration: 0.2,
+                          ease: EXPO,
+                          delay: (scenario.showMenu ? 1.7 : 0.85) + i * 0.07,
+                        }}
                       >
-                        {inv.amount}
+                        {s.amount}
                       </motion.span>
                     ))}
                   </div>
@@ -227,14 +263,14 @@ export default function Factur2d2Mockup({ paused = false }: { paused?: boolean }
               >
                 <div className="factur-bubble factur-bubble--bot">
                   <div className="factur-done-card">
-                    <div className="factur-done-title">✅ Factura B created</div>
+                    <div className="factur-done-title">✅ {scenario.type} created</div>
                     <div className="factur-done-row">
                       <span className="factur-done-label">CAE</span>
-                      <span className="factur-done-value">{invoice.cae}</span>
+                      <span className="factur-done-value">{scenario.cae}</span>
                     </div>
                     <div className="factur-done-row">
                       <span className="factur-done-label">Amount</span>
-                      <span className="factur-done-value">{invoice.amount}</span>
+                      <span className="factur-done-value">{scenario.amount}</span>
                     </div>
                     <div className="factur-done-row">
                       <span className="factur-done-label">Venc. CAE</span>
